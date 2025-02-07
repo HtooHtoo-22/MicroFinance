@@ -1,9 +1,11 @@
 package com.microfinance.code.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "cif")
 public class CIF {
@@ -22,7 +24,7 @@ public class CIF {
     @Column(name = "job")
     private String job;
     @Column(name = "income_amount")
-    private Double income;
+    private Double incomAmounte;
     @Column(name = "nrc_number")
     private String NRC;
     @Column(name = "front_NRC_photo")
