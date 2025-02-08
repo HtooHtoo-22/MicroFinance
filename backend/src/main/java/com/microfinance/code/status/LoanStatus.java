@@ -1,10 +1,9 @@
-package com.microfinance.code.model;
+package com.microfinance.code.status;
 
 public enum LoanStatus {
     APPROVE("Approve"),
     REJECT("Reject"),
-    PENDING("Pending"),
-    DEFAULT_PENDING("Default Pending");
+    PENDING("Pending");
 
     private final String displayName;
 

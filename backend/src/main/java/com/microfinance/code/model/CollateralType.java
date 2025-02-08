@@ -1,17 +1,24 @@
 package com.microfinance.code.model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
-@Table(name = "colleteral_type")
-public class ColleteralType {
+@Getter
+@Setter
+@Table(name = "collateral_type")
+public class CollateralType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "name", length = 30, nullable = false)
     private String name;
+
+    @Column(name = "status",nullable = false)
+    private boolean status;
+
+
 }

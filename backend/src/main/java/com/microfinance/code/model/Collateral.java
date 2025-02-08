@@ -1,14 +1,16 @@
 package com.microfinance.code.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
-@Data
-@Table(name = "colleteral")
-public class Colleteral {
+@Getter
+@Setter
+@Table(name = "collateral")
+public class Collateral {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,5 +37,5 @@ public class Colleteral {
 
     @ManyToOne
     @JoinColumn(name = "colleteral_type", nullable = false) // Added nullable
-    private ColleteralType colleteralType;
+    private CollateralType colleteralType;
 }

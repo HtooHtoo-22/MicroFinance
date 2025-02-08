@@ -1,13 +1,16 @@
 package com.microfinance.code.model;
 
+import com.microfinance.code.status.LoanStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "SME_Loan")
 public class SME_Loan {
     @Id
@@ -37,8 +40,15 @@ public class SME_Loan {
     private LocalDateTime approveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20) // Already has nullable and length
+    @Column(name = "status", nullable = false, length = 20)
     private LoanStatus status;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.status == null) { // Only set if not already set
+            this.status = LoanStatus.PENDING;
+        }
+    }
 
     @Column(name = "document_fee", nullable = false) // Added nullable
     private BigDecimal documentFee;

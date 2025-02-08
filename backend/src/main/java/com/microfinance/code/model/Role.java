@@ -12,4 +12,6 @@ public class Role {
     private Integer id;
     @Column(name = "role_name", length = 20, nullable = false)
     private String roleName;
+    @Column(name = "role_description", length = 80, nullable = false)
+    private String roleDescription;
 }
