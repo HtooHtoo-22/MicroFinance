@@ -23,9 +23,9 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "user_id", length = 30)
+    @Column(name = "user_id", length = 30, nullable = false)
     private String userId;
-    @Column(name = "name", nullable = false)
+    @Column(name = "name",length = 25, nullable = false)
     private String name;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -34,6 +34,7 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "branch_id")
     private Branch branch;
+
     private boolean active;
 
     @Override
