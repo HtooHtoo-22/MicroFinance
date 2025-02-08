@@ -12,21 +12,26 @@ public class CurrentAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "account_id")
+
+    @Column(name = "account_id", nullable = false, length = 30)
     private String accountId;
-    @Column(name = "max_Amount")
+
+    @Column(name = "max_Amount", nullable = false)
     private Double maxAmount;
-    @Column(name = "min_Amount")
+
+    @Column(name = "min_Amount", nullable = false)
     private Double minAmount;
-    @Column(name = "register_date")
-    private LocalDateTime registerDate;
-    @Column(name = "approve_date")
-    private LocalDateTime approveDate;
-    @Column(name = "loan_balence")
-    private Double loanBalence;
-    @Column(name = "account_Repaid")
-    private Double accountRepaid;
+
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime create_date;
+
+    @Column(name = "total_balence", nullable = false)
+    private Double totalBalence;
+
+    @Column(name = "freeze_status", nullable = false)
+    private boolean freezeStatus;
+
     @OneToOne
-    @JoinColumn(name = "cif_id")
+    @JoinColumn(name = "cif_id", nullable = false)
     private CIF cif;
 }

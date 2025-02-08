@@ -11,54 +11,75 @@ import java.time.LocalDateTime;
 public class CIF {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "cif_id")
+    @Column(name = "cif_id", nullable = false, length = 30)
     private String cifId;
-    @Column(name = "user_name")
+
+    @Column(name = "user_name", nullable = false, length = 100)
     private String userName;
-    @Column(name = "gender")
+
+    @Column(name = "gender", nullable = false, length = 10)
     private String gender;
-    @Column(name = "job")
+
+    @Column(name = "job", nullable = false, length = 50)
     private String job;
-    @Column(name = "income_amount")
-    private Double incomAmounte;
-    @Column(name = "nrc_number")
+
+    @Column(name = "income_amount", nullable = false)
+    private Double incomeAmount;
+
+    @Column(name = "nrc_number", nullable = false, length = 20)
     private String NRC;
-    @Column(name = "front_NRC_photo")
+
+    @Column(name = "front_NRC_photo", nullable = false, length = 255)
     private String frontNRCUrl;
-    @Column(name = "back_NRC_photo")
+
+    @Column(name = "back_NRC_photo", nullable = false, length = 255)
     private String backNRCUrl;
-    @Column(name = "user_photo")
+
+    @Column(name = "user_photo", nullable = false, length = 255)
     private String userPhotoURL;
-    @Column(name = "phone")
+
+    @Column(name = "phone", nullable = false, length = 15)
     private String phone;
-    @Column(name = "email")
+
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
-    @Column(name = "register_date")
-    private LocalDateTime registerDate;
-    @Column(name = "approve_date")
-    private LocalDateTime approveDate;
-    @Column(name = "address")
+
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime createDate;
+
+    @Column(name = "state", nullable = false, length = 50)
+    private String state;
+
+    @Column(name = "address", nullable = false, length = 200)
     private String address;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
+    @Column(name = "status", nullable = false, length = 10)
     private Status status;
+
     @ManyToOne
-    @JoinColumn(name = "branch_id")
+    @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name ="user_id", nullable = false)
+    private User user;
 
     private enum Status {
         APPROVE("Approve"),
         REJECT("Reject");
+
         private final String displayName;
-        Status(String displayName){
+
+        Status(String displayName) {
             this.displayName = displayName;
         }
-        public String getDisplayName(){
+
+        public String getDisplayName() {
             return displayName;
         }
     }

@@ -12,6 +12,4 @@ public class Role {
     private Integer id;
     @Column(name = "role_name")
     private String roleName;
-    @Column(name = "description")
-    private String description;
 }

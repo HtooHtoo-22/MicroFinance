@@ -34,7 +34,7 @@ public class AuthenticationService {
         if(userRepo.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
-        var user = User.builder()
+        var user = User.build()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

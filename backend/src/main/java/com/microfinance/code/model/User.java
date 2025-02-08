@@ -1,7 +1,11 @@
 package com.microfinance.code.model;
 
 import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,6 +14,9 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user")
 public class User implements UserDetails {
 
@@ -28,7 +35,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "branch_id")
     private Branch branch;
     private boolean active;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
