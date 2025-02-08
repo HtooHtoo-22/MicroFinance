@@ -2,10 +2,13 @@ package com.microfinance.code.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "cif")
 public class CIF {
@@ -48,11 +51,14 @@ public class CIF {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
     @Column(name = "state", nullable = false, length = 50)
     private String state;
+
+    @Column(name = "township", nullable = false, length = 50)
+    private String township;
 
     @Column(name = "address", nullable = false, length = 200)
     private String address;
@@ -69,9 +75,20 @@ public class CIF {
     @JoinColumn(name ="user_id", nullable = false)
     private User user;
 
+    @PrePersist
+    protected void onCreate(){
+        if(createdDate == null){
+            LocalDateTime now = LocalDateTime.now();
+            createdDate = now ;
+        }
+        if(status == null){
+            status = Status.PENDING;
+        }
+    }
     private enum Status {
         APPROVE("Approve"),
-        REJECT("Reject");
+        REJECT("Reject"),
+        PENDING("Pending");
 
         private final String displayName;
 

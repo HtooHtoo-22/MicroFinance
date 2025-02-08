@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,52 +19,34 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "user_id", length = 30, nullable = false)
     private String userId;
-    @Column(name = "name",length = 25, nullable = false)
+    @Column(name = "name",length = 65, nullable = false)
     private String name;
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true,length = 60,nullable = false)
     private String email;
     @Column(nullable = false)
     private String password;
     @ManyToOne
     @JoinColumn(name = "branch_id")
     private Branch branch;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+    @Column(name = "registered_date", nullable = false)
+    private LocalDateTime registeredDate;
 
-    private boolean active;
+    @PrePersist
+    protected void onCreate(){
+        if(registeredDate == null){
+            LocalDateTime now = LocalDateTime.now();
+            registeredDate = now ;
+        }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
-    public String getUsername() {
-        return getUserId();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }
