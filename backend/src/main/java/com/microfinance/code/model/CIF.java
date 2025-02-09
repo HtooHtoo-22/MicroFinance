@@ -82,13 +82,13 @@ public class CIF {
             createdDate = now ;
         }
         if(status == null){
-            status = Status.PENDING;
+            status = Status.ACTIVE;
         }
     }
     private enum Status {
-        APPROVE("Approve"),
-        REJECT("Reject"),
-        PENDING("Pending");
+        ACTIVE("Active"),
+        DELETE("Delete");
+
 
         private final String displayName;
 
