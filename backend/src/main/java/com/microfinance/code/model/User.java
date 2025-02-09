@@ -48,5 +48,10 @@ public class User {
             registeredDate = now ;
         }
 
+<<<<<<< HEAD
     }
 }
+=======
+
+}
+>>>>>>> WHA
