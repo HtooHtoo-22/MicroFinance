@@ -30,7 +30,6 @@ public class BranchMapper {
         if (dto == null) {
             return null;
         }
-
         Branch branch = new Branch();
         branch.setId(dto.getId());
         branch.setCode(dto.getCode());

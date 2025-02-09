@@ -13,4 +13,10 @@ public class GlobalExceptionHandler {
         ApiResponse<?> errorResponse = ApiResponse.error(HttpStatus.NOT_FOUND,HttpStatus.NOT_FOUND.value(),ex.getMessage());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(EmptyException.class)
+    public ResponseEntity<ApiResponse<?>> handleEmptyException(EmptyException ex){
+        ApiResponse<?> errorResponse = ApiResponse.error(HttpStatus.NOT_FOUND,HttpStatus.NOT_FOUND.value(),ex.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
 }
