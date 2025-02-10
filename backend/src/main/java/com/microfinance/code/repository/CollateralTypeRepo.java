@@ -10,4 +10,5 @@ import java.util.List;
 public interface CollateralTypeRepo extends JpaRepository<CollateralType,Integer> {
     List<CollateralType> findByStatusTrue();
     List<CollateralType> findByStatus(boolean status);
+    boolean existsByName(String name);
 }

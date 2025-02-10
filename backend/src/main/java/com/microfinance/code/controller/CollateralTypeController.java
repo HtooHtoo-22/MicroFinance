@@ -3,6 +3,7 @@ package com.microfinance.code.controller;
 import com.microfinance.code.dto.CollateralTypeDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.service.impl.CollateralTypeServiceImpl;
+import com.microfinance.code.service.interFace.CollateralTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +15,17 @@ import java.util.List;
 @RequestMapping("/api/collateral-types")
 public class CollateralTypeController {
     @Autowired
-    private CollateralTypeServiceImpl collateralTypeService;
+    private CollateralTypeService collateralTypeService;
 
     // Create Collateral Type
-    @PostMapping
+    @PostMapping("/")
     public ApiResponse<CollateralTypeDTO> createCollateralType(@RequestBody CollateralTypeDTO dto) {
         CollateralTypeDTO createdDTO = collateralTypeService.createCollateralType(dto);
         return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral Type created successfully", createdDTO);
     }
 
     // Get All Active Collateral Types
-    @GetMapping
+    @GetMapping("/all")
     public ApiResponse<List<CollateralTypeDTO>> getAllCollateralTypes() {
         List<CollateralTypeDTO> collateralTypes = collateralTypeService.getAllCollateralTypes();
         return ApiResponse.success(HttpStatus.OK, 200, "Collateral Types retrieved successfully", collateralTypes);
