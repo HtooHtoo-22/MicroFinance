@@ -1,5 +1,6 @@
 package com.microfinance.code.model;
 
+import com.microfinance.code.status.CIFStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,6 +63,12 @@ public class CIF {
     @Column(name = "address", nullable = false, length = 200)
     private String address;
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 10)
+    private CIFStatus status;
+
+
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
@@ -70,4 +77,21 @@ public class CIF {
     @JoinColumn(name ="user_id", nullable = false)
     private User user;
 
-}
+
+    @PrePersist
+    protected void onCreate(){
+        if(createdDate == null){
+            LocalDateTime now = LocalDateTime.now();
+            createdDate = now ;
+        }
+        if(status == null){
+
+            status = CIFStatus.ACTIVE;
+        }
+    }
+
+
+    }
+
+
+

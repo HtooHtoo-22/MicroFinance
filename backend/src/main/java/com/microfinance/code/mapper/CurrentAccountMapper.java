@@ -11,7 +11,7 @@ public class CurrentAccountMapper {
         account.setAccountId(dto.getAccountId());
         account.setMaxAmount(dto.getMaxAmount());
         account.setMinAmount(dto.getMinAmount());
-        account.setCreate_date(dto.getCreateDate());
+        account.setCreatedDate(dto.getCreateDate());
         account.setTotalBalence(dto.getTotalBalance());
         account.setFreezeStatus(dto.isFreezeStatus());
 
@@ -27,7 +27,7 @@ public class CurrentAccountMapper {
         dto.setAccountId(account.getAccountId());
         dto.setMaxAmount(account.getMaxAmount());
         dto.setMinAmount(account.getMinAmount());
-        dto.setCreateDate(account.getCreate_date());
+        dto.setCreateDate(account.getCreatedDate());
         dto.setTotalBalance(account.getTotalBalence());
         dto.setFreezeStatus(account.isFreezeStatus());
 

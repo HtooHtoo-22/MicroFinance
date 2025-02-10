@@ -24,8 +24,8 @@ public class CurrentAccount {
     @Column(name = "min_Amount", nullable = false)
     private Double minAmount;
 
-    @Column(name = "create_date", nullable = false)
-    private LocalDateTime create_date;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
     @Column(name = "total_balence", nullable = false)
     private Double totalBalence;
