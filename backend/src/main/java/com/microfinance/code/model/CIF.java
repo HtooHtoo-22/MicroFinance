@@ -63,9 +63,11 @@ public class CIF {
     @Column(name = "address", nullable = false, length = 200)
     private String address;
 
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
     private CIFStatus status;
+
 
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
@@ -74,6 +76,7 @@ public class CIF {
     @ManyToOne
     @JoinColumn(name ="user_id", nullable = false)
     private User user;
+
 
     @PrePersist
     protected void onCreate(){
@@ -89,3 +92,6 @@ public class CIF {
 
 
     }
+
+
+
