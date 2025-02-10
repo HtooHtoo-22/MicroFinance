@@ -2,8 +2,11 @@ package com.microfinance.code.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "role")
 public class Role {
@@ -14,4 +17,7 @@ public class Role {
     private String roleName;
     @Column(name = "role_description", length = 80, nullable = false)
     private String roleDescription;
+
+    @Column(name = "status",nullable = false)
+    private boolean status;
 }
