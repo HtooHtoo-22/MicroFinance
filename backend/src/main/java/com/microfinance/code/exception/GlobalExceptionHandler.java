@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
 
-<<<<<<< HEAD
+
     @ExceptionHandler(EmptyException.class)
     public ResponseEntity<ApiResponse<?>> handleEmptyException(EmptyException ex){
         ApiResponse<?> errorResponse = ApiResponse.error(HttpStatus.NOT_FOUND,HttpStatus.NOT_FOUND.value(),ex.getMessage());
@@ -29,11 +29,11 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-=======
+    }
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ApiResponse<?>> handleValidationException(ValidationException ex) {
         ApiResponse<?> errorResponse = ApiResponse.error(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
->>>>>>> WHA
+
     }
 }
