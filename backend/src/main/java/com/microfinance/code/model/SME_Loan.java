@@ -76,4 +76,5 @@ public class SME_Loan {
     @ManyToOne
     @JoinColumn(name = "current_account_id", nullable = false)
     private CurrentAccount currentAccount;
+
 }
