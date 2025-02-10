@@ -1,11 +1,10 @@
 package com.microfinance.code.status;
 
-public enum BranchStatus {
-    OPEN("Open"),
-    CLOSE("Close"),
-    Active("Active");
+public enum transactionType {
+    DR("DR"),
+    CR("CR");
     private final String displayName;
-    BranchStatus(String displayName) {
+    transactionType(String displayName) {
         this.displayName = displayName;
     }
     public String getDisplayName() {

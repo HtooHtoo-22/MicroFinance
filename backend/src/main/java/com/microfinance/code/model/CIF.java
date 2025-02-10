@@ -2,7 +2,6 @@ package com.microfinance.code.model;
 
 import com.microfinance.code.status.CIFStatus;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -64,10 +63,13 @@ public class CIF {
     @Column(name = "address", nullable = false, length = 200)
     private String address;
 
+<<<<<<< HEAD
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
     private CIFStatus status;
 
+=======
+>>>>>>> WHA
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
@@ -76,6 +78,7 @@ public class CIF {
     @JoinColumn(name ="user_id", nullable = false)
     private User user;
 
+<<<<<<< HEAD
     @PrePersist
     protected void onCreate(){
         if(createdDate == null){
@@ -90,3 +93,6 @@ public class CIF {
 
 
     }
+=======
+}
+>>>>>>> WHA
