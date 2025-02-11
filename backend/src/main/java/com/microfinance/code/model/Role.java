@@ -17,7 +17,6 @@ public class Role {
     private String roleName;
     @Column(name = "role_description", length = 80, nullable = false)
     private String roleDescription;
-
-    @Column(name = "status",nullable = false)
-    private boolean status;
+    @Column(name = "status")
+    private boolean active;
 }
