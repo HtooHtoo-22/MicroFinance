@@ -1,11 +1,13 @@
 package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.CollateralTypeDTO;
+import com.microfinance.code.exception.AlreadyExistException;
 import com.microfinance.code.exception.EmptyException;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.CollateralTypeMapper;
 import com.microfinance.code.model.CollateralType;
 import com.microfinance.code.repository.CollateralTypeRepo;
+import com.microfinance.code.service.interFace.CollateralTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CollateralTypeServiceImpl {
+public class CollateralTypeServiceImpl implements CollateralTypeService {
 
     @Autowired
     private CollateralTypeRepo collateralTypeRepo;
@@ -22,6 +24,10 @@ public class CollateralTypeServiceImpl {
     private CollateralTypeMapper collateralTypeMapper;
 
     public CollateralTypeDTO createCollateralType(CollateralTypeDTO dto) {
+        if (collateralTypeRepo.existsByName(dto.getName())) {
+            throw new AlreadyExistException("Collateral Type with name '" + dto.getName() + "' already exists.");
+        }
+
         CollateralType collateralType = collateralTypeMapper.toEntity(dto);
         CollateralType savedCollateralType = collateralTypeRepo.save(collateralType);
         return collateralTypeMapper.toDTO(savedCollateralType);
