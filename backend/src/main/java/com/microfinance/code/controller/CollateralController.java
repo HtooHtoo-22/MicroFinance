@@ -18,15 +18,15 @@ public class CollateralController {
     @Autowired
     private CollateralService collateralService;
 
-    @PostMapping("/")
-    public ApiResponse<CollateralDTO> createCollateral(@RequestPart("collateral") CollateralDTO dto,
-                                                       @RequestParam("image")MultipartFile image
-                                                      )
-    {
-        dto.setImageFile(image);
-        CollateralDTO createdCollateral = collateralService.createCollateral(dto);
-        return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
-    }
+//    @PostMapping("/")
+//    public ApiResponse<CollateralDTO> createCollateral(@RequestPart("collateral") CollateralDTO dto,
+//                                                       @RequestParam("image")MultipartFile image
+//                                                      )
+//    {
+//        dto.setImageFile(image);
+//        CollateralDTO createdCollateral = collateralService.createCollateral(dto);
+//        return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
+//    }
     @GetMapping("/")
     public ApiResponse<List<CollateralDTO>> getAllCollaterals() {
         List<CollateralDTO> collaterals = collateralService.getAllCollaterals();
