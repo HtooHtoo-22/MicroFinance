@@ -1,5 +1,6 @@
 package com.microfinance.code.dto;
 
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,4 +26,5 @@ public class CIFDTO {
     private String status;
     private Integer branchId;
     private Integer userId;
+
 }

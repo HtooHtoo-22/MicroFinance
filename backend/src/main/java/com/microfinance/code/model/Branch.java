@@ -2,20 +2,26 @@ package com.microfinance.code.model;
 
 import com.microfinance.code.status.BranchStatus;
 import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+
 @Entity
 @Getter
 @Setter
 @Table(name = "branch")
+@Data
 public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "code", nullable = false, length = 5)
     private String code;
 
