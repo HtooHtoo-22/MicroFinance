@@ -23,12 +23,12 @@ public class UserMapper {
         return dto;
     }
 
-    public User toEntity(UserDTO dto, Branch branch, Role role) {
+    public User toEntity(UserDTO dto, Branch branch, Role role, String userId) {
         if (dto == null) {
             return null;
         }
         User user = new User();
-        user.setUserId(UUID.randomUUID().toString()); // Generate unique userId
+        user.setUserId(userId); // Use sequential userId, NOT UUID
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword()); // Hash before saving

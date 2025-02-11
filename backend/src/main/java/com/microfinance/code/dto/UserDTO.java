@@ -10,5 +10,6 @@ public class UserDTO {
     private String password;
     private boolean active;
     private int brandId;
+    private int roleID;
 
 }

@@ -4,8 +4,10 @@ import com.microfinance.code.dto.UserDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.mapper.UserMapper;
 import com.microfinance.code.model.Branch;
+import com.microfinance.code.model.Role;
 import com.microfinance.code.model.User;
 import com.microfinance.code.repository.BranchRepo;
+import com.microfinance.code.repository.RoleRepository;
 import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.interFace.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +23,19 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final BranchRepo branchRepo;
-    //private final RoleRepo roleRepo;
+    private final RoleRepository roleRepo;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     @Autowired
     public UserServiceImpl(
             UserRepo userRepo,
             BranchRepo branchRepo,
-           // RoleRepository roleRepository,
+            RoleRepository roleRepository,
             UserMapper userMapper,
             BCryptPasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.branchRepo = branchRepo;
-        //this.roleRepository = roleRepository;
+        this.roleRepo = roleRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -49,14 +51,32 @@ public class UserServiceImpl implements UserService {
         }
 
         Branch branch = branchRepo.findById(dto.getBrandId()).orElse(null);
-       // Role role = roleRepository.findById(dto.getRoleId()).orElse(null);
+        Role role = roleRepo.findById(dto.getRoleID()).orElse(null);
 
-        User user = userMapper.toEntity(dto, branch,role);
+        // Generate sequential userId
+        String newUserId = generateNextUserId();
+
+        // Pass generated userId to UserMapper
+        User user = userMapper.toEntity(dto, branch, role, newUserId);
         user.setPassword(passwordEncoder.encode(dto.getPassword())); // Hash password
 
         return userRepo.save(user);
     }
 
+    // Generate sequential userId (001, 002, 003, etc.)
+    private String generateNextUserId() {
+        String lastUserId = userRepo.findLastUserId(); // Fetch last userId from DB
+
+        if (lastUserId == null) {
+            return "001"; // Start from 001 if no users exist
+        }
+
+        int lastIdNumber = Integer.parseInt(lastUserId); // Convert userId to a number
+        int nextIdNumber = lastIdNumber + 1;
+
+        // Format the number with leading zeros (e.g., 001, 002, 003)
+        return String.format("%03d", nextIdNumber);
+    }
     @Override
     public User updateUser(Integer id, UserDTO dto) {
         Optional<User> existingUserOpt = userRepo.findById(id);
