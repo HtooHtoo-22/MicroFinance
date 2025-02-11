@@ -6,7 +6,6 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.mapper.BranchMapper;
 import com.microfinance.code.model.Branch;
 import com.microfinance.code.service.interFace.BranchService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,29 +31,42 @@ public class BranchController {
         BranchDTO createdBranchDTO = branchMapper.toDTO(createdBranch);
         return ApiResponse.success(HttpStatus.CREATED, 0101,"Branch created successfully", createdBranchDTO);
     }
-    @GetMapping("/")
+    @GetMapping()
     public ApiResponse<List<BranchDTO>> getAllBranches() {
         List<BranchDTO> branchList = branchService.getAllBranches();
         return ApiResponse.success(HttpStatus.OK, 200, "Branch Types retrieved successfully", branchList);
     }
 
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ApiResponse<BranchDTO>> getBranchById(@PathVariable Integer id) {
-//        ApiResponse<BranchDTO> response = branchService.getBranchById(id);
-//        return ResponseEntity.status(response.getHttpStatus()).body(response);
-//    }
-//
-////    @PutMapping("/{id}")
-////    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(@PathVariable Integer id, @RequestBody BranchDTO branchDTO) {
-////        ApiResponse<BranchDTO> response = branchService.updateBranch(id, branchDTO);
-////        return ResponseEntity.status(response.getHttpStatus()).body(response);
-////    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<String>> deleteBranch(@PathVariable Integer id) {
-//        ApiResponse<String> response = branchService.deleteBranch(id);
-//        return ResponseEntity.status(response.getHttpStatus()).body(response);
-//    }
+    @GetMapping("/{id}")
+    public ApiResponse<BranchDTO> getBranchById(@PathVariable Integer id) {
+        BranchDTO branchDTO = branchService.getBranchById(id);
+        return   ApiResponse.success(HttpStatus.OK, 200, "Collateral Type retrieved successfully", branchDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(
+            @PathVariable Integer id,
+            @RequestBody BranchDTO dto
+    ) {
+        Branch updatedBranch = branchService.updateBranch(id, dto);
+
+        if (updatedBranch == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(HttpStatus.NOT_FOUND, 404, "Branch not found"));
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success(HttpStatus.OK, 200, "Branch updated successfully", branchMapper.toDTO(updatedBranch))
+        );
+
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteBranch(@PathVariable Integer id) {
+        ApiResponse<String> response = branchService.deleteBranch(id);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
+    }
 
 }
