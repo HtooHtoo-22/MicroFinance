@@ -25,5 +25,6 @@ public class CIFDTO {
     private String address;
     private String status;
     private Integer branchId;
+    private String code;
     private Integer userId;
 }

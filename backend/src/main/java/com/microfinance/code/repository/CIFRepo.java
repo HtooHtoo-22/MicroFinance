@@ -10,4 +10,9 @@ import java.util.List;
 @Repository
 public interface CIFRepo extends JpaRepository<CIF ,Integer>{
     List<CIF> findByStatus(CIFStatus status);
+    boolean existsByNRC(String nrc);
+    boolean existsByEmail(String email);
+    boolean existsByNRCAndIdNot(String nrc, Integer id);
+    boolean existsByEmailAndIdNot(String email, Integer id);
+
 }
