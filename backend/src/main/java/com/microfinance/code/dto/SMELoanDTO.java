@@ -25,6 +25,6 @@ public class SMELoanDTO {
     private String entryUserName;
     private int approvedUserId;
     private String approvedUserName;
-    private int currentAccountId;
+    private Integer currentAccountId;
     private String currentAccountaccId;
 }

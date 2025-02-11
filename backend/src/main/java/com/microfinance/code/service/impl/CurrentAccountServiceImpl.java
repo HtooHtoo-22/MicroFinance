@@ -17,6 +17,8 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     @Autowired
     private CurrentAccountRepository currentAccountRepository;
 
+
+
     @Override
     public CurrentAccountDTO createCurrentAccount(CurrentAccountDTO dto) {
         String accountId = generateAccountId(dto.getCifId());
