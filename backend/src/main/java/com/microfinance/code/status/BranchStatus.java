@@ -2,8 +2,7 @@ package com.microfinance.code.status;
 
 public enum BranchStatus {
     OPEN("Open"),
-    CLOSE("Close"),
-    Active("Active");
+    CLOSE("Close");
     private final String displayName;
     BranchStatus(String displayName) {
         this.displayName = displayName;
