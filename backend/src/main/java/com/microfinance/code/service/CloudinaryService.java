@@ -18,31 +18,30 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     private static final Logger logger = Logger.getLogger(CloudinaryService.class.getName());
+
     /**
-     * Uploads a file to Cloudinary and returns the URL of the uploaded file.
+     * Uploads a file to Cloudinary and returns the secure URL.
      *
      * @param file the file to be uploaded
-     * @return the URL of the uploaded file
+     * @return the secure URL of the uploaded file
      * @throws IOException if the file could not be uploaded
      */
     public String uploadFile(MultipartFile file) throws IOException {
-        // Optional: Check file size before uploading
-        if (file.getSize() > 100 * 1024 * 1024) { // Example: Max size of 100MB
+        if (file.getSize() > 100 * 1024 * 1024) {
             throw new IOException("File size exceeds the allowed limit of 100MB");
         }
 
         try {
-            // Upload the file to Cloudinary
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), 
-                    ObjectUtils.asMap("resource_type", "auto"));
-            
-            // Return the URL of the uploaded file
-            return uploadResult.get("url").toString();
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+
+            String uploadedUrl = uploadResult.get("secure_url").toString();
+            logger.log(Level.INFO, "File uploaded successfully: " + uploadedUrl);
+
+            return uploadedUrl;
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error uploading file to Cloudinary", e);
             throw new IOException("Error uploading file to Cloudinary", e);
         } catch (Exception e) {
-            // Catch other possible exceptions (e.g., Cloudinary API exceptions)
             logger.log(Level.SEVERE, "Unexpected error during file upload", e);
             throw new IOException("Unexpected error during file upload", e);
         }
@@ -56,10 +55,19 @@ public class CloudinaryService {
      * @throws IOException if the file could not be deleted
      */
     public String deleteFile(String publicId) throws IOException {
+        if (publicId == null || publicId.isEmpty()) {
+            throw new IOException("Invalid public ID for deletion");
+        }
+
         try {
             Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            return result.get("result").toString();
+
+            String deleteStatus = result.get("result").toString();
+            logger.log(Level.INFO, "File deletion status: " + deleteStatus);
+
+            return deleteStatus;
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error deleting file from Cloudinary", e);
             throw new IOException("Error deleting file from Cloudinary", e);
         }
     }
