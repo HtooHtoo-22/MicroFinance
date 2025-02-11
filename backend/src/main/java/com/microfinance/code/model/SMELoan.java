@@ -16,7 +16,7 @@ public class SMELoan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
     @Column(name = "loan_id", nullable = false, length = 30) // Added nullable and length
     private String loanId;
