@@ -32,10 +32,6 @@ public class Collateral {
     private String image;
 
     @ManyToOne
-    @JoinColumn(name = "sme_loan_id", nullable = false) // Added nullable
-    private SMELoan smeLoanId;
-
-    @ManyToOne
     @JoinColumn(name = "collateral_type_id", nullable = false) // Added nullable
     private CollateralType collateralType;
 }

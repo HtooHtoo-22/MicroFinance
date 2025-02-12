@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class SMELoanDTO {
@@ -18,6 +19,7 @@ public class SMELoanDTO {
     private String status;
     private BigDecimal documentFee;
     private BigDecimal serviceCharge;
+    private List<Integer> collateralIds;
     private LocalDateTime expiredDate;
     private int duration;
     private BigDecimal principal;
@@ -27,4 +29,5 @@ public class SMELoanDTO {
     private String approvedUserName;
     private Integer currentAccountId;
     private String currentAccountaccId;
+
 }

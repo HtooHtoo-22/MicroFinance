@@ -52,11 +52,6 @@ public class CollateralMapper {
         dto.setAddress(collateral.getAddress());
         dto.setImage(collateral.getImage());
 
-        // Setting related IDs and name
-        if (collateral.getSmeLoanId() != null) {
-            dto.setSmeLoanId(collateral.getSmeLoanId().getId());
-        }
-
         if (collateral.getCollateralType() != null) {
             dto.setCollateralTypeId(collateral.getCollateralType().getId());
             dto.setCollateralTypeName(collateral.getCollateralType().getName()); // Fetching name

@@ -2,13 +2,10 @@ package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.SMELoanDTO;
 import com.microfinance.code.exception.NotFoundException;
+import com.microfinance.code.exception.ValidationException;
 import com.microfinance.code.mapper.SMELoanMapper;
-import com.microfinance.code.model.CurrentAccount;
-import com.microfinance.code.model.SMELoan;
-import com.microfinance.code.model.User;
-import com.microfinance.code.repository.CurrentAccountRepository;
-import com.microfinance.code.repository.SMELoanRepo;
-import com.microfinance.code.repository.UserRepo;
+import com.microfinance.code.model.*;
+import com.microfinance.code.repository.*;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.status.LoanStatus;
 import jakarta.transaction.Transactional;
@@ -30,6 +27,10 @@ public class SMELoanServiceImpl implements SMELoanService {
     private UserRepo userRepository;
     @Autowired
     private CurrentAccountRepository currentAccountRepository;
+    @Autowired
+    private CollateralRepo collateralRepo;
+    @Autowired
+    private SMELoanHasCollateralRepo smeLoanHasCollateralRepo;
 
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
@@ -43,19 +44,36 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         // Fetch current account
         CurrentAccount currentAcc = currentAccountRepository.findById(dto.getCurrentAccountId())
-                .orElseThrow(()->new NotFoundException("Ma Tway Bu Kwa"));
+                .orElseThrow(() -> new NotFoundException("Current account not found"));
+
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);
         smeLoan.setEntryUser(entryUser);
         smeLoan.setApprovedUser(approvedUser);
         smeLoan.setCurrentAccount(currentAcc);
 
-        // Save entity
+        // Save SME Loan first to generate an ID
         smeLoan = smeLoanRepository.save(smeLoan);
 
+        // Fetch collateral entities based on given collateral IDs
+        List<Collateral> collaterals = collateralRepo.findAllById(dto.getCollateralIds());
+
+        // Create and save SMELoanHasCollateral entries
+//        List<SMELoanHasCollateral> loanCollaterals = collaterals.stream()
+//                .map(collateral -> new SMELoanHasCollateral(smeLoan, collateral))
+//                .collect(Collectors.toList());
+        SMELoanHasCollateral smeLoanHasCollateral = null;
+        for (Integer collateralId : dto.getCollateralIds()){
+            smeLoanHasCollateral = new SMELoanHasCollateral();
+            smeLoanHasCollateral.setCollateral(collateralRepo.findById(collateralId)
+                    .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId)));
+            smeLoanHasCollateral.setSmeLoan(smeLoan);
+            smeLoanHasCollateralRepo.save(smeLoanHasCollateral);
+        }
         // Convert back to DTO and return
         return SMELoanMapper.toDTO(smeLoan);
     }
+
     @Transactional
     @Override
     public void approveSMELoan(Integer smeLoanId) {
