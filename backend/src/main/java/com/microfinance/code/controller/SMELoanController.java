@@ -17,7 +17,6 @@ public class SMELoanController {
 
     @PostMapping("/")
     public ApiResponse<SMELoanDTO> createLoan(@RequestBody SMELoanDTO dto) {
-        System.out.println(dto);
         SMELoanDTO createdLoan = smeLoanService.createSMELoan(dto);
         return ApiResponse.success(HttpStatus.CREATED, 201, "SME Loan Register Successfully", createdLoan);
     }

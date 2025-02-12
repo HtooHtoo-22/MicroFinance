@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,16 +63,28 @@ public class SMELoanServiceImpl implements SMELoanService {
 //        List<SMELoanHasCollateral> loanCollaterals = collaterals.stream()
 //                .map(collateral -> new SMELoanHasCollateral(smeLoan, collateral))
 //                .collect(Collectors.toList());
+        BigDecimal totalCollateralValue = BigDecimal.ZERO;
         SMELoanHasCollateral smeLoanHasCollateral = null;
-        for (Integer collateralId : dto.getCollateralIds()){
-            smeLoanHasCollateral = new SMELoanHasCollateral();
-            smeLoanHasCollateral.setCollateral(collateralRepo.findById(collateralId)
-                    .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId)));
-            smeLoanHasCollateral.setSmeLoan(smeLoan);
-            smeLoanHasCollateralRepo.save(smeLoanHasCollateral);
+        for (Integer collateralId : dto.getCollateralIds()) {
+            Collateral collateral = collateralRepo.findById(collateralId)
+                    .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId));
+            totalCollateralValue = totalCollateralValue.add(collateral.getValue());
         }
-        // Convert back to DTO and return
-        return SMELoanMapper.toDTO(smeLoan);
+        if (totalCollateralValue.compareTo(smeLoan.getLoanAmount()) < 0) {
+            throw new ValidationException("Your total collateral amount is not enough for your loan amount");
+        }else {
+            for (Integer collateralId : dto.getCollateralIds()){
+                smeLoanHasCollateral = new SMELoanHasCollateral();
+                Collateral collateral = collateralRepo.findById(collateralId)
+                        .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId));
+
+                smeLoanHasCollateral.setCollateral(collateral);
+                smeLoanHasCollateral.setSmeLoan(smeLoan);
+                smeLoanHasCollateralRepo.save(smeLoanHasCollateral);
+            }
+            return SMELoanMapper.toDTO(smeLoan);
+        }
+
     }
 
     @Transactional
