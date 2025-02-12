@@ -34,7 +34,7 @@ public class SMELoanServiceImpl implements SMELoanService {
     private SMELoanHasCollateralRepo smeLoanHasCollateralRepo;
 
     @Override
-    public SMELoanDTO createSMELoan(SMELoanDTO dto) {
+    public SMELoanDTO createSMELoan1(SMELoanDTO dto) {
         // Fetch entry user
         User entryUser = userRepository.findById(dto.getEntryUserId())
                 .orElseThrow(() -> new NotFoundException("Entry user not found"));
@@ -56,34 +56,70 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Save SME Loan first to generate an ID
         smeLoan = smeLoanRepository.save(smeLoan);
 
-        // Fetch collateral entities based on given collateral IDs
-        List<Collateral> collaterals = collateralRepo.findAllById(dto.getCollateralIds());
-
-        // Create and save SMELoanHasCollateral entries
-//        List<SMELoanHasCollateral> loanCollaterals = collaterals.stream()
-//                .map(collateral -> new SMELoanHasCollateral(smeLoan, collateral))
-//                .collect(Collectors.toList());
-        BigDecimal totalCollateralValue = BigDecimal.ZERO;
+        BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
         SMELoanHasCollateral smeLoanHasCollateral = null;
         for (Integer collateralId : dto.getCollateralIds()) {
             Collateral collateral = collateralRepo.findById(collateralId)
-                    .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId));
-            totalCollateralValue = totalCollateralValue.add(collateral.getValue());
+                    .orElseThrow(() -> new NotFoundException("Collaterl Id not found " + collateralId));
+            SMELoanHasCollateral smeLoanHasCollateral1 = smeLoanHasCollateralRepo.findByCollateral(collateral);
+            if (smeLoanHasCollateral1 != null) {
+
+                BigDecimal totalUsedValue = smeLoanHasCollateralRepo.findTotalUsedValueByCollateralId(collateralId);
+                BigDecimal remainingValue = collateral.getValue().subtract(totalUsedValue);
+                totalRemainingCollateralValue = totalRemainingCollateralValue.add(remainingValue);
+            } else {
+                totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue());
+            }
+
         }
-        if (totalCollateralValue.compareTo(smeLoan.getLoanAmount()) < 0) {
+        if (totalRemainingCollateralValue.compareTo(smeLoan.getLoanAmount()) < 0) {
             throw new ValidationException("Your total collateral amount is not enough for your loan amount");
-        }else {
-            for (Integer collateralId : dto.getCollateralIds()){
+        } else {
+            for (Integer collateralId : dto.getCollateralIds()) {
                 smeLoanHasCollateral = new SMELoanHasCollateral();
                 Collateral collateral = collateralRepo.findById(collateralId)
-                        .orElseThrow(()->new NotFoundException("Collaterl Id not found "+collateralId));
+                        .orElseThrow(() -> new NotFoundException("Collaterl Id not found " + collateralId));
 
                 smeLoanHasCollateral.setCollateral(collateral);
                 smeLoanHasCollateral.setSmeLoan(smeLoan);
+                smeLoanHasCollateral.setUsedValue(collateral.getValue());
                 smeLoanHasCollateralRepo.save(smeLoanHasCollateral);
             }
             return SMELoanMapper.toDTO(smeLoan);
         }
+    }
+
+    @Override
+    public SMELoanDTO createSMELoan(SMELoanDTO dto) {
+        // Fetch entry user
+        User entryUser = userRepository.findById(dto.getEntryUserId())
+                .orElseThrow(() -> new NotFoundException("Entry user not found"));
+
+        // Fetch approved user
+        User approvedUser = userRepository.findById(dto.getApprovedUserId())
+                .orElseThrow(() -> new NotFoundException("Approved user not found"));
+
+        // Fetch current account
+        CurrentAccount currentAcc = currentAccountRepository.findById(dto.getCurrentAccountId())
+                .orElseThrow(() -> new NotFoundException("Current account not found"));
+
+        // Convert DTO to Entity
+        SMELoan smeLoan = SMELoanMapper.toEntity(dto);
+        smeLoan.setEntryUser(entryUser);
+        smeLoan.setApprovedUser(approvedUser);
+        smeLoan.setCurrentAccount(currentAcc);
+
+
+        BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
+
+        // Validate if the collateral is enough for the loan amount
+        if (totalRemainingCollateralValue.compareTo(smeLoan.getLoanAmount()) < 0) {
+            throw new ValidationException("Your total collateral amount is not enough for your loan amount");
+        }
+        smeLoan = smeLoanRepository.save(smeLoan);
+        // Save SME Loan Has Collateral records
+        saveSMELoanHasCollateral(dto.getCollateralIds(), smeLoan);
+        return SMELoanMapper.toDTO(smeLoan);
 
     }
 
@@ -99,5 +135,50 @@ public class SMELoanServiceImpl implements SMELoanService {
         smeLoan.setApprovedDate(LocalDateTime.now()); // Set approved date to current date
         smeLoanRepository.save(smeLoan); // Save the updated loan
     }
+
+
+    private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
+        BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
+
+        for (Integer collateralId : collateralIds) {
+            Collateral collateral = collateralRepo.findById(collateralId)
+                    .orElseThrow(() -> new NotFoundException("Collateral Id not found " + collateralId));
+
+            // Check if the collateral is already used
+            SMELoanHasCollateral existingLoanCollateral = smeLoanHasCollateralRepo.findByCollateral(collateral);
+            if (existingLoanCollateral != null) {
+                BigDecimal totalUsedValue = smeLoanHasCollateralRepo.findTotalUsedValueByCollateralId(collateralId);
+                totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue().subtract(totalUsedValue));
+            } else {
+                totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue());
+            }
+        }
+
+        return totalRemainingCollateralValue;
+    }
+
+    private void saveSMELoanHasCollateral(List<Integer> collateralIds, SMELoan smeLoan) {
+        BigDecimal remainingLoanAmount = smeLoan.getLoanAmount();
+        for (Integer collateralId : collateralIds) {
+            Collateral collateral = collateralRepo.findById(collateralId)
+                    .orElseThrow(() -> new NotFoundException("Collateral Id not found " + collateralId));
+
+            // Calculate the used value for this collateral
+            BigDecimal usedValue = collateral.getValue().min(remainingLoanAmount);
+
+            // Reduce the remaining loan amount
+            remainingLoanAmount = remainingLoanAmount.subtract(usedValue);
+
+            // Create the SMELoanHasCollateral entity
+            SMELoanHasCollateral loanHasCollateral = new SMELoanHasCollateral();
+            loanHasCollateral.setCollateral(collateral);
+            loanHasCollateral.setSmeLoan(smeLoan);
+            loanHasCollateral.setUsedValue(usedValue); // Set the correct used value
+
+            // Save the record
+            smeLoanHasCollateralRepo.save(loanHasCollateral);
+        }
+    }
+
 
 }

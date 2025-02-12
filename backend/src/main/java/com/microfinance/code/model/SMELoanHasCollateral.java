@@ -27,14 +27,5 @@ public class SMELoanHasCollateral {
     @Column(name = "used_value")
     private BigDecimal usedValue;
 
-    @PrePersist
-    public void onCreate(){
-        this.usedValue = new BigDecimal("22.2222");
-    }
 
-    public SMELoanHasCollateral(SMELoan smeLoan, Collateral collateral) {
-        this.smeLoan = smeLoan;
-        this.collateral = collateral;
-
-    }
 }
