@@ -9,7 +9,6 @@ public class SMELoanMapper {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    // Convert Entity to DTO
     public static SMELoanDTO toDTO(SMELoan smeLoan) {
         SMELoanDTO dto = new SMELoanDTO();
         dto.setId(smeLoan.getId());
@@ -19,7 +18,6 @@ public class SMELoanMapper {
         dto.setGracePeriod(smeLoan.getGracePeriod());
         dto.setLoanPurpose(smeLoan.getLoanPurpose());
 
-        // Convert LocalDateTime to String
         dto.setRegisteredDate(smeLoan.getRegisteredDate() != null ? smeLoan.getRegisteredDate().format(DATE_FORMATTER) : null);
         dto.setApprovedDate(smeLoan.getApprovedDate() != null ? smeLoan.getApprovedDate().format(DATE_FORMATTER) : null);
 
@@ -31,21 +29,18 @@ public class SMELoanMapper {
         dto.setDuration(smeLoan.getDuration());
         dto.setPrincipal(smeLoan.getPrincipal());
 
-        // Map user details
         dto.setEntryUserId(smeLoan.getEntryUser().getId());
         dto.setEntryUserName(smeLoan.getEntryUser().getName()); // Assuming User has a name field
 
         dto.setApprovedUserId(smeLoan.getApprovedUser().getId());
         dto.setApprovedUserName(smeLoan.getApprovedUser().getName());
 
-        // Map current account details
         dto.setCurrentAccountId(smeLoan.getCurrentAccount().getId());
         dto.setCurrentAccountaccId(smeLoan.getCurrentAccount().getAccountId()); // Assuming CurrentAccount has accountNumber
 
         return dto;
     }
 
-    // Convert DTO to Entity
     public static SMELoan toEntity(SMELoanDTO dto) {
         SMELoan smeLoan = new SMELoan();
         smeLoan.setId(dto.getId());

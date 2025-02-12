@@ -18,44 +18,44 @@ public class SMELoan {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "loan_id", nullable = false, length = 30) // Added nullable and length
+    @Column(name = "loan_id", nullable = false, length = 30, unique = true) // Ensure loanId is unique
     private String loanId;
 
-    @Column(name = "loan_amount", nullable = false) // Added nullable
+    @Column(name = "loan_amount", nullable = false)
     private BigDecimal loanAmount;
 
-    @Column(name = "interest_rate", nullable = false) // Added nullable
+    @Column(name = "interest_rate", nullable = false)
     private BigDecimal interestRate;
 
-    @Column(name = "grace_period", nullable = true) // Added nullable
+    @Column(name = "grace_period", nullable = true)
     private int gracePeriod;
 
-    @Column(name = "loan_purpose", nullable = false, length = 200) // Added nullable and length
+    @Column(name = "loan_purpose", nullable = false, length = 200)
     private String loanPurpose;
 
-    @Column(name = "registered_date", nullable = false) // Added nullable
+    @Column(name = "registered_date", nullable = false)
     private LocalDateTime registeredDate;
 
-    @Column(name = "approved_date") // approveDate can be null initially
+    @Column(name = "approved_date")
     private LocalDateTime approvedDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private LoanStatus status;
 
-    @Column(name = "document_fee", nullable = false) // Added nullable
+    @Column(name = "document_fee", nullable = false)
     private BigDecimal documentFee;
 
-    @Column(name = "service_charge", nullable = false) // Added nullable
+    @Column(name = "service_charge", nullable = false)
     private BigDecimal serviceCharge;
 
-    @Column(name = "expired_date", nullable = true) // Added nullable
+    @Column(name = "expired_date", nullable = true)
     private LocalDateTime expiredDate;
 
-    @Column(name = "duration", nullable = false) // Added nullable
+    @Column(name = "duration", nullable = false)
     private int duration;
 
-    @Column(name = "principal", nullable = false) // Added nullable
+    @Column(name = "principal", nullable = false)
     private BigDecimal principal;
 
     @ManyToOne
@@ -63,7 +63,7 @@ public class SMELoan {
     private User entryUser;
 
     @ManyToOne
-    @JoinColumn(name = "approvedUser_id", nullable = false)
+    @JoinColumn(name = "approvedUser_id", nullable = true)
     private User approvedUser;
 
     @ManyToOne
@@ -72,15 +72,21 @@ public class SMELoan {
 
     @PrePersist
     public void prePersist() {
-        if (this.status == null) { // Only set if not already set
+        if (this.status == null) {
             this.status = LoanStatus.PENDING;
         }
-        if(registeredDate == null){
-            LocalDateTime now = LocalDateTime.now();
-            registeredDate = now ;
+        if (this.registeredDate == null) {
+            this.registeredDate = LocalDateTime.now();
         }
-        if(principal == null){
-            principal = loanAmount;
+        if (this.principal == null) {
+            this.principal = this.loanAmount;
         }
+        if (this.loanId == null) {
+            this.loanId = generateLoanId(); // Generate loanId automatically
+        }
+    }
+
+    private String generateLoanId() {
+        return "LOAN" + System.currentTimeMillis(); // Example: LOAN1696156800000
     }
 }
