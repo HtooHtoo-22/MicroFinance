@@ -43,8 +43,6 @@ public class SMELoan {
     @Column(name = "status", nullable = false, length = 20)
     private LoanStatus status;
 
-
-
     @Column(name = "document_fee", nullable = false) // Added nullable
     private BigDecimal documentFee;
 

@@ -8,14 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
 @Repository
 public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, Integer> {
-
-    @Query(value = "SELECT MAX(CAST(SUBSTRING(account_id, 7) AS UNSIGNED)) FROM current_account WHERE cif_id = :cifId", nativeQuery = true)
-    Integer findMaxAccountNumberByCifId(@Param("cifId") Integer cifId);
-
     Optional<CurrentAccount> findByAccountId(String accountId);
 
-    @Query("SELECT c FROM CurrentAccount c WHERE c.id = :id")
-    Optional<CurrentAccount> findByIdWithQuery(@Param("id") Integer id);
+
 }
