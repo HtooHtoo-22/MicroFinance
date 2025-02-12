@@ -14,10 +14,13 @@ import com.microfinance.code.status.LoanStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SMELoanServiceImpl implements SMELoanService {
@@ -39,7 +42,7 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .orElseThrow(() -> new NotFoundException("Approved user not found"));
 
         // Fetch current account
-        CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountaccId())
+        CurrentAccount currentAcc = currentAccountRepository.findById(dto.getCurrentAccountId())
                 .orElseThrow(()->new NotFoundException("Ma Tway Bu Kwa"));
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);
@@ -58,7 +61,9 @@ public class SMELoanServiceImpl implements SMELoanService {
     public void approveSMELoan(Integer smeLoanId) {
         SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
                 .orElseThrow(() -> new NotFoundException("SME Loan with ID " + smeLoanId + " not found."));
-
+        if (smeLoan.getCurrentAccount() == null) {
+            throw new NotFoundException("Current Account not found for SME Loan ID " + smeLoanId);
+        }
         smeLoan.setStatus(LoanStatus.APPROVE); // Change status to "Approved"
         smeLoan.setApprovedDate(LocalDateTime.now()); // Set approved date to current date
         smeLoanRepository.save(smeLoan); // Save the updated loan
