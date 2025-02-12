@@ -2,8 +2,11 @@ package com.microfinance.code.model;
 
 import com.microfinance.code.status.CIFStatus;
 import jakarta.persistence.*;
+<<<<<<< HEAD
 
 import lombok.Data;
+=======
+>>>>>>> 5ad149b36372358bbeecdec0ceec60ff33c3caeb
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +14,14 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+<<<<<<< HEAD
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 @Data
+=======
+>>>>>>> 5ad149b36372358bbeecdec0ceec60ff33c3caeb
 @Entity
 @Table(name = "cif")
 public class CIF {
@@ -41,11 +47,14 @@ public class CIF {
     private Double incomeAmount;
 
     @Column(name = "nrc_number", nullable = false, length = 20)
+<<<<<<< HEAD
 
     @Column(name = "income_amount")
     private Double incomeAmount;
     @Column(name = "nrc_number")
 >>>>>>> KMS
+=======
+>>>>>>> 5ad149b36372358bbeecdec0ceec60ff33c3caeb
     private String NRC;
 
     @Column(name = "front_NRC_photo", nullable = false, length = 255)
