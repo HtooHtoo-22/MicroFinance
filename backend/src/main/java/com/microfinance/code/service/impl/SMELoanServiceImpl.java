@@ -39,7 +39,7 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .orElseThrow(() -> new NotFoundException("Approved user not found"));
 
         // Fetch current account
-        CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountaccId())
+        CurrentAccount currentAcc = currentAccountRepository.findById(dto.getCurrentAccountId())
                 .orElseThrow(()->new NotFoundException("Ma Tway Bu Kwa"));
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);

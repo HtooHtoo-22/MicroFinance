@@ -2,22 +2,12 @@ package com.microfinance.code.model;
 
 import com.microfinance.code.status.BranchStatus;
 import jakarta.persistence.*;
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ad149b36372358bbeecdec0ceec60ff33c3caeb
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-<<<<<<< HEAD
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-=======
->>>>>>> 5ad149b36372358bbeecdec0ceec60ff33c3caeb
 
 @Entity
 @Getter
