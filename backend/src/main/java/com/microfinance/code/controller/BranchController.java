@@ -1,7 +1,7 @@
 package com.microfinance.code.controller;
 
 import com.microfinance.code.dto.BranchDTO;
-import com.microfinance.code.dto.CollateralTypeDTO;
+
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.mapper.BranchMapper;
 import com.microfinance.code.model.Branch;
