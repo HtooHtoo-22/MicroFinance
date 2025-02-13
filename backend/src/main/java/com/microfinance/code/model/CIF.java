@@ -2,13 +2,16 @@ package com.microfinance.code.model;
 
 import com.microfinance.code.status.CIFStatus;
 import jakarta.persistence.*;
+
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+
+@Data
+
 @Entity
 @Table(name = "cif")
 public class CIF {

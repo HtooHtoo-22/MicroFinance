@@ -41,10 +41,6 @@ public class CollateralServiceImpl implements CollateralService {
             throw new RuntimeException(e);
         }
         Collateral collateral = collateralMapper.toEntity(dto);
-        // Validate SME Loan
-        SMELoan smeLoan = smeLoanRepo.findById(dto.getSmeLoanId())
-                .orElseThrow(() -> new NotFoundException("SME Loan not found with ID: " + dto.getSmeLoanId()));
-        collateral.setSmeLoanId(smeLoan);
 
         // Validate Collateral Type
         CollateralType collateralType = collateralTypeRepo.findById(dto.getCollateralTypeId())

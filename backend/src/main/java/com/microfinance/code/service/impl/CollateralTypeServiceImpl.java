@@ -39,7 +39,7 @@ public class CollateralTypeServiceImpl implements CollateralTypeService {
     public CollateralTypeDTO getCollateralTypeById(Integer id) {
         return collateralTypeRepo.findById(id)
                 .map(collateralTypeMapper::toDTO)
-                .orElseThrow(()->new NotFoundException("Collateral Type is not Found"));
+                .orElseThrow(()->new NotFoundException("Collateral Type is not Found with this ID : "+id));
     }
     public CollateralTypeDTO updateCollateralType(Integer id, CollateralTypeDTO dto) {
         if (!collateralTypeRepo.existsById(id)) {
