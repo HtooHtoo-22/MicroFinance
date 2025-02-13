@@ -93,7 +93,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         smeLoanRepository.save(smeLoan); // Save the updated loan
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setType(transactionType.CR);
-        transactionDTO.setAmount(smeLoan.getLoanAmount());
+        BigDecimal totalCharges = smeLoan.getDocumentFee().add(smeLoan.getServiceCharge());
+        transactionDTO.setAmount(smeLoan.getLoanAmount().subtract(totalCharges));
         transactionDTO.setCurrentAccountId(smeLoan.getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
     }
