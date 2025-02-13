@@ -4,12 +4,13 @@ import com.microfinance.code.dto.CurrentAccountDTO;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.CurrentAccountMapper;
 import com.microfinance.code.model.CurrentAccount;
+import com.microfinance.code.model.CIF;
 import com.microfinance.code.repository.CurrentAccountRepository;
+import com.microfinance.code.repository.CIFRepo;
 import com.microfinance.code.service.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class CurrentAccountServiceImpl implements CurrentAccountService {
@@ -17,11 +18,18 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     @Autowired
     private CurrentAccountRepository currentAccountRepository;
 
+    @Autowired
+    private CIFRepo cifRepo;
+
     @Override
     public CurrentAccountDTO createCurrentAccount(CurrentAccountDTO dto) {
+        CIF cif = cifRepo.findById(dto.getCifId())
+                .orElseThrow(() -> new NotFoundException("CIF not found with id: " + dto.getCifId()));
+
         String accountId = generateAccountId(dto.getCifId());
         dto.setAccountId(accountId);
         CurrentAccount account = CurrentAccountMapper.toEntity(dto);
+        account.setCif(cif); // Set the CIF entity
         CurrentAccount savedAccount = currentAccountRepository.save(account);
         return CurrentAccountMapper.toDTO(savedAccount);
     }
@@ -34,10 +42,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     }
 
     private String generateAccountId(Integer cifId) {
-        Integer maxAccountNumber = currentAccountRepository.findMaxAccountNumberByCifId(cifId);
-
-        int nextAccountNumber = (maxAccountNumber == null) ? 1 : maxAccountNumber + 1;
-
-        return String.format("ACC%d-%05d", cifId, nextAccountNumber);
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
+        return "ACC-" + cifId + "-" + timestamp;
     }
 }
