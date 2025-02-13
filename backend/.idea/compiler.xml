@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useProcessorModulePath="true">
           <entry name="$MAVEN_REPOSITORY$/org/project lombok/lombok/unknown/lombok-unknown.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/project lombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="MicroFinance" />
       </profile>
