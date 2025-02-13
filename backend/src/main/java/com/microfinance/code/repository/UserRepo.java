@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User,Integer> {
-    Optional<User> findByEmail(String email);  // Find user by email
+    Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
     @Query("SELECT u.userId FROM User u ORDER BY u.id DESC LIMIT 1")
