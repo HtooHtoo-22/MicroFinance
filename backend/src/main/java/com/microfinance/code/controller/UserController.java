@@ -19,14 +19,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody UserDTO dto) {
         try {
             User createdUser = userService.createUser(dto);
             UserDTO createdUserDTO = new UserDTO();
             createdUserDTO.setName(createdUser.getName());
             createdUserDTO.setEmail(createdUser.getEmail());
-            createdUserDTO.setPassword("********"); // Hide password in response
+            createdUserDTO.setPassword("********");
             createdUserDTO.setActive(true);
             createdUserDTO.setBrandId(createdUser.getBranch() != null ? createdUser.getBranch().getId() : 0);
             createdUserDTO.setRoleID(createdUser.getRole() != null ? createdUser.getRole().getId() : 0);
@@ -39,6 +39,7 @@ public class UserController {
                     .body(ApiResponse.error(HttpStatus.BAD_REQUEST, 400, e.getMessage()));
         }
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO dto) {
         try {

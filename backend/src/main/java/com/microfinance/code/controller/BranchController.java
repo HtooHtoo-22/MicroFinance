@@ -31,6 +31,7 @@ public class BranchController {
         BranchDTO createdBranchDTO = branchMapper.toDTO(createdBranch);
         return ApiResponse.success(HttpStatus.CREATED, 0101,"Branch created successfully", createdBranchDTO);
     }
+
     @GetMapping()
     public ApiResponse<List<BranchDTO>> getAllBranches() {
         List<BranchDTO> branchList = branchService.getAllBranches();

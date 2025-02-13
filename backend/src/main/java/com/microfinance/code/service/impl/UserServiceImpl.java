@@ -2,6 +2,7 @@ package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.UserDTO;
 import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.UserMapper;
 import com.microfinance.code.model.Branch;
 import com.microfinance.code.model.Role;
@@ -50,33 +51,30 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists");
         }
 
-        Branch branch = branchRepo.findById(dto.getBrandId()).orElse(null);
-        Role role = roleRepo.findById(dto.getRoleID()).orElse(null);
+        Branch branch = branchRepo.findById(dto.getBrandId())
+                .orElseThrow(() -> new RuntimeException("Brand Not Found"));
+        Role role = roleRepo.findById(dto.getRoleID())
+                .orElseThrow(() -> new NotFoundException("Role Not Found"));
 
-        // Generate sequential userId
         String newUserId = generateNextUserId();
-
-        // Pass generated userId to UserMapper
         User user = userMapper.toEntity(dto, branch, role, newUserId);
-        user.setPassword(passwordEncoder.encode(dto.getPassword())); // Hash password
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         return userRepo.save(user);
     }
 
-    // Generate sequential userId (001, 002, 003, etc.)
     private String generateNextUserId() {
-        String lastUserId = userRepo.findLastUserId(); // Fetch last userId from DB
+        String lastUserId = userRepo.findLastUserId();
 
         if (lastUserId == null) {
-            return "001"; // Start from 001 if no users exist
+            return "001";
         }
 
-        int lastIdNumber = Integer.parseInt(lastUserId); // Convert userId to a number
+        int lastIdNumber = Integer.parseInt(lastUserId);
         int nextIdNumber = lastIdNumber + 1;
-
-        // Format the number with leading zeros (e.g., 001, 002, 003)
         return String.format("%03d", nextIdNumber);
     }
+
     @Override
     public User updateUser(Integer id, UserDTO dto) {
         Optional<User> existingUserOpt = userRepo.findById(id);
