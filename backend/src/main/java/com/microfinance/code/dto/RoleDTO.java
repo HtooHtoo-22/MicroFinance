@@ -9,4 +9,5 @@ public class RoleDTO {
     private String roleName;
     private String roleDescription;
     private boolean active;
+
 }

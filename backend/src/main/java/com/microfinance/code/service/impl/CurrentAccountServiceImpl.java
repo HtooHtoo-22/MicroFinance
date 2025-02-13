@@ -11,7 +11,6 @@ import com.microfinance.code.service.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class CurrentAccountServiceImpl implements CurrentAccountService {

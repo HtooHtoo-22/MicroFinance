@@ -25,4 +25,9 @@ public class SMELoanController {
         smeLoanService.approveSMELoan(loanId);
         return ApiResponse.success(HttpStatus.OK,HttpStatus.OK.value(), "Successfully Approve");
     }
+    @PostMapping("/reject/{id}")
+    public ApiResponse rejectLoan(@PathVariable("id")Integer loanId){
+        smeLoanService.rejectSMELoan(loanId);
+        return ApiResponse.success(HttpStatus.OK,HttpStatus.OK.value(), "Successfully Reject!");
+    }
 }
