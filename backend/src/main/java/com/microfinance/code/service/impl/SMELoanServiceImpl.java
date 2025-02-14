@@ -10,6 +10,7 @@ import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.service.TransactionService;
 import com.microfinance.code.service.interFace.SMELoanService;
+import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
 import com.microfinance.code.status.LoanStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
@@ -40,7 +41,8 @@ public class SMELoanServiceImpl implements SMELoanService {
     private RateRepository rateRepo;
     @Autowired
     private TransactionService transactionService;
-
+    @Autowired
+    private SMERepaymentScheduleService scheduleService;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -97,6 +99,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         transactionDTO.setAmount(smeLoan.getLoanAmount().subtract(totalCharges));
         transactionDTO.setCurrentAccountId(smeLoan.getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
+        scheduleService.createSchedule(smeLoan);
+
     }
     @Override
     public void rejectSMELoan(Integer smeLoanId){

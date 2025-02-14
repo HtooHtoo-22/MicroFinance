@@ -40,7 +40,9 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             schedule.setTermNumber(term);
             schedule.setDueDate(dueDate); // Use LocalDate for dueDate
             schedule.setInterestAmount(interestAmount);
-            schedule.setPrincipal(BigDecimal.ZERO); // Update based on your logic
+            int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());
+            schedule.setTotalDays(daysInMonth);
+            schedule.setPrincipal(smeLoan.getPrincipal()); // Update based on your logic
             schedule.setStatus(RepaymentStatus.NOT_DUE_YET);
 
             // Save schedule to database (Assuming you have a repository)
