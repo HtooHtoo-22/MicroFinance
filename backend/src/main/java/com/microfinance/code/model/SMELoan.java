@@ -80,7 +80,8 @@ public class SMELoan {
             registeredDate = now ;
         }
         if(principal == null){
-            principal = loanAmount;
+            principal = new BigDecimal("0");
         }
+
     }
 }
