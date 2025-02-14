@@ -34,4 +34,8 @@ public class Collateral {
     @ManyToOne
     @JoinColumn(name = "collateral_type_id", nullable = false) // Added nullable
     private CollateralType collateralType;
+
+    @ManyToOne
+    @JoinColumn(name = "current_account_id", nullable = false) // Added nullable
+    private CurrentAccount currentAccount;
 }

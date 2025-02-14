@@ -1,13 +1,18 @@
 package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.SMELoanDTO;
+import com.microfinance.code.dto.TransactionDTO;
+import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.exception.ValidationException;
 import com.microfinance.code.mapper.SMELoanMapper;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
+import com.microfinance.code.service.TransactionService;
 import com.microfinance.code.service.interFace.SMELoanService;
+import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
 import com.microfinance.code.status.LoanStatus;
+import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +37,12 @@ public class SMELoanServiceImpl implements SMELoanService {
     private CollateralRepo collateralRepo;
     @Autowired
     private SMELoanHasCollateralRepo smeLoanHasCollateralRepo;
-
+    @Autowired
+    private RateRepository rateRepo;
+    @Autowired
+    private TransactionService transactionService;
+    @Autowired
+    private SMERepaymentScheduleService scheduleService;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -49,10 +59,14 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);
+        smeLoan.setLoanId(SMELoanIDGenerator.generateLoanId());
         smeLoan.setEntryUser(entryUser);
         smeLoan.setApprovedUser(approvedUser);
         smeLoan.setCurrentAccount(currentAcc);
-
+        Double serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate") / 100;
+        BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
+        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRateBD);
+        smeLoan.setServiceCharge(serviceCharges);
 
         BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
 
@@ -76,10 +90,32 @@ public class SMELoanServiceImpl implements SMELoanService {
             throw new NotFoundException("Current Account not found for SME Loan ID " + smeLoanId);
         }
         smeLoan.setStatus(LoanStatus.APPROVE); // Change status to "Approved"
+        smeLoan.setPrincipal(smeLoan.getLoanAmount());
         smeLoan.setApprovedDate(LocalDateTime.now()); // Set approved date to current date
         smeLoanRepository.save(smeLoan); // Save the updated loan
-    }
+        TransactionDTO transactionDTO = new TransactionDTO();
+        transactionDTO.setType(transactionType.CR);
+        BigDecimal totalCharges = smeLoan.getDocumentFee().add(smeLoan.getServiceCharge());
+        transactionDTO.setAmount(smeLoan.getLoanAmount().subtract(totalCharges));
+        transactionDTO.setCurrentAccountId(smeLoan.getCurrentAccount().getAccountId());
+        transactionService.createTransaction(transactionDTO);
+        scheduleService.createSchedule(smeLoan);
 
+    }
+    @Override
+    public void rejectSMELoan(Integer smeLoanId){
+        SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
+                .orElseThrow(() -> new NotFoundException("SME Loan with ID " + smeLoanId + " not found."));
+        smeLoan.setStatus(LoanStatus.REJECT);
+        // Find all collaterals linked to this SME Loan
+        List<SMELoanHasCollateral> smeLoanHasCollaterals = smeLoanHasCollateralRepo.findBySmeLoan(smeLoan);
+
+        // Delete all collaterals
+        smeLoanHasCollateralRepo.deleteAll(smeLoanHasCollaterals);
+
+        // Save the SME Loan status update
+        smeLoanRepository.save(smeLoan);
+    }
 
     private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
         BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
