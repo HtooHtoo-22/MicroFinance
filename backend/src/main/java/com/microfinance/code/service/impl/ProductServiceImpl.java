@@ -1,0 +1,121 @@
+package com.microfinance.code.service.impl;
+
+import com.cloudinary.Cloudinary;
+
+import com.microfinance.code.dto.ProductDTO;
+
+import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.mapper.ProductMapper;
+import com.microfinance.code.model.Dealer;
+import com.microfinance.code.model.Product;
+
+import com.microfinance.code.repository.DealerRepo;
+import com.microfinance.code.repository.ProductRepo;
+import com.microfinance.code.service.CloudinaryService;
+import com.microfinance.code.service.interFace.ProductService;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+@Service
+public class ProductServiceImpl implements ProductService {
+  @Autowired
+    private ProductMapper productMapper;
+
+    @Autowired
+    private ProductRepo productRepo;
+
+    @Autowired
+    private DealerRepo dealerRepo;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
+    @Override
+    public void hello() {
+        System.out.println("Hello");
+    }
+    @Override
+    public ProductDTO createProduct(ProductDTO dto, MultipartFile userPhoto) throws IOException {
+        // Upload image to Cloudinary
+        String photoUrl = cloudinaryService.uploadFile(userPhoto);
+
+        // Convert DTO to Entity
+        Product product = productMapper.toEntity(dto);
+        product.setPhoto(photoUrl); // Set Cloudinary URL
+
+        // Save to DB
+        product = productRepo.save(product);
+
+        // Convert back to DTO
+        return productMapper.toDTO(product);
+    }
+    @Override
+    public List<ProductDTO> getProductsByDealerId(Integer dealerId) {
+        List<Product> products = productRepo.findByDealerId(dealerId); // Fetch from DB
+        return products.stream()
+                .map(productMapper::toDTO) // Convert to DTOs
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductDTO updateProduct(Integer id, Map<String, Object> updates) {
+        Optional<Product> optionalProduct = productRepo.findById(id);
+        if (!optionalProduct.isPresent()) {
+            throw new RuntimeException("Product not found with ID: " + id);
+        }
+
+        Product product = optionalProduct.get();
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "productName":
+                    product.setProductName((String) value);
+                    break;
+                case "value":
+                    product.setValue(new BigDecimal(value.toString()));
+                    break;
+                case "photo":
+                    product.setPhoto((String) value);
+                    break;
+                case "dealerRegisterId":
+                    Dealer dealer = new Dealer();
+                    dealer.setId((Integer) value);
+                    product.setDealer(dealer);
+                    break;
+                case "status":
+                    product.setStatus((Boolean) value);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid field: " + key);
+            }
+        });
+
+        Product updatedProduct = productRepo.save(product);
+        return productMapper.toDTO(updatedProduct);
+    }
+
+    @Override
+    public ApiResponse<String> deleteProduct(Integer id) {
+        Optional<Product> optionalProduct = productRepo.findById(id);
+
+        if (!optionalProduct.isPresent()) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "Product not found with ID: " + id, "error");
+        }
+
+        productRepo.deleteById(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "Product deleted successfully", "Deleted product ID: " + id, "success");
+    }
+
+}
