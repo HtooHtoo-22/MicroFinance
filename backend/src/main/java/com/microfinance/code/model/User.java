@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -12,9 +13,12 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,15 +37,46 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-    @Column(name = "registered_date", nullable = false)
-    private LocalDateTime registeredDate;
-
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime CreateDate;
+    @Column(name = "status")
+    private boolean active;
     @PrePersist
     protected void onCreate() {
-        if (registeredDate == null) {
+        if (CreateDate == null) {
             LocalDateTime now = LocalDateTime.now();
-            registeredDate = now;
+            CreateDate = now;
         }
 
     }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.UserDTO;
+import com.microfinance.code.dto.UserResponseDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.UserMapper;
@@ -17,42 +18,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserRepo userRepo;
-    private final BranchRepo branchRepo;
-    private final RoleRepository roleRepo;
-    private final UserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImpl(
-            UserRepo userRepo,
-            BranchRepo branchRepo,
-            RoleRepository roleRepository,
-            UserMapper userMapper,
-            BCryptPasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.branchRepo = branchRepo;
-        this.roleRepo = roleRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private UserRepo userRepo;
+
+    @Autowired
+    private BranchRepo branchRepo;
+
+    @Autowired
+    private RoleRepository roleRepo;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public void hello() {
-
-    }
-    @Override
-    public User createUser(UserDTO dto) {
+    public UserResponseDTO createUser(UserDTO dto) {
         if (userRepo.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         Branch branch = branchRepo.findById(dto.getBrandId())
-                .orElseThrow(() -> new RuntimeException("Brand Not Found"));
+                .orElseThrow(() -> new RuntimeException("Branch Not Found"));
         Role role = roleRepo.findById(dto.getRoleID())
                 .orElseThrow(() -> new NotFoundException("Role Not Found"));
 
@@ -60,37 +53,34 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(dto, branch, role, newUserId);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        return userRepo.save(user);
+        User savedUser = userRepo.save(user);
+        return userMapper.toResponseDTO(savedUser);
     }
 
     private String generateNextUserId() {
         String lastUserId = userRepo.findLastUserId();
-
         if (lastUserId == null) {
             return "001";
         }
-
         int lastIdNumber = Integer.parseInt(lastUserId);
         int nextIdNumber = lastIdNumber + 1;
         return String.format("%03d", nextIdNumber);
     }
 
     @Override
-    public User updateUser(Integer id, UserDTO dto) {
-        Optional<User> existingUserOpt = userRepo.findById(id);
-        if (existingUserOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
+    public UserResponseDTO updateUser(Integer id, UserDTO dto) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = existingUserOpt.get();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword())); // Hash password
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        return userRepo.save(user);
+        User updatedUser = userRepo.save(user);
+        return userMapper.toResponseDTO(updatedUser);
     }
 
     @Override
@@ -103,13 +93,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Integer id) {
-        return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponseDTO getUserById(Integer id) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toResponseDTO(user);
     }
 
     @Override
-    public List<UserDTO> getAllUser() {
+    public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepo.findAll();
-        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
+        return users.stream().map(userMapper::toResponseDTO).collect(Collectors.toList());
     }
 }

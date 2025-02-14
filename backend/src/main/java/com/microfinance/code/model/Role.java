@@ -19,5 +19,4 @@ public class Role {
     private String roleDescription;
     @Column(name = "status")
     private boolean active;
-
 }
