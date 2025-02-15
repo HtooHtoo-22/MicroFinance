@@ -2,7 +2,7 @@ package com.microfinance.code.controller;
 
 import com.microfinance.code.dto.TransactionDTO;
 import com.microfinance.code.etc.ApiResponse;
-import com.microfinance.code.service.TransactionService;
+import com.microfinance.code.service.interFace.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

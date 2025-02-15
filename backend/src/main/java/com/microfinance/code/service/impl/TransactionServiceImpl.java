@@ -8,7 +8,7 @@ import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.Transaction;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.TransactionRepository;
-import com.microfinance.code.service.TransactionService;
+import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.status.transactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

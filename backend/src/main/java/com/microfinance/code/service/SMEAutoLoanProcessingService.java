@@ -29,7 +29,7 @@ public class SMEAutoLoanProcessingService {
     }
 
 
-    @Scheduled(cron = "0 * 9-17 * * *") // Runs every minute from 9 AM to 5 PM
+    //@Scheduled(cron = "0 * 9-17 * * *") // Runs every minute from 9 AM to 5 PM
     //@Scheduled(cron = "0 5 23 * * *") // Runs at exactly 11:05:00 PM every day
     public void checkLoanRepayments() {
         System.out.println("Running Loan Repayment Check: " + LocalTime.now());

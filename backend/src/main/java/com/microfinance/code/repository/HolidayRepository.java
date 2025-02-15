@@ -10,5 +10,6 @@ import java.time.LocalDate;
 public interface HolidayRepository extends JpaRepository<Holiday, Integer> {
 
     boolean existsByHolidayDateAndName(LocalDate holidayDate, String name);
+    boolean existsByHolidayDate(LocalDate holidayDate);
 }
 

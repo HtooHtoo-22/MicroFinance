@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.microfinance.code.dto.RoleDTO;
 import com.microfinance.code.etc.ApiResponse;
-import com.microfinance.code.service.RoleService;
+import com.microfinance.code.service.interFace.RoleService;
 
 @RestController
 @RequestMapping("/api/roles")
