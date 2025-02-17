@@ -25,6 +25,13 @@ public class HolidayController {
         return "Fetching holidays for year " + year;
     }
 
+    @GetMapping("/add-weekends/{year}")
+    public String addWeekendHolidays(@PathVariable int year) {
+        holidayService.addWeekendHolidays(year);
+        return "Weekend holidays added for year " + year;
+    }
+
+
     @GetMapping("/all")
     public List<Holiday> getAllHolidays() {
         return holidayService.getAllHolidays();

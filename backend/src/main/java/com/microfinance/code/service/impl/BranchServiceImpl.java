@@ -4,6 +4,7 @@ package com.microfinance.code.service.impl;
 import com.microfinance.code.dto.BranchDTO;
 import com.microfinance.code.dto.CollateralTypeDTO;
 import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.exception.AlreadyExistException;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.BranchMapper;
 
@@ -35,6 +36,9 @@ public  class BranchServiceImpl implements BranchService {
 
     @Override
     public Branch createBranch(BranchDTO dto) {
+        if (branchRepo.existsByCodeAndTownship(dto.getCode(), dto.getTownship())) {
+            throw new AlreadyExistException("Branch with code '" + dto.getCode() + "' and township '" + dto.getTownship() + "' already exists.");
+        }
         // Logic to create a branch
         Branch branch = branchMapper.toEntity(dto);  // Assuming you map DTO to Entity
         return branchRepo.save(branch);

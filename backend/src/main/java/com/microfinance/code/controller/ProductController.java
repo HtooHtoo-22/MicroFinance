@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
-    @Autowired
+    @Autowired 
     private ProductService productService;
 
     @Autowired
@@ -54,5 +54,9 @@ public class ProductController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Integer id) {
+        ApiResponse<String> response = productService.deleteProduct(id);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
+    }
 }
