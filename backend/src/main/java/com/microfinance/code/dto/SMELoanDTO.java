@@ -3,6 +3,7 @@ package com.microfinance.code.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class SMELoanDTO {
     private BigDecimal documentFee;
     private BigDecimal serviceCharge;
     private List<Integer> collateralIds;
-    private LocalDateTime expiredDate;
+    private LocalDate expiredDate;
     private int duration;
     private BigDecimal principal;
     private int entryUserId;

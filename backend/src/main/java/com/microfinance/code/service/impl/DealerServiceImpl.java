@@ -45,11 +45,20 @@ public class DealerServiceImpl implements DealerService {
     @Override
     public DealerDTO createDealer(DealerDTO dealerDTO) {
         // Check if email already exists
-        Optional<Dealer> existingDealer = dealerRepo.findByEmail(dealerDTO.getEmail());
-        if (existingDealer.isPresent()) {
+        Optional<Dealer> existingDealerByEmail = dealerRepo.findByEmail(dealerDTO.getEmail());
+        if (existingDealerByEmail.isPresent()) {
             throw new AlreadyExistException("Dealer with this email already exists");
         }
 
+        Optional<Dealer> existingDealerByBussinessName = dealerRepo.findByBusinessName(dealerDTO.getBusinessName());
+        if (existingDealerByBussinessName.isPresent()) {
+            throw new AlreadyExistException("Dealer with this bussiness name already exists");
+        }
+
+        Optional<Dealer> existingDealerByCurrentAccountId = dealerRepo.findByCurrentAccountId(dealerDTO.getCurrentAccountId());
+        if (existingDealerByCurrentAccountId.isPresent()) {
+            throw new AlreadyExistException("Dealer with this cureentAccount already exists");
+        }
         Dealer dealer = dealerMapper.toEntity(dealerDTO);
         dealer.setRegisterDate(LocalDate.now());
         dealer.setStatus(DealerStatus.ACTIVE); // Default status ACTIVE
@@ -93,6 +102,22 @@ public class DealerServiceImpl implements DealerService {
             updates.remove("newPassword");
         }
 
+        if (updates.containsKey("email")) {
+            String newEmail = updates.get("email").toString();
+            Optional<Dealer> existingDealerByEmail = dealerRepo.findByEmail(newEmail);
+            if (existingDealerByEmail.isPresent() && !existingDealerByEmail.get().getId().equals(dealer.getId())) {
+                throw new AlreadyExistException("Dealer with this email already exists");
+            }
+        }
+
+
+        if (updates.containsKey("businessName")) {
+            String newBusinessName = updates.get("businessName").toString();
+            Optional<Dealer> existingDealerByBusinessName = dealerRepo.findByBusinessName(newBusinessName);
+            if (existingDealerByBusinessName.isPresent() && !existingDealerByBusinessName.get().getId().equals(dealer.getId())) {
+                throw new AlreadyExistException("Dealer with this business name already exists");
+            }
+        }
 
         updates.forEach((key, value) -> {
             Field field = getField(Dealer.class, key);

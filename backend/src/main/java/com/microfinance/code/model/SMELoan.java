@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -50,7 +51,7 @@ public class SMELoan {
     private BigDecimal serviceCharge;
 
     @Column(name = "expired_date", nullable = true) // Added nullable
-    private LocalDateTime expiredDate;
+    private LocalDate expiredDate;
 
     @Column(name = "duration", nullable = false) // Added nullable
     private int duration;
