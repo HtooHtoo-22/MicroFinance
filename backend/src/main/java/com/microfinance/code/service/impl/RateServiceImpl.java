@@ -4,7 +4,7 @@ import com.microfinance.code.dto.RateDTO;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.Rate;
 import com.microfinance.code.repository.RateRepository;
-import com.microfinance.code.service.RateService;
+import com.microfinance.code.service.interFace.RateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

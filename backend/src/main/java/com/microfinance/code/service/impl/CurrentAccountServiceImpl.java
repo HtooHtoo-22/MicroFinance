@@ -7,7 +7,7 @@ import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.CIF;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.CIFRepo;
-import com.microfinance.code.service.CurrentAccountService;
+import com.microfinance.code.service.interFace.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

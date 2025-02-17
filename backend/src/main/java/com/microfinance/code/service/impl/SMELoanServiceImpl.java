@@ -8,7 +8,7 @@ import com.microfinance.code.exception.ValidationException;
 import com.microfinance.code.mapper.SMELoanMapper;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
-import com.microfinance.code.service.TransactionService;
+import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
 import com.microfinance.code.status.LoanStatus;
@@ -16,14 +16,10 @@ import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class SMELoanServiceImpl implements SMELoanService {

@@ -10,7 +10,7 @@ import com.microfinance.code.dto.RoleDTO;
 import com.microfinance.code.mapper.RoleMapper;
 import com.microfinance.code.model.Role;
 import com.microfinance.code.repository.RoleRepository;
-import com.microfinance.code.service.RoleService;
+import com.microfinance.code.service.interFace.RoleService;
 
 @Service
 public class RoleServiceImpl implements RoleService {
