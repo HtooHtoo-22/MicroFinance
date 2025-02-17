@@ -36,6 +36,7 @@ public class SMEODRepayService {
     @Transactional
     @Scheduled(cron = "0 * 9-23 * * *") // Runs every hour from 9 AM to 5 PM
     public void processODRepayment() {
+        System.out.println("Processing OD Repayment");
         List<SMERepaymentSchedule> overdueSchedules = scheduleRepository.findByStatusIn(
                 List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
         if (overdueSchedules.isEmpty()) return;
