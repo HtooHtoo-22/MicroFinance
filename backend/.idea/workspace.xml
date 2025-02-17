@@ -4,7 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5de57c2c-94d5-4080-a6cf-bef559d5e9b5" name="Changes" comment="">
+    <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/RegisterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/ApplicationConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/JwtAuthenticationFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/LogoutService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/Token.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/TokenRepo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/JWTService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/status/TokenType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/CurrentAccountService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/RateService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/SMEAutoLoanProcessingService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/TransactionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/BranchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/BranchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/UserResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/UserResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/RoleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/RoleRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/UserRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/CurrentAccountController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/CurrentAccountController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/UserResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/UserResponseDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/RoleRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/RoleRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/impl/RateServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/impl/RateServiceImpl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/angular/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/angular/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/angular.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/angular/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/package-lock.json" afterDir="false" />
@@ -23,15 +59,16 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Exception" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$/.." value="HaHa" />
+        <entry key="$PROJECT_DIR$/.." value="WHA" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -46,10 +83,13 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
-        &quot;associatedIndex&quot;: 0
-        }</component>
-  <component name="ProjectId" id="2syEobgQFnDWSeAyyRrDI8YAnNP" />
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2sepevnXT73UO2zpzzP1xLqK5cE" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
@@ -67,66 +107,54 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "HaHa",
+    "git-widget-placeholder": "Merging HaHa",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/user/Documents/springboot/Microfinance/backend",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.1019368",
+    "project.structure.side.proportion": "0.32494006",
     "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
     "spring.configuration.checksum": "0e017c4f537886ac610bece265d80b59",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="ReactorSettings">
-    <option name="notificationShown" value="true" />
-  </component>
-  <component name="RunManager">
-    <configuration name="MicroFinanceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
-      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-      <module name="MicroFinance" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.microfinance.code.MicroFinanceApplication" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.microfinance.code.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="5de57c2c-94d5-4080-a6cf-bef559d5e9b5" name="Changes" comment="" />
-      <created>1739419589585</created>
+      <changelist id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="" />
+      <created>1724680484294</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1739419589585</updated>
-      <workItem from="1739509996451" duration="727000" />
-      <workItem from="1739518758492" duration="6622000" />
-      <workItem from="1739599482402" duration="5190000" />
-      <workItem from="1739616836432" duration="171000" />
-      <workItem from="1739622523059" duration="1600000" />
-      <workItem from="1739629800109" duration="1726000" />
-      <workItem from="1739761431460" duration="15007000" />
-      <workItem from="1739792687207" duration="651000" />
+      <updated>1724680484294</updated>
+      <workItem from="1739360741710" duration="10340000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/microfinance/code/model/CIF.java</url>
-          <line>14</line>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.sql.SQLException" package="java.sql" />
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
+        </breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

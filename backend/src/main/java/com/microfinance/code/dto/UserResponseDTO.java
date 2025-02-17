@@ -1,11 +1,18 @@
 package com.microfinance.code.dto;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@Builder
 public class UserResponseDTO {
-    private Long id;
+    private Integer id;
+    private String userId;
     private String name;
     private String email;
-    private boolean active;
+    private String branchName;
+    private String roleName;
+    private String createDate;
 }
