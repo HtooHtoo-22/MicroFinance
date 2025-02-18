@@ -1,4 +1,4 @@
-package com.microfinance.code.service;
+package com.microfinance.code.service.interFace;
 
 import com.microfinance.code.dto.TransactionDTO;
 

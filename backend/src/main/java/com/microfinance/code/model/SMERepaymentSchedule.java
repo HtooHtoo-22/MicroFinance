@@ -34,6 +34,9 @@ public class SMERepaymentSchedule {
     @Column(name = "interest_OD_amount", precision = 12, scale = 2, nullable = true)
     private BigDecimal interestODAmount;
 
+    @Column(name = "total_repaid_amount")
+    private BigDecimal totalRepaidAmount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 45, nullable = false)
     private RepaymentStatus status;

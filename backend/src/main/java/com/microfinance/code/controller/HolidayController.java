@@ -2,10 +2,7 @@ package com.microfinance.code.controller;
 
 import com.microfinance.code.model.Holiday;
 import com.microfinance.code.service.HolidayService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,7 +36,7 @@ public class HolidayController {
 
     // ✅ View holidays for a specific year
     @GetMapping("/{year}")
-    public List<Holiday> getHolidaysByYear(@PathVariable int year) {
+    public List<Holiday> getHolidaysByYear(@PathVariable("year") int year) {
         return holidayService.getHolidaysByYear(year);
     }
 }
