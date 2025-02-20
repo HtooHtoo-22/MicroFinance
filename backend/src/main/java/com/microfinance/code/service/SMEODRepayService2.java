@@ -1,12 +1,13 @@
 package com.microfinance.code.service;
-
-import com.microfinance.code.model.*;
-import com.microfinance.code.repository.*;
+import com.microfinance.code.model.SMEODRepaymentTrack;
+import com.microfinance.code.model.SMERepaymentSchedule;
+import com.microfinance.code.repository.CurrentAccountRepository;
+import com.microfinance.code.repository.SMELateFeeCalculationRepo;
+import com.microfinance.code.repository.SMEODRepaymentTrackRepo;
+import com.microfinance.code.repository.SMERepaymentScheduleRepo;
 import com.microfinance.code.status.RepaymentStatus;
-import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,26 +16,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class SMEODRepayService {
-
-    private final SMERepaymentScheduleRepo scheduleRepo;
-    private final TransactionRepository transactionRepo;
-    private final SMEODRepaymentTrackRepo repaymentTrackRepo;
-    private final CurrentAccountRepository accountRepo;
-    private final SMELateFeeCalculationRepo lateFeeRepo;
-
+public class SMEODRepayService2 {
     @Autowired
-    public SMEODRepayService(SMERepaymentScheduleRepo scheduleRepo,
-                             TransactionRepository transactionRepo,
-                             SMEODRepaymentTrackRepo repaymentTrackRepo,
-                             CurrentAccountRepository accountRepo,
-                             SMELateFeeCalculationRepo lateFeeRepo) {
-        this.scheduleRepo = scheduleRepo;
-        this.transactionRepo = transactionRepo;
-        this.repaymentTrackRepo = repaymentTrackRepo;
-        this.accountRepo = accountRepo;
-        this.lateFeeRepo = lateFeeRepo;
-    }
+    private  SMERepaymentScheduleRepo scheduleRepo;
+    @Autowired
+    private  SMEODRepaymentTrackRepo repaymentTrackRepo;
+    @Autowired
+    private  SMELateFeeCalculationRepo lateFeeRepo;
+
 
     @Transactional
     public void processODRepayment(BigDecimal transactionAmount, Integer smeLoanId) {
@@ -49,21 +38,17 @@ public class SMEODRepayService {
         }
 
         BigDecimal remainingTransactionAmount = transactionAmount;
-        System.out.println("Remaining Amount : "+remainingTransactionAmount);
+
         for (SMERepaymentSchedule schedule : overdueSchedules) {
             if (remainingTransactionAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                // Apply late fee when there is still an overdue amount
-                if (schedule.getInterestODAmount().compareTo(BigDecimal.ZERO) > 0) {
-                    applyLateFee(schedule);
-                }
-                continue;
+                break;
             }
+
             BigDecimal amountToRepay = remainingTransactionAmount.min(schedule.getInterestODAmount());
             remainingTransactionAmount = remainingTransactionAmount.subtract(amountToRepay);
-            System.out.println(remainingTransactionAmount);
+
             updateRepaymentStatus(schedule, amountToRepay);
             logRepayment(schedule, amountToRepay);
-            updateAccountBalance(schedule.getSmeLoan().getCurrentAccount(), amountToRepay);
         }
 
         if (remainingTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -81,7 +66,6 @@ public class SMEODRepayService {
             schedule.setFullyPaidDate(LocalDate.now());
         } else {
             schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
-            applyLateFee(schedule);
         }
 
         scheduleRepo.save(schedule);
@@ -93,20 +77,5 @@ public class SMEODRepayService {
         track.setPaid_od_amount(amountToRepay);
         track.setDate(LocalDateTime.now());
         repaymentTrackRepo.save(track);
-    }
-    private void applyLateFee(SMERepaymentSchedule schedule) {
-        System.out.println("Applying Late Fee");
-        schedule.setLateFeeStatus(true);
-        scheduleRepo.save(schedule);
-
-        SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
-        lateFee.setSmeRepaymentSchedule(schedule);
-        lateFee.setLateDays(1);
-        lateFee.setLateFees(schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001)));
-        lateFeeRepo.save(lateFee);
-    }
-    private void updateAccountBalance(CurrentAccount account, BigDecimal amountToRepay) {
-        account.setTotalBalence(account.getTotalBalence() - amountToRepay.doubleValue());
-        accountRepo.save(account);
     }
 }

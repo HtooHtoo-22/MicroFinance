@@ -37,6 +37,8 @@ public class SMELateFeeRepayService {
 
     @Autowired
     private CurrentAccountRepository accountRepo;
+    @Autowired
+    private SMEODRepayService odService;
     @Transactional
     @Scheduled(cron = "0 * 9-23 * * *")
     public void processLateFees() {
@@ -61,6 +63,8 @@ public class SMELateFeeRepayService {
                 recordLateFeeTracking(smeLoanId, lateFees);
                 updateRepaymentSchedules(lateFees);
                 updateAccountBalance(account, totalLateFees);
+                transactionAmount = transactionAmount.subtract(totalLateFees);
+                odService.processODRepayment(transactionAmount,smeLoanId);
             } else {
                 // Insufficient funds - Update late days and fees for ALL entries
                 for (SMELateFeeCalculation lateFee : lateFees) {
