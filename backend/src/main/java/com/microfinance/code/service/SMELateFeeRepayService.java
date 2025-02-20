@@ -1,10 +1,7 @@
 package com.microfinance.code.service;
 
 import com.microfinance.code.exception.NotFoundException;
-import com.microfinance.code.model.CurrentAccount;
-import com.microfinance.code.model.SMELateFeeCalculation;
-import com.microfinance.code.model.SMELateFeeTracking;
-import com.microfinance.code.model.SMERepaymentSchedule;
+import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
@@ -39,78 +36,93 @@ public class SMELateFeeRepayService {
     private CurrentAccountRepository accountRepo;
     @Autowired
     private SMEODRepayService odService;
+    @Autowired
+    private SMELateFeeHoldingRepo lateFeeHoldingRepo;
+    @Autowired
+    private CurrentAccountRepository currentAccountRepo;
     @Transactional
     @Scheduled(cron = "0 * 9-23 * * *")
     public void processLateFees() {
         System.out.println("=========================Late Fee Process=============================");
-        // Step 1: Retrieve all distinct SME loans with late fees
+
         List<Integer> smeLoanIds = lateFeeCalculationRepo.findDistinctSmeLoanIds();
         System.out.println(smeLoanIds);
+
         for (Integer smeLoanId : smeLoanIds) {
             List<SMELateFeeCalculation> lateFees = lateFeeCalculationRepo.findBySmeLoanId(smeLoanId);
-            System.out.println("Total Late Fees Rows: "+lateFees);
+            System.out.println("Total Late Fees Rows: " + lateFees);
+
             BigDecimal totalLateFees = lateFees.stream()
                     .map(SMELateFeeCalculation::getLateFees)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            System.out.println("Late FEEs total "+totalLateFees);
+            System.out.println("Late Fees Total: " + totalLateFees);
+
             CurrentAccount account = smeLoanRepo.findCurrentAccountBySmeLoanId(smeLoanId)
-                    .orElseThrow(()->new NotFoundException("Cannot Find Current Account By SME Loan ID"));
+                    .orElseThrow(() -> new NotFoundException("Cannot Find Current Account By SME Loan ID"));
+
             BigDecimal transactionAmount = getAvailableTransactionAmount(account); // Fetch available funds
-            System.out.println("TransactionAMount : "+transactionAmount);
-            if (transactionAmount.compareTo(totalLateFees) >= 0) {
+            System.out.println("Transaction Amount: " + transactionAmount);
+
+            // Fetch any existing held amount from the previous transaction
+            SMELateFeeHolding lateFeeHolding = lateFeeHoldingRepo.findBySmeLoan_Id(smeLoanId).orElse(null);
+            BigDecimal heldAmount = lateFeeHolding != null ? lateFeeHolding.getHoldAmount() : BigDecimal.ZERO;
+
+            // Combine current available amount with previously held amount
+            BigDecimal totalAvailableAmount = transactionAmount.add(heldAmount);
+            System.out.println("Total Available (Transaction + Hold): " + totalAvailableAmount);
+
+            if (totalAvailableAmount.compareTo(totalLateFees) >= 0) {
                 // Full payment scenario
                 lateFeeCalculationRepo.deleteBySmeLoanId(smeLoanId);
                 recordLateFeeTracking(smeLoanId, lateFees);
                 updateRepaymentSchedules(lateFees);
                 updateAccountBalance(account, totalLateFees);
-                transactionAmount = transactionAmount.subtract(totalLateFees);
-                odService.processODRepayment(transactionAmount,smeLoanId);
+
+                // Deduct the total late fee from available funds
+                totalAvailableAmount = totalAvailableAmount.subtract(totalLateFees);
+
+                // If we had a hold amount, clear it
+                if (lateFeeHolding != null) {
+                    lateFeeHoldingRepo.delete(lateFeeHolding);
+                }
+
+                odService.processODRepayment(totalAvailableAmount, smeLoanId);
+
             } else {
-                // Insufficient funds - Update late days and fees for ALL entries
+                // Insufficient funds case
+                BigDecimal holdAmount = totalAvailableAmount; // We hold what was paid
+                System.out.println("Amount Held: " + holdAmount);
+
+
+                // Deduct the available funds from the account
+                updateAccountBalance(account, totalAvailableAmount);
+
+                // Update late fee calculations (increment late days, add more fees)
                 for (SMELateFeeCalculation lateFee : lateFees) {
-                    // 1. Increment late days by 1
                     lateFee.setLateDays(lateFee.getLateDays() + 1);
-
-                    // 2. Calculate additional fee (0.1% of interest_OD_amount)
-                    SMERepaymentSchedule schedule = lateFee.getSmeRepaymentSchedule();
-                    BigDecimal odAmount = schedule.getInterestODAmount() != null
-                            ? schedule.getInterestODAmount()
-                            : BigDecimal.ZERO;
-
-                    // Calculate 0.1% of OD amount with proper rounding
-                    BigDecimal additionalFee = odAmount.multiply(new BigDecimal("0.001"))
+                    BigDecimal additionalFee = lateFee.getSmeRepaymentSchedule().getInterestODAmount()
+                            .multiply(new BigDecimal("0.001"))
                             .setScale(2, RoundingMode.HALF_UP);
-
-                    // 3. Update late fees with the new calculation
                     lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
-
-                    // 4. Save the updated entry
                     lateFeeCalculationRepo.save(lateFee);
                 }
 
+                // Store the remaining unpaid late fee in `SMELateFeeHolding`
+                if (lateFeeHolding == null) {
+                    lateFeeHolding = new SMELateFeeHolding();
+                    lateFeeHolding.setSmeLoan(smeLoanRepo.findById(smeLoanId).orElseThrow(() ->
+                            new NotFoundException("SME Loan not found")));
+                }
+                lateFeeHolding.setHoldAmount(holdAmount);
+
+                lateFeeHoldingRepo.save(lateFeeHolding);
 
 
 
-
-
-                // Partial payment scenario
-//                BigDecimal remainingAmount = transactionAmount;
-//                for (SMELateFeeCalculation lateFee : lateFees) {
-//                    if (remainingAmount.compareTo(BigDecimal.ZERO) <= 0) break;
-//
-//                    if (remainingAmount.compareTo(lateFee.getLateFees()) >= 0) {
-//                        remainingAmount = remainingAmount.subtract(lateFee.getLateFees());
-//                        lateFeeCalculationRepo.delete(lateFee);
-//                    } else {
-//                        lateFee.setLateDays(lateFee.getLateDays() + 1);
-//                        lateFee.setLateFees(lateFee.getLateFees().subtract(remainingAmount));
-//                        lateFeeCalculationRepo.save(lateFee);
-//                        remainingAmount = BigDecimal.ZERO;
-//                    }
-//                }
             }
         }
     }
+
     private BigDecimal calculateAvailableFunds(CurrentAccount account) {
         return transactionRepo.findByCurrentAccountIdAndDate(account, LocalDate.now())
                 .stream()
