@@ -17,4 +17,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     @Query("SELECT t FROM Transaction t WHERE t.currentAccountId = :accountId AND FUNCTION('DATE', t.date) = :date")
     List<Transaction> findByCurrentAccountIdAndDate(@Param("accountId") CurrentAccount accountId, @Param("date") LocalDate date);
 
+
 }

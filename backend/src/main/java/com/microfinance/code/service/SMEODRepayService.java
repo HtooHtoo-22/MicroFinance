@@ -17,104 +17,100 @@ import java.util.List;
 @Service
 public class SMEODRepayService {
 
-    private final SMERepaymentScheduleRepo scheduleRepository;
-    private final TransactionRepository transactionRepository;
-    private final SMEODRepaymentTrackRepo odRepayTrackRepository;
-    private final CurrentAccountRepository currentAccountRepository;
+    private final SMERepaymentScheduleRepo scheduleRepo;
+    private final TransactionRepository transactionRepo;
+    private final SMEODRepaymentTrackRepo repaymentTrackRepo;
+    private final CurrentAccountRepository accountRepo;
+    private final SMELateFeeCalculationRepo lateFeeRepo;
 
     @Autowired
-    public SMEODRepayService(SMERepaymentScheduleRepo scheduleRepository,
-                             TransactionRepository transactionRepository,
-                             SMEODRepaymentTrackRepo odRepayTrackRepository,
-                             CurrentAccountRepository currentAccountRepository) {
-        this.scheduleRepository = scheduleRepository;
-        this.transactionRepository = transactionRepository;
-        this.odRepayTrackRepository = odRepayTrackRepository;
-        this.currentAccountRepository = currentAccountRepository;
+    public SMEODRepayService(SMERepaymentScheduleRepo scheduleRepo,
+                             TransactionRepository transactionRepo,
+                             SMEODRepaymentTrackRepo repaymentTrackRepo,
+                             CurrentAccountRepository accountRepo,
+                             SMELateFeeCalculationRepo lateFeeRepo) {
+        this.scheduleRepo = scheduleRepo;
+        this.transactionRepo = transactionRepo;
+        this.repaymentTrackRepo = repaymentTrackRepo;
+        this.accountRepo = accountRepo;
+        this.lateFeeRepo = lateFeeRepo;
     }
 
     @Transactional
-    @Scheduled(cron = "0 * 9-23 * * *") // Runs every hour from 9 AM to 5 PM
+//    @Scheduled(cron = "0 * 9-23 * * *") // Runs every hour from 9 AM to 5 PM
     public void processODRepayment() {
         System.out.println("Processing OD Repayment");
-        List<SMERepaymentSchedule> overdueSchedules = scheduleRepository.findByStatusIn(
-                List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
-        if (overdueSchedules.isEmpty()) return;
 
-        for (SMERepaymentSchedule overdueSchedule : overdueSchedules) {
-            processRepaymentForODSchedule(overdueSchedule);
-        }
+        List<SMERepaymentSchedule> overdueSchedules = scheduleRepo.findByStatusInAndLateFeeStatus(
+                List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE), false);
+        overdueSchedules.forEach(this::processRepaymentForSchedule);
     }
 
-    private void processRepaymentForODSchedule(SMERepaymentSchedule overdueSchedule) {
-        CurrentAccount account = overdueSchedule.getSmeLoan().getCurrentAccount();
+    private void processRepaymentForSchedule(SMERepaymentSchedule schedule) {
+        CurrentAccount account = schedule.getSmeLoan().getCurrentAccount();
         BigDecimal availableFunds = calculateAvailableFunds(account);
-        if (availableFunds.compareTo(BigDecimal.ZERO) <= 0) return;
 
-        BigDecimal odAmount = overdueSchedule.getInterestODAmount();
-        BigDecimal amountUsedForRepayment = availableFunds.min(odAmount);
+        if (availableFunds.compareTo(BigDecimal.ZERO) <= 0) {
+            applyLateFee(schedule);
+            return;
+        }
 
-        updateRepaymentStatus(overdueSchedule, amountUsedForRepayment);
-        updateAccountBalance(account, amountUsedForRepayment);
-        logRepayment(overdueSchedule, amountUsedForRepayment);
+        BigDecimal amountToRepay = availableFunds.min(schedule.getInterestODAmount());
+        updateRepaymentStatus(schedule, amountToRepay);
+        updateAccountBalance(account, amountToRepay);
+        logRepayment(schedule, amountToRepay);
+
+        if (schedule.getInterestODAmount().compareTo(BigDecimal.ZERO) > 0) {
+            applyLateFee(schedule);
+        }
     }
 
     private BigDecimal calculateAvailableFunds(CurrentAccount account) {
-        BigDecimal availableFunds = BigDecimal.ZERO;
-        List<Transaction> transactions = transactionRepository.findByCurrentAccountIdAndDate(account, LocalDate.now());
-        for (Transaction transaction : transactions) {
-            availableFunds = transaction.getType() == transactionType.CR
-                    ? availableFunds.add(transaction.getAmount())
-                    : availableFunds.subtract(transaction.getAmount());
-        }
-        return availableFunds;
+        return transactionRepo.findByCurrentAccountIdAndDate(account, LocalDate.now())
+                .stream()
+                .map(transaction -> transaction.getType() == transactionType.CR
+                        ? transaction.getAmount()
+                        : transaction.getAmount().negate())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void updateRepaymentStatus(SMERepaymentSchedule overdueSchedule, BigDecimal amountUsedForRepayment) {
-        BigDecimal newInterestODAmount = overdueSchedule.getInterestODAmount().subtract(amountUsedForRepayment);
-        overdueSchedule.setInterestODAmount(newInterestODAmount);
+    private void updateRepaymentStatus(SMERepaymentSchedule schedule, BigDecimal amountToRepay) {
+        BigDecimal remainingAmount = schedule.getInterestODAmount().subtract(amountToRepay);
+        schedule.setInterestODAmount(remainingAmount);
+        schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(amountToRepay));
 
-        overdueSchedule.setTotalRepaidAmount(overdueSchedule.getTotalRepaidAmount().add(amountUsedForRepayment));
-
-        if (newInterestODAmount.compareTo(BigDecimal.ZERO) == 0) {
-            overdueSchedule.setStatus(RepaymentStatus.PAID);
-            overdueSchedule.setFullyPaidDate(LocalDate.now());
+        if (remainingAmount.compareTo(BigDecimal.ZERO) == 0) {
+            schedule.setStatus(RepaymentStatus.PAID);
+            schedule.setFullyPaidDate(LocalDate.now());
         } else {
-            overdueSchedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
+            schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
         }
 
-        try {
-            scheduleRepository.save(overdueSchedule);
-        } catch (Exception e) {
-            System.err.println("Error saving repayment schedule: " + e.getMessage());
-        }
+        scheduleRepo.save(schedule);
     }
 
-    private void updateAccountBalance(CurrentAccount account, BigDecimal amountUsedForRepayment) {
-        // Convert the BigDecimal to a double for the balance subtraction
-        double repaymentAmount = amountUsedForRepayment.doubleValue();
-        double updatedBalance = account.getTotalBalence() - repaymentAmount;
-
-        // Update the account balance
-        account.setTotalBalence(updatedBalance);
-        try {
-            currentAccountRepository.save(account);
-        } catch (Exception e) {
-            System.err.println("Error updating account balance: " + e.getMessage());
-        }
+    private void updateAccountBalance(CurrentAccount account, BigDecimal amountToRepay) {
+        account.setTotalBalence(account.getTotalBalence() - amountToRepay.doubleValue());
+        accountRepo.save(account);
     }
 
+    private void logRepayment(SMERepaymentSchedule schedule, BigDecimal amountToRepay) {
+        SMEODRepaymentTrack track = new SMEODRepaymentTrack();
+        track.setSmeRepaymentSchedule(schedule);
+        track.setPaid_od_amount(amountToRepay);
+        track.setDate(LocalDateTime.now());
+        repaymentTrackRepo.save(track);
+    }
 
-    private void logRepayment(SMERepaymentSchedule overdueSchedule, BigDecimal amountUsedForRepayment) {
-        SMEODRepaymentTrack odRepaymentTrack = new SMEODRepaymentTrack();
-        odRepaymentTrack.setSmeRepaymentSchedule(overdueSchedule);
-        odRepaymentTrack.setPaid_od_amount(amountUsedForRepayment);
-        odRepaymentTrack.setDate(LocalDateTime.now());
+    private void applyLateFee(SMERepaymentSchedule schedule) {
+        System.out.println("Applying Late Fee");
+        schedule.setLateFeeStatus(true);
+        scheduleRepo.save(schedule);
 
-        try {
-            odRepayTrackRepository.save(odRepaymentTrack);
-        } catch (Exception e) {
-            System.err.println("Error saving repayment track: " + e.getMessage());
-        }
+        SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
+        lateFee.setSmeRepaymentSchedule(schedule);
+        lateFee.setLateDays(1);
+        lateFee.setLateFees(schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001)));
+        lateFeeRepo.save(lateFee);
     }
 }

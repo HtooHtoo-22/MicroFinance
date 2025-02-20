@@ -48,6 +48,9 @@ public class SMERepaymentSchedule {
     @Temporal(TemporalType.DATE)
     private LocalDate fullyPaidDate;
 
+    @Column(name="late_fee_status")
+    private boolean lateFeeStatus;
+
     @ManyToOne
     @JoinColumn(name = "sme_loan_id",nullable = false)
     private SMELoan smeLoan;
