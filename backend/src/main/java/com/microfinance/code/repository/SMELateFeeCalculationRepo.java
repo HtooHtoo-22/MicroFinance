@@ -1,6 +1,8 @@
 package com.microfinance.code.repository;
 
 import com.microfinance.code.model.SMELateFeeCalculation;
+import com.microfinance.code.model.SMELoan;
+import com.microfinance.code.model.SMERepaymentSchedule;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -32,5 +34,8 @@ public interface SMELateFeeCalculationRepo extends JpaRepository<SMELateFeeCalcu
     @Query("DELETE FROM SMELateFeeCalculation s WHERE s.smeRepaymentSchedule.smeLoan.id = :smeLoanId")
     void deleteBySmeLoanId(@Param("smeLoanId") Integer smeLoanId);
 
+    @Modifying
+    @Query("DELETE FROM SMELateFeeCalculation l WHERE l.lateDays < 91 AND l.smeRepaymentSchedule.smeLoan = :smeLoan")
+    void deleteOldLateFeesBySchedule(@Param("smeLoan") SMELoan smeLoan);
 
 }

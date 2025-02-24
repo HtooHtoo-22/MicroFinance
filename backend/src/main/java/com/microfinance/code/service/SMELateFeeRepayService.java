@@ -3,6 +3,7 @@ package com.microfinance.code.service;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
+import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,17 +100,61 @@ public class SMELateFeeRepayService {
                                       BigDecimal totalAvailableAmount, SMELateFeeHolding lateFeeHolding) {
         BigDecimal holdAmount = totalAvailableAmount;
         logAmountHeld(holdAmount);
-
         updateAccountBalance(account, totalAvailableAmount);
-        incrementLateDaysAndFees(lateFees);
-
+        //BigDecimal princialAmount = lateFeeHolding.getSmeLoan().getPrincipal();
+        //BigDecimal outstandingAmount;
+        SMELoan smeLoan = smeLoanRepo.findById(smeLoanId)
+                .orElseThrow(()->new NotFoundException("SME Loan Not Found"));
+        incrementLateDaysAndFees(lateFees,smeLoan);
         if (lateFeeHolding == null) {
             lateFeeHolding = createLateFeeHolding(smeLoanId);
         }
         lateFeeHolding.setHoldAmount(holdAmount);
         lateFeeHoldingRepo.save(lateFeeHolding);
     }
+    private BigDecimal calculateOutstandingAmount(SMELoan smeLoan) {
+        BigDecimal outstandingAmount = BigDecimal.ZERO;
 
+        // Fetch repayment schedules with required statuses
+        List<SMERepaymentSchedule> repaymentSchedules = repaymentScheduleRepo.findBySmeLoanIdAndStatusIn(
+                smeLoan.getId(), List.of(RepaymentStatus.NOT_DUE_YET, RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
+
+        if (repaymentSchedules.isEmpty()) {
+            throw new RuntimeException("No repayment schedules found for the loan");
+        }
+
+        // Find the minimum principal amount
+        BigDecimal minPrincipal = repaymentSchedules.stream()
+                .map(SMERepaymentSchedule::getPrincipal)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        outstandingAmount = outstandingAmount.add(minPrincipal);
+        BigDecimal totalOD = BigDecimal.ZERO;
+        BigDecimal totalInterest = BigDecimal.ZERO;
+
+        for (SMERepaymentSchedule schedule : repaymentSchedules) {
+            BigDecimal interestAmount = schedule.getInterestAmount() != null ? schedule.getInterestAmount() : BigDecimal.ZERO;
+            BigDecimal interestODAmount = schedule.getInterestODAmount() != null ? schedule.getInterestODAmount() : BigDecimal.ZERO;
+
+            if (schedule.getStatus() == RepaymentStatus.NOT_DUE_YET) {
+                outstandingAmount = outstandingAmount.add(interestAmount);
+                totalInterest = totalInterest.add(interestAmount);
+            }
+
+            if (schedule.getStatus() == RepaymentStatus.FULL_OVERDUE || schedule.getStatus() == RepaymentStatus.PARTIAL_OVERDUE) {
+                outstandingAmount = outstandingAmount.add(interestODAmount);
+                totalOD = totalOD.add(interestODAmount);
+                System.out.println("Schedule ID: " + schedule.getId() + " | OD Interest: " + interestODAmount);
+            }
+        }
+
+        System.out.println("Principal: " + minPrincipal);
+        System.out.println("Total OD Amount: " + totalOD);
+        System.out.println("Total Remaining Interest Amount: " + totalInterest);
+
+        return outstandingAmount;
+    }
     private SMELateFeeHolding createLateFeeHolding(Integer smeLoanId) {
         SMELateFeeHolding lateFeeHolding = new SMELateFeeHolding();
         lateFeeHolding.setSmeLoan(smeLoanRepo.findById(smeLoanId)
@@ -117,14 +162,47 @@ public class SMELateFeeRepayService {
         return lateFeeHolding;
     }
 
-    private void incrementLateDaysAndFees(List<SMELateFeeCalculation> lateFees) {
+    private void incrementLateDaysAndFees(List<SMELateFeeCalculation> lateFees, SMELoan smeLoan) {
+        if (lateFees.isEmpty()) {
+            return;
+        }
+
+        // Step 1: Find the max late days in the list
+        int maxLateDays = lateFees.stream()
+                .mapToInt(SMELateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+        System.out.println("Max Late Days : " + maxLateDays);
+
+        BigDecimal outstandingAmount = calculateOutstandingAmount(smeLoan);
+
         for (SMELateFeeCalculation lateFee : lateFees) {
-            lateFee.setLateDays(lateFee.getLateDays() + 1);
-            BigDecimal additionalFee = calculateAdditionalFee(lateFee);
-            lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
-            lateFeeCalculationRepo.save(lateFee);
+            lateFee.setLateDays(lateFee.getLateDays() + 1); // Increment late days
+
+            BigDecimal additionalFee;
+            if (maxLateDays >= 90 && lateFee.getLateDays() > 90) {
+                // Apply additional fee for late days above 90
+                additionalFee = outstandingAmount.multiply(BigDecimal.valueOf(0.002));
+                System.out.println("Outstanding Amount : " + outstandingAmount);
+                System.out.println("Additional Fee : " + additionalFee);
+
+                if (maxLateDays == 90) {
+                    System.out.println("Hello");
+                    lateFee.setLateFees(additionalFee);
+                    lateFeeCalculationRepo.save(lateFee);
+                    lateFeeCalculationRepo.deleteOldLateFeesBySchedule(lateFee.getSmeRepaymentSchedule().getSmeLoan());
+                } else {
+                    lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
+                }
+            } else {
+                // Apply normal additional fee calculation for late days below or equal to 90
+                additionalFee = calculateAdditionalFee(lateFee);
+                lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
+            }
         }
     }
+
+
 
     private BigDecimal calculateAdditionalFee(SMELateFeeCalculation lateFee) {
         return lateFee.getSmeRepaymentSchedule().getInterestODAmount()

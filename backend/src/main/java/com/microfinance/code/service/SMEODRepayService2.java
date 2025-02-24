@@ -53,11 +53,22 @@ public class SMEODRepayService2 {
     }
 
     private void processRepaymentForSchedule(SMERepaymentSchedule schedule) {
+
+        List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(schedule.getSmeLoan().getId());
+        int maxLateDays = calculations.stream()
+                .mapToInt(SMELateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+
         CurrentAccount account = schedule.getSmeLoan().getCurrentAccount();
         BigDecimal availableFunds = calculateAvailableFunds(account);
 
         if (availableFunds.compareTo(BigDecimal.ZERO) <= 0) {
-            applyLateFee(schedule);
+            if (maxLateDays<91){
+                schedule.setLateFeeStatus(true);
+                scheduleRepo.save(schedule);
+                applyLateFee(schedule);
+            }
             return;
         }
 
@@ -67,7 +78,11 @@ public class SMEODRepayService2 {
         logRepayment(schedule, amountToRepay);
 
         if (schedule.getInterestODAmount().compareTo(BigDecimal.ZERO) > 0) {
-            applyLateFee(schedule);
+            if (maxLateDays<91){
+                schedule.setLateFeeStatus(true);
+                scheduleRepo.save(schedule);
+                applyLateFee(schedule);
+            }
         }
     }
 
