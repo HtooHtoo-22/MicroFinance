@@ -1,0 +1,99 @@
+<div class="container mx-auto px-4 py-8">
+  <h2 class="text-2xl font-bold mb-6 text-[#00A1FF]">User List</h2>
+  
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex flex-col items-center justify-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    <p class="mt-4 text-gray-600">Loading users...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+    <span class="block sm:inline">{{ errorMessage }}</span>
+    <button class="absolute top-0 bottom-0 right-0 px-4" (click)="errorMessage = null">
+      <span class="sr-only">Close</span>
+      <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="!loading && !errorMessage" class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full table-auto">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let user of paginatedUsers" class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.userId }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.branchName || 'N/A' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.roleName }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm mr-2" 
+                    routerLink="/users/edit/{{user.userId}}">
+              Edit
+            </button>
+            <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm"
+                    routerLink="delete-user/{{user.userId}}">
+              Delete
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="users.length === 0">
+          <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+            No users found
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+     <!-- Add Pagination Controls -->
+     <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <!-- Items per page info -->
+        <div class="text-sm text-gray-700">
+          Showing <span class="font-medium">{{ startIndex }}</span> to <span class="font-medium">{{ endIndex }}</span> of
+          <span class="font-medium">{{ totalUsers }}</span> results
+        </div>
+
+        <!-- Pagination buttons -->
+        <div class="flex items-center space-x-2">
+          <button 
+            (click)="previousPage()" 
+            [disabled]="currentPage === 1"
+            class="px-3 py-1 rounded-md text-sm font-medium"
+            [ngClass]="currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
+            Previous
+          </button>
+
+          <div class="flex space-x-1">
+            <button *ngFor="let page of pages" 
+              (click)="goToPage(page)"
+              class="px-3 py-1 rounded-md text-sm font-medium"
+              [ngClass]="currentPage === page ? 'bg-blue-500 text-white' : 'bg-white text-gray-500 hover:bg-blue-50 border border-gray-300'">
+              {{ page }}
+            </button>
+          </div>
+
+          <button 
+            (click)="nextPage()" 
+            [disabled]="currentPage === totalPages"
+            class="px-3 py-1 rounded-md text-sm font-medium"
+            [ngClass]="currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
+            Next
+          </button>
+        </div>
+      </div>
+  </div>
+
+</div>
