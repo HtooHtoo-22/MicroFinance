@@ -1,7 +1,15 @@
 import { NgModule } from '@angular/core';
+import { CreateBranchComponent } from './Components/branch/create-branch/create-branch.component';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
+import { importProvidersFrom } from '@angular/core';
+import { ListBranchComponent } from './Components/branch/list-branch/list-branch.component';
+import { UpdateBranchComponent } from './Components/branch/update-branch/update-branch.component';
+import { ListProductComponent } from './Components/product/list-product/list-product.component';
+import { CreateProductComponent } from './Components/product/create-product/create-product.component';
+import { EditProductComponent } from './Components/product/edit-product/edit-product.component';
+
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { CifRegisterComponent } from './Components/cif-register/cif-register.component';
@@ -26,6 +34,12 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 @NgModule({
   declarations: [
     AppComponent,
+    ListBranchComponent,
+    CreateBranchComponent,
+    UpdateBranchComponent,
+    ListProductComponent,
+    CreateProductComponent,
+    EditProductComponent,
     DashboardComponent,
     CifRegisterComponent,
     CurrentAccListComponent,
@@ -43,11 +57,12 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
   ],
   imports: [
     BrowserModule,
+    RouterModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterModule,
+
     NgClass,
     NgFor,
     HttpClientModule,

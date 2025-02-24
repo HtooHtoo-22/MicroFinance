@@ -40,7 +40,9 @@ app.use(
 /**
  * Handle all other requests by rendering the Angular application.
  */
-app.use('/**', (req, res, next) => {
+import { Request, Response, NextFunction } from 'express';
+
+app.use('/**', (req: Request, res: Response, next: NextFunction) => {
   angularApp
     .handle(req)
     .then((response) =>

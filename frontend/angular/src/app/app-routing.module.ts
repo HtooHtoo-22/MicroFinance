@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CreateBranchComponent } from './Components/branch/create-branch/create-branch.component';
+import { ListBranchComponent } from './Components/branch/list-branch/list-branch.component';
+import { UpdateBranchComponent } from './Components/branch/update-branch/update-branch.component';
 import { CifRegisterComponent } from './Components/cif-register/cif-register.component';
 import { TransactionComponent } from './Components/transaction/transaction.component';
 import { TransactionHistoryComponent } from './Components/transaction-history/transaction-history.component';
@@ -37,6 +40,9 @@ const routes: Routes = [
       { path: 'list-users', component: ListuserComponent },
       { path: 'edit-user/:id', component: CreateuserComponent },
       { path: 'delete-user/:id', component: ListuserComponent },
+      { path: 'create-branch', component: CreateBranchComponent },
+      { path: 'list-branch', component: ListBranchComponent },
+      { path: 'update-branch/:id', component: UpdateBranchComponent },
 
     ]
   },
@@ -47,4 +53,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

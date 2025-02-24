@@ -1,0 +1,14 @@
+<h2>Branch List</h2>
+
+<ul *ngIf="branches$ | async as branches; else noBranches">
+  <li *ngFor="let branch of branches">
+    {{ branch.code }} - {{ branch.name }} - {{ branch.address }}
+    <a [routerLink]="['/update-branch', branch.id]">Update</a>
+    <a *ngIf="branch.id" (click)="onDelete(branch.id)">Delete</a>
+    <!-- <button *ngIf="branch.id !== undefined" (click)="onUpdate(branch.id)">Update</button> -->
+    <!-- <button *ngIf="branch.id !== undefined" (click)="onDelete(branch.id)">Delete</button> -->
+  </li>
+</ul>
+<ng-template #noBranches>
+  <p>No branches available.</p>
+</ng-template>
