@@ -3,10 +3,8 @@ package com.microfinance.code.service;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.status.RepaymentStatus;
-import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -38,53 +36,96 @@ public class SMEODRepayService {
 
     @Transactional
     public void processODRepayment(BigDecimal transactionAmount, Integer smeLoanId) {
-        System.out.println("Processing OD Repayment for SME Loan ID: " + smeLoanId);
+        logProcessStart(smeLoanId);
 
-        List<SMERepaymentSchedule> overdueSchedules = scheduleRepo.findBySmeLoanIdAndStatusIn(
-                smeLoanId, List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
-
+        List<SMERepaymentSchedule> overdueSchedules = findOverdueSchedules(smeLoanId);
         if (overdueSchedules.isEmpty()) {
-            System.out.println("No overdue schedules found for SME Loan ID: " + smeLoanId);
+            logNoOverdueSchedules(smeLoanId);
             return;
         }
 
-        BigDecimal remainingTransactionAmount = transactionAmount;
-        System.out.println("Remaining Amount : "+remainingTransactionAmount);
+        BigDecimal remainingAmount = processOverdueSchedules(overdueSchedules, transactionAmount);
+        logRemainingAmount(remainingAmount);
+    }
+
+    private List<SMERepaymentSchedule> findOverdueSchedules(Integer smeLoanId) {
+        return scheduleRepo.findBySmeLoanIdAndStatusIn(
+                smeLoanId, List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
+    }
+
+    private BigDecimal processOverdueSchedules(List<SMERepaymentSchedule> overdueSchedules, BigDecimal transactionAmount) {
+        BigDecimal remainingAmount = transactionAmount;
         for (SMERepaymentSchedule schedule : overdueSchedules) {
-            if (remainingTransactionAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                // Apply late fee when there is still an overdue amount
-                if (schedule.getInterestODAmount().compareTo(BigDecimal.ZERO) > 0) {
-                    applyLateFee(schedule);
-                }
+            if (remainingAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                applyLateFeeIfApplicable(schedule);
                 continue;
             }
-            BigDecimal amountToRepay = remainingTransactionAmount.min(schedule.getInterestODAmount());
-            remainingTransactionAmount = remainingTransactionAmount.subtract(amountToRepay);
-            System.out.println(remainingTransactionAmount);
-            updateRepaymentStatus(schedule, amountToRepay);
-            logRepayment(schedule, amountToRepay);
-            updateAccountBalance(schedule.getSmeLoan().getCurrentAccount(), amountToRepay);
-        }
 
-        if (remainingTransactionAmount.compareTo(BigDecimal.ZERO) > 0) {
-            System.out.println("Excess transaction amount remaining: " + remainingTransactionAmount);
+            remainingAmount = repaySchedule(schedule, remainingAmount);
         }
+        return remainingAmount;
+    }
+
+    private BigDecimal repaySchedule(SMERepaymentSchedule schedule, BigDecimal remainingAmount) {
+        BigDecimal amountToRepay = calculateAmountToRepay(schedule, remainingAmount);
+        remainingAmount = remainingAmount.subtract(amountToRepay);
+
+        updateRepaymentStatus(schedule, amountToRepay);
+        logRepayment(schedule, amountToRepay);
+        updateAccountBalance(schedule.getSmeLoan().getCurrentAccount(), amountToRepay);
+
+        return remainingAmount;
+    }
+
+    private BigDecimal calculateAmountToRepay(SMERepaymentSchedule schedule, BigDecimal remainingAmount) {
+        return remainingAmount.min(schedule.getInterestODAmount());
     }
 
     private void updateRepaymentStatus(SMERepaymentSchedule schedule, BigDecimal amountToRepay) {
-        BigDecimal remainingAmount = schedule.getInterestODAmount().subtract(amountToRepay);
-        schedule.setInterestODAmount(remainingAmount);
+        BigDecimal remainingODAmount = schedule.getInterestODAmount().subtract(amountToRepay);
+        schedule.setInterestODAmount(remainingODAmount);
         schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(amountToRepay));
 
-        if (remainingAmount.compareTo(BigDecimal.ZERO) == 0) {
-            schedule.setStatus(RepaymentStatus.PAID);
-            schedule.setFullyPaidDate(LocalDate.now());
+        if (remainingODAmount.compareTo(BigDecimal.ZERO) == 0) {
+            markScheduleAsPaid(schedule);
         } else {
-            schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
-            applyLateFee(schedule);
+            markScheduleAsPartialOverdue(schedule);
         }
 
         scheduleRepo.save(schedule);
+    }
+
+    private void markScheduleAsPaid(SMERepaymentSchedule schedule) {
+        schedule.setStatus(RepaymentStatus.PAID);
+        schedule.setFullyPaidDate(LocalDate.now());
+    }
+
+    private void markScheduleAsPartialOverdue(SMERepaymentSchedule schedule) {
+        schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
+        applyLateFee(schedule);
+    }
+
+    private void applyLateFeeIfApplicable(SMERepaymentSchedule schedule) {
+        if (schedule.getInterestODAmount().compareTo(BigDecimal.ZERO) > 0) {
+            applyLateFee(schedule);
+        }
+    }
+
+    private void applyLateFee(SMERepaymentSchedule schedule) {
+        logLateFeeApplication();
+        schedule.setLateFeeStatus(true);
+        scheduleRepo.save(schedule);
+
+        SMELateFeeCalculation lateFee = createLateFee(schedule);
+        lateFeeRepo.save(lateFee);
+    }
+
+    private SMELateFeeCalculation createLateFee(SMERepaymentSchedule schedule) {
+        SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
+        lateFee.setSmeRepaymentSchedule(schedule);
+        lateFee.setLateDays(1);
+        lateFee.setLateFees(schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001)));
+        return lateFee;
     }
 
     private void logRepayment(SMERepaymentSchedule schedule, BigDecimal amountToRepay) {
@@ -94,19 +135,27 @@ public class SMEODRepayService {
         track.setDate(LocalDateTime.now());
         repaymentTrackRepo.save(track);
     }
-    private void applyLateFee(SMERepaymentSchedule schedule) {
-        System.out.println("Applying Late Fee");
-        schedule.setLateFeeStatus(true);
-        scheduleRepo.save(schedule);
 
-        SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
-        lateFee.setSmeRepaymentSchedule(schedule);
-        lateFee.setLateDays(1);
-        lateFee.setLateFees(schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001)));
-        lateFeeRepo.save(lateFee);
-    }
     private void updateAccountBalance(CurrentAccount account, BigDecimal amountToRepay) {
         account.setTotalBalence(account.getTotalBalence() - amountToRepay.doubleValue());
         accountRepo.save(account);
+    }
+
+    private void logProcessStart(Integer smeLoanId) {
+        System.out.println("Processing OD Repayment for SME Loan ID: " + smeLoanId);
+    }
+
+    private void logNoOverdueSchedules(Integer smeLoanId) {
+        System.out.println("No overdue schedules found for SME Loan ID: " + smeLoanId);
+    }
+
+    private void logRemainingAmount(BigDecimal remainingAmount) {
+        if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("Excess transaction amount remaining: " + remainingAmount);
+        }
+    }
+
+    private void logLateFeeApplication() {
+        System.out.println("Applying Late Fee");
     }
 }

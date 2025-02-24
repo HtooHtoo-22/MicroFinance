@@ -2,9 +2,11 @@ package com.microfinance.code.service;
 
 import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.Holiday;
+import com.microfinance.code.model.SMELateFeeCalculation;
 import com.microfinance.code.model.SMERepaymentSchedule;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.HolidayRepository;
+import com.microfinance.code.repository.SMELateFeeCalculationRepo;
 import com.microfinance.code.repository.SMERepaymentScheduleRepo;
 import com.microfinance.code.status.RepaymentStatus;
 import jakarta.transaction.Transactional;
@@ -26,22 +28,26 @@ public class SMERepaymentService {
 
     @Autowired
     private CurrentAccountRepository currentAccountRepository; // Repository for CurrentAccount table
-
+    @Autowired
+    private  SMERepaymentScheduleRepo scheduleRepo;
+    @Autowired
+    private  SMELateFeeCalculationRepo lateFeeRepo;
 
     @Transactional
-//    @Scheduled(cron = "0 * 9-17 * * *")
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
 
         // Check if today is a holiday
-        boolean isHoliday = isHoliday(today);
-        if (isHoliday) {
-            System.out.println("Today is a holiday. Skipping repayments.");
-            return;
-        }
-        System.out.println("Run");
+//        boolean isHoliday = isHoliday(today);
+//        if (isHoliday) {
+//            System.out.println("Today is a holiday. Skipping repayments.");
+//            return;
+//        }
+        System.out.println("___________________________Auto Pay__________________________________________");
         // Proceed if it's not a holiday
         processScheduledRepayments(today);
+        System.out.println("______________________________________________________________________________");
     }
     private boolean isHoliday(LocalDate date) {
         return holidayRepository.existsByHolidayDate(date); // Assuming holidayRepo has a method to check for holidays
@@ -85,15 +91,46 @@ public class SMERepaymentService {
             schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(availableBalance));
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount.subtract(availableBalance))); // Remaining amount as OD interest
             schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
+            if(schedule.getGracePeriodEndDate()!=null){
+                applyLateFee(schedule);
+            }
         } else {
             // No available balance, full overdue
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount)); // All remaining amount is OD interest
             schedule.setStatus(RepaymentStatus.FULL_OVERDUE);
+            if(schedule.getGracePeriodEndDate()!=null){
+                applyLateFee(schedule);
+            }
         }
 
         // Save updated data to the database
         currentAccountRepository.save(currentAccount);
         repaymentScheduleRepository.save(schedule);
+    }
+    private void applyLateFee(SMERepaymentSchedule schedule) {
+        System.out.println("Applying Late Fee");
+        schedule.setLateFeeStatus(true);
+        scheduleRepo.save(schedule);
+
+        LocalDate dueDate = schedule.getDueDate();
+        LocalDate graceEndDate = schedule.getGracePeriodEndDate();
+        LocalDate currentDate = LocalDate.now();
+
+        if (currentDate.equals(graceEndDate)) { // Late days start after grace period
+            long lateDays = java.time.temporal.ChronoUnit.DAYS.between(dueDate, currentDate);
+
+            SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
+            lateFee.setSmeRepaymentSchedule(schedule);
+            lateFee.setLateDays((int) lateDays);
+
+            // Late fee based on days overdue
+            BigDecimal lateFeeAmount = schedule.getInterestODAmount()
+                    .multiply(BigDecimal.valueOf(0.001)) // Late fee rate
+                    .multiply(BigDecimal.valueOf(lateDays)); // Multiply by late days
+
+            lateFee.setLateFees(lateFeeAmount);
+            lateFeeRepo.save(lateFee);
+        }
     }
 
 }
