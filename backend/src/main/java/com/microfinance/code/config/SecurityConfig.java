@@ -25,6 +25,10 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/authenticate",
             "/api/v1/auth/refresh-token",
+            "/api/branches/**",
+            "/api/roles/**",
+//            "/api/users/**",
+            "/api/users",
             "/ws/**",
     };
 
@@ -35,13 +39,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain createFilter(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // Enable CORS in Spring Security
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                                req.requestMatchers(WHITE_LIST_URL).permitAll()
-                                        .requestMatchers("/api/v1/auth/admin/**").hasRole("Admin")
-                                        .anyRequest()
-                                        .authenticated()
-                    )
+                        req.requestMatchers(WHITE_LIST_URL).permitAll()
+                                .requestMatchers("/api/cif/**").hasAnyAuthority("ADMIN", "MANAGER") // ✅ Only Admin & Manager
+                                .requestMatchers("/api/users/create").hasAnyAuthority("MANAGER", "ADMIN")
+                                .anyRequest().authenticated()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -52,5 +57,33 @@ public class SecurityConfig {
                 );
         return http.build();
     }
-}
 
+}
+//
+//package com.microfinance.code.config;
+//
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.config.Customizer;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+//import org.springframework.security.config.http.SessionCreationPolicy;
+//import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfig {
+//
+//    @Bean
+//    public SecurityFilterChain createFilter(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll() // Allow all requests without authentication
+//                );
+//
+//        return http.build();
+//    }
+//}

@@ -15,6 +15,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class AuthenticationService {
     private final UserRepo userRepo;
 
     public AuthenticationResponse register(RegisterRequest request) throws BadRequestException {
-        if(userRepo.existsByEmail(request.getEmail())) {
+        if (userRepo.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
         var user = User.builder()
@@ -51,18 +52,27 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
+        System.out.println("Authenticating user: " + request.getUsername());
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+
+        // Get the authenticated user from the principal
+        User user = (User) authentication.getPrincipal();
+
+        System.out.println("User authenticated: " + user.getEmail());
+        System.out.println("Roles: " + user.getAuthorities());
+        // Generate tokens
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+
+        // Revoke old tokens and save new one
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -98,7 +108,7 @@ public class AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return;
         }
         refreshToken = authHeader.substring(7);

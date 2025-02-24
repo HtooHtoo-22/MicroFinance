@@ -39,7 +39,7 @@ public class CIFController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ApiResponse<List<CIFDTO>> getAllCIFs() {
         List<CIFDTO> cifs = cifService.getAllCIFs();
         return ApiResponse.success(HttpStatus.OK, 200, "CIFs retrieved successfully", cifs);
@@ -69,7 +69,4 @@ public class CIFController {
         List<CIFDTO> deleteCifs = cifService.getDeleteCIFs();
         return ApiResponse.success(HttpStatus.OK, 200, "Delete CIFs retrieved successfully", deleteCifs);
     }
-
-
-
 }

@@ -6,12 +6,13 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.mapper.BranchMapper;
 import com.microfinance.code.model.Branch;
 import com.microfinance.code.service.interFace.BranchService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/branches")
 public class BranchController {
@@ -32,7 +33,7 @@ public class BranchController {
         return ApiResponse.success(HttpStatus.CREATED, 0101,"Branch created successfully", createdBranchDTO);
     }
 
-    @GetMapping()
+    @GetMapping
     public ApiResponse<List<BranchDTO>> getAllBranches() {
         List<BranchDTO> branchList = branchService.getAllBranches();
         return ApiResponse.success(HttpStatus.OK, 200, "Branch Types retrieved successfully", branchList);

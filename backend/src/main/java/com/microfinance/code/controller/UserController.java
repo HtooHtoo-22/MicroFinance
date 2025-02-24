@@ -47,9 +47,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, 200, "Users retrieved successfully", users));
     }
 
     @DeleteMapping("/{id}")

@@ -40,32 +40,56 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserDTO dto) {
-        if (userRepo.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
 
-        Branch branch = branchRepo.findById(dto.getBrandId())
+        System.out.println("Searching for branch with ID: " + dto.getBranchId());
+
+        Branch branch = branchRepo.findById(dto.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch Not Found"));
-        Role role = roleRepo.findById(dto.getRoleID())
+        System.out.println("branch" + branch.getName());
+
+        System.out.println("Searching for role with ID: " + dto.getRoleId());
+        Role role = roleRepo.findById(dto.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Role Not Found"));
 
-        String newUserId = generateNextUserId();
-        User user = userMapper.toEntity(dto, branch, role, newUserId);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        String generatedEmail = generateEmail(dto.getName());
+        String generatedPassword = generatePassword(role.getRoleName());
+        String UserId = generateUserId(branch.getCode());
+        User user = userMapper.toEntity(dto, branch, role, UserId);
+        user.setEmail(generatedEmail);
 
+        if (generatedPassword == null || generatedPassword.isEmpty()) {
+            throw new RuntimeException("Generated password is invalid");
+        }
+        user.setPassword(passwordEncoder.encode(generatedPassword));
+        System.out.println("Encoded Password: " + user.getPassword());
         User savedUser = userRepo.save(user);
         return userMapper.toResponseDTO(savedUser);
     }
 
-    private String generateNextUserId() {
-        String lastUserId = userRepo.findLastUserId();
-        if (lastUserId == null) {
-            return "001";
-        }
-        int lastIdNumber = Integer.parseInt(lastUserId);
-        int nextIdNumber = lastIdNumber + 1;
-        return String.format("%03d", nextIdNumber);
+    private String generateUserId(String branchcode) {
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
+        return "UC-" + branchcode + "-"  + timestamp;
     }
+
+    private String generateEmail(String name) {
+        return name.toLowerCase().replace(" ", "") + "@richcoin.com";
+    }
+
+    private String generatePassword(String roleName) {
+        switch (roleName.toUpperCase()) {
+            case "ADMIN":
+                return "admin@richcoin"; // Password for ADMIN role
+            case "MANAGER":
+                return "manager@richcoin"; // Password for MANAGER role
+            case "OPERATION":
+                return "operation@richcoin"; // Password for OPERATION role
+            case "ENTRY":
+                return "entry@richcoin"; // Password for ENTRY role
+            default:
+                return "default@richcoin"; // Password for unknown or unhandled roles
+        }
+    }
+
 
     @Override
     public UserResponseDTO updateUser(Integer id, UserDTO dto) {
@@ -73,12 +97,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
-
         User updatedUser = userRepo.save(user);
         return userMapper.toResponseDTO(updatedUser);
     }
