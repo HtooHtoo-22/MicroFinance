@@ -83,10 +83,6 @@ public  class BranchServiceImpl implements BranchService {
                 .map(branchMapper::toDTO)
                 .collect(Collectors.toList());
     }
-
-
-
-
 }
 
 
