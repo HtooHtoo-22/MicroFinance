@@ -1,0 +1,26 @@
+<h2>Update Branch</h2>
+
+<form [formGroup]="branchForm" (ngSubmit)="onSubmit()">
+  <label for="code">Branch Code:</label>
+  <input id="code" formControlName="code" required />
+
+  <label for="name">Branch Name:</label>
+  <input id="name" formControlName="name" required />
+
+  <label for="address">Address:</label>
+  <input id="address" formControlName="address" required />
+
+  <label for="state">State:</label>
+  <input id="state" formControlName="state" required />
+
+  <label for="township">Township:</label>
+  <input id="township" formControlName="township" required />
+
+  <label for="status">Status:</label>
+  <select id="status" formControlName="status" required>
+    <option value="ACTIVE">Active</option>
+    <option value="INACTIVE">Inactive</option>
+  </select>
+
+  <button type="submit" [disabled]="branchForm.invalid">Update Branch</button>
+</form>
