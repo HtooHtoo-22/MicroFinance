@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/branches")
+@CrossOrigin
 public class BranchController {
 
     private final BranchService branchService;
@@ -24,14 +25,14 @@ public class BranchController {
         this.branchMapper = branchMapper;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ApiResponse<BranchDTO> createBranch(@RequestBody BranchDTO dto) {
         Branch branch = branchMapper.toEntity(dto);
         Branch createdBranch = branchService.createBranch(dto);
         BranchDTO createdBranchDTO = branchMapper.toDTO(createdBranch);
-        return ApiResponse.success(HttpStatus.CREATED, 0101,"Branch created successfully", createdBranchDTO);
+        return ApiResponse.success(HttpStatus.CREATED, 101, "Branch created successfully", createdBranchDTO);
     }
-    @GetMapping()
+    @GetMapping
     public ApiResponse<List<BranchDTO>> getAllBranches() {
         List<BranchDTO> branchList = branchService.getAllBranches();
         return ApiResponse.success(HttpStatus.OK, 200, "Branch Types retrieved successfully", branchList);
@@ -64,9 +65,8 @@ public class BranchController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteBranch(@PathVariable Integer id) {
-        ApiResponse<String> response = branchService.deleteBranch(id);
-        return ResponseEntity.status(response.getHttpStatus()).body(response);
+    public ApiResponse<String> deleteBranch(@PathVariable Integer id) {
+        branchService.deleteBranch(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "Branch deleted successfully");
     }
-
 }

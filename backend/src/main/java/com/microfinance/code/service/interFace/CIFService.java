@@ -14,4 +14,6 @@ public interface CIFService {
      CIFDTO updateCIFStatus(Integer id, String status);
      List<CIFDTO> getActiveCIFs();
      List<CIFDTO> getDeleteCIFs();
+     CIFDTO getCifById(Integer id);  // ✅ Add this method
+
 }

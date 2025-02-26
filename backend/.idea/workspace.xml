@@ -5,49 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/HolidayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/HolidayController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/BranchRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/BranchRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HolidayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HolidayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/BranchServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/BranchServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/CurrentAccountController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/CurrentAccountController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/RateController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/RateController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/BranchDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/BranchDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralTypeDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralTypeDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/RateDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/RateDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/TransactionDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/TransactionDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/UserResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/UserResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/etc/ApiResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/etc/ApiResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/EmptyException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/EmptyException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/NotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/NotFoundException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/ValidationException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/exception/ValidationException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CollateralTypeMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CollateralTypeMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/RateMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/RateMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/CollateralType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/CollateralType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/CurrentAccount.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/CurrentAccount.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/LoanStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/LoanStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/Rate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/Rate.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/Transaction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/model/Transaction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/BranchRepo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/BranchRepo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/CollateralTypeRepo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/CollateralTypeRepo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/RateRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/RateRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/CurrentAccountService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/CurrentAccountService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/RateService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/RateService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/TransactionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/TransactionService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/impl/RateServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/impl/RateServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralTypeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralTypeService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/CIFStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/CIFStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/LoanStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/LoanStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/transactionType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/status/transactionType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/BranchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/BranchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CIFController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CIFController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CIFServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CIFServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/CIFService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/CIFService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/angular/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/src/app/app-routing.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/angular/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/src/app/app.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/angular/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/angular/src/app/app.module.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +67,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging SanSan&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;SanSan&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/user/Documents/springboot/Microfinance/backend&quot;,
@@ -159,7 +125,17 @@
       <workItem from="1739507705806" duration="2435000" />
       <workItem from="1739523706652" duration="1072000" />
       <workItem from="1739716462144" duration="2214000" />
-      <workItem from="1739759323541" duration="1646000" />
+      <workItem from="1739759323541" duration="2347000" />
+      <workItem from="1739932830507" duration="9492000" />
+      <workItem from="1739976933179" duration="2273000" />
+      <workItem from="1740018775599" duration="5976000" />
+      <workItem from="1740059140388" duration="1911000" />
+      <workItem from="1740103857428" duration="2846000" />
+      <workItem from="1740365070419" duration="7329000" />
+      <workItem from="1740405683743" duration="1276000" />
+      <workItem from="1740452347788" duration="5702000" />
+      <workItem from="1740491366596" duration="4547000" />
+      <workItem from="1740538773850" duration="3072000" />
     </task>
     <servers />
   </component>
@@ -184,6 +160,11 @@
           <properties class="java.sql.SQLException" package="java.sql" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CIFMapper.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

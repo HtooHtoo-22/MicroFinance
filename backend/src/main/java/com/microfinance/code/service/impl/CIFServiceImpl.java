@@ -116,6 +116,24 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
             }
         }
 
+        if (updates.containsKey("incomeAmount")) {
+            Object incomeValue = updates.get("incomeAmount");
+            if (incomeValue instanceof Integer) {
+                updates.put("incomeAmount", ((Integer) incomeValue).doubleValue()); // Convert Integer to Double
+            }
+        }
+
+        if (updates.containsKey("status")) {
+            String statusString = (String) updates.get("status");
+            try {
+                CIFStatus statusEnum = CIFStatus.valueOf(statusString.toUpperCase()); // Convert to Enum
+                updates.put("status", statusEnum);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid status value: " + statusString);
+            }
+        }
+
+
         // Loop through fields and update dynamically
         updates.forEach((key, value) -> {
             Field field = getField(CIF.class, key); // Custom method to get the field
@@ -170,7 +188,11 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
         String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
         return "CIF-" + branchCode + "-" + userId + "-" + timestamp;
     }
+    @Override
+    public CIFDTO getCifById(Integer id) {
+        CIF cif = cifRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("CIF not found with id: " + id));
 
-
-
+        return cifMapper.toDTO(cif); // ✅ Convert entity to DTO
+    }
 }

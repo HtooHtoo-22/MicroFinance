@@ -6,12 +6,14 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.service.interFace.CIFService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cif")
@@ -47,6 +49,7 @@ public class CIFController {
 
     @PatchMapping("/{id}")
     public ApiResponse<CIFDTO> updateCif(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+        System.out.println("Received Updates: " + updates); // Log incoming data
         CIFDTO updatedCif = cifService.updateCIF(id, updates);
         return ApiResponse.success(HttpStatus.OK, 200, "CIF updated successfully", updatedCif);
     }
@@ -69,7 +72,13 @@ public class CIFController {
         List<CIFDTO> deleteCifs = cifService.getDeleteCIFs();
         return ApiResponse.success(HttpStatus.OK, 200, "Delete CIFs retrieved successfully", deleteCifs);
     }
-
-
+    @GetMapping("/{id}")
+    public ApiResponse<CIFDTO> getCifById(@PathVariable Integer id) {
+        CIFDTO cifDTO = cifService.getCifById(id);
+        if (cifDTO == null) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "CIF not found for id " + id);
+        }
+        return ApiResponse.success(HttpStatus.OK, 200, "CIF found", cifDTO);
+    }
 
 }
