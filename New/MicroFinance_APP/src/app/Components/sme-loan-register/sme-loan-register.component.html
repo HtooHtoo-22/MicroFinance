@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl">
+      <h2 class="text-3xl font-bold mb-8 text-center text-[#00A1FF]">SME Loan Register</h2>
+      <form [formGroup]="smeLoanForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  
+        <!-- Loan Amount and Interest Rate -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="loanAmount" class="block text-sm font-semibold text-gray-700">Loan Amount</label>
+            <input id="loanAmount" formControlName="loanAmount" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+  
+          <div class="space-y-2">
+            <label for="interestRate" class="block text-sm font-semibold text-gray-700">Interest Rate</label>
+            <input id="interestRate" formControlName="interestRate" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+        </div>
+  
+        <!-- Grace Period and Loan Purpose -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="gracePeriod" class="block text-sm font-semibold text-gray-700">Grace Period (Optional)</label>
+            <input id="gracePeriod" formControlName="gracePeriod" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+        </div>
+  
+        <div class="space-y-2">
+          <label for="loanPurpose" class="block text-sm font-semibold text-gray-700">Loan Purpose</label>
+          <textarea id="loanPurpose" formControlName="loanPurpose" rows="3"
+          class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm"></textarea>
+        </div>
+  
+        <!-- Document Fee and Service Charge -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="documentFee" class="block text-sm font-semibold text-gray-700">Document Fee</label>
+            <input id="documentFee" formControlName="documentFee" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+  
+          <div class="space-y-2">
+            <label for="serviceCharge" class="block text-sm font-semibold text-gray-700">Service Charge</label>
+            <input id="serviceCharge" formControlName="serviceCharge" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+        </div>
+  
+        <!-- Duration and Principal -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="duration" class="block text-sm font-semibold text-gray-700">Duration (Months)</label>
+            <input id="duration" formControlName="duration" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+  
+          <div class="space-y-2">
+            <label for="principal" class="block text-sm font-semibold text-gray-700">Principal</label>
+            <input id="principal" formControlName="principal" type="number"
+                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <div class="text-center pt-6">
+          <button type="submit"
+          class="w-full mt-1 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

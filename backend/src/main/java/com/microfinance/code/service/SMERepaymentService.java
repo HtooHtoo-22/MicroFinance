@@ -54,7 +54,7 @@ public class SMERepaymentService {
     }
     @Transactional
     public void processScheduledRepayments(LocalDate today) {
-        List<SMERepaymentSchedule> schedules = repaymentScheduleRepository.findByDueDateOrGracePeriodEndDate(today,today);
+        List<SMERepaymentSchedule> schedules = repaymentScheduleRepository.findByDueDateOrGracePeriodEndDateAndStatus(today,today,RepaymentStatus.NOT_DUE_YET);
 
         if (schedules.isEmpty()) {
             System.out.println("No repayments due today.");
@@ -67,6 +67,13 @@ public class SMERepaymentService {
     }
 
     private void processRepayment(SMERepaymentSchedule schedule) {
+
+        List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(schedule.getSmeLoan().getId());
+        int maxLateDays = calculations.stream()
+                .mapToInt(SMELateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+
         // Get the current account and total balance as BigDecimal
         CurrentAccount currentAccount = schedule.getSmeLoan().getCurrentAccount();
         BigDecimal totalBalance = BigDecimal.valueOf(currentAccount.getTotalBalence()); // Convert to BigDecimal
@@ -85,22 +92,25 @@ public class SMERepaymentService {
             schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(dueAmount));
             schedule.setStatus(RepaymentStatus.PAID); // Mark as fully paid
             schedule.setFullyPaidDate(today);
+            schedule.setInterestAmount(new BigDecimal(0.0));
         } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
             // Not enough balance, but partial payment can be made (without touching the minimum)
             currentAccount.setTotalBalence(currentAccount.getMinAmount()); // Keep the minimum balance intact
             schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(availableBalance));
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount.subtract(availableBalance))); // Remaining amount as OD interest
             schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
-            if(schedule.getGracePeriodEndDate()!=null){
+            if(schedule.getGracePeriodEndDate()!=null && maxLateDays<91){
                 applyLateFee(schedule);
             }
+            schedule.setInterestAmount(new BigDecimal(0.0));
         } else {
             // No available balance, full overdue
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount)); // All remaining amount is OD interest
             schedule.setStatus(RepaymentStatus.FULL_OVERDUE);
-            if(schedule.getGracePeriodEndDate()!=null){
+            if(schedule.getGracePeriodEndDate()!=null && maxLateDays<91){
                 applyLateFee(schedule);
             }
+            schedule.setInterestAmount(new BigDecimal(0.0));
         }
 
         // Save updated data to the database

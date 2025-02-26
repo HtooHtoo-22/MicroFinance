@@ -1,0 +1,54 @@
+<div class="container">
+    <h2>List of CIFs</h2>
+  
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>CIF ID</th>
+          <th>User Name</th>
+          <th>Gender</th>
+          <th>Job</th>
+          <th>Income Amount</th>
+          <th>NRC</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>State</th>
+          <th>Township</th>
+          <th>Address</th>
+          <th>Branch ID</th>
+          <th>User ID</th>
+          <th>Front NRC</th>
+          <th>Back NRC</th>
+          <th>User Photo</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cif of cifs">
+          <td>{{ cif.id }}</td>
+          <td>{{ cif.cifId }}</td>
+          <td>{{ cif.userName }}</td>
+          <td>{{ cif.gender }}</td>
+          <td>{{ cif.job }}</td>
+          <td>{{ cif.incomeAmount }}</td>
+          <td>{{ cif.nrc }}</td>
+          <td>{{ cif.phone }}</td>
+          <td>{{ cif.email }}</td>
+          <td>{{ cif.state }}</td>
+          <td>{{ cif.township }}</td>
+          <td>{{ cif.address }}</td>
+          <td>{{ cif.branchId }}</td>
+          <td>{{ cif.userId }}</td>
+          <td><img [src]="cif.frontNRCUrl" alt="Front NRC" width="50" height="50" /></td>
+          <td><img [src]="cif.backNRCUrl" alt="Back NRC" width="50" height="50" /></td>
+          <td><img [src]="cif.userPhotoURL" alt="User Photo" width="50" height="50" /></td>
+          <td>{{ cif.status }}</td>
+          <td>
+            <a [routerLink]="['/update-cif', cif.id]" class="btn btn-primary">Update</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

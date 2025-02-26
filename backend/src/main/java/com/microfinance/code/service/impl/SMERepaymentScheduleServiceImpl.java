@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleService {
@@ -70,7 +71,27 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             smeRepaymentScheduleRepo.save(schedule);
         }
     }
+    @Override
+    public void editSchedule(SMELoan smeLoan, BigDecimal changedPrincipal) {
+        // Retrieve the schedules that are not yet due
+        List<SMERepaymentSchedule> schedules = smeRepaymentScheduleRepo.findBySmeLoanAndStatus(smeLoan, RepaymentStatus.NOT_DUE_YET);
 
+        // Iterate through the schedules and update the principal and interest
+        for (SMERepaymentSchedule schedule : schedules) {
+            // Update the principal in the schedule
+            schedule.setPrincipal(changedPrincipal);
+            System.out.println("Changed Principal : "+changedPrincipal);
+            // Recalculate the interest based on the new principal
+            BigDecimal interestRate = smeLoan.getInterestRate();
+            BigDecimal newInterest = calculateInterest(changedPrincipal,interestRate,schedule.getDueDate());
+            System.out.println("New interest : "+newInterest);
+            // Update the interest in the schedule
+            schedule.setInterestAmount(newInterest);
+
+            // Save the updated schedule
+            smeRepaymentScheduleRepo.save(schedule);
+        }
+    }
     private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate) {
         // Get number of days in the month
         int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());

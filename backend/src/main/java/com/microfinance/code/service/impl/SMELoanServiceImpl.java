@@ -112,7 +112,25 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Save the SME Loan status update
         smeLoanRepository.save(smeLoan);
     }
+    @Override
+    public void repayPrincipal(Integer smeLoanId, BigDecimal repaidPrincipal) {
+        // Retrieve the SME loan by its ID
+        SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
+                .orElseThrow(() -> new RuntimeException("SME Loan not found"));
 
+        // Subtract the repaid principal from the current principal
+        BigDecimal currentPrincipal = smeLoan.getPrincipal();
+        BigDecimal newPrincipal = currentPrincipal.subtract(repaidPrincipal);
+
+        // Update the principal in the SME loan
+        //smeLoan.setPrincipal(newPrincipal);
+
+        // Call the editSchedule method to adjust the schedules
+        scheduleService.editSchedule(smeLoan, newPrincipal);
+
+        // Save the updated SME loan
+        smeLoanRepository.save(smeLoan);
+    }
     private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
         BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
 

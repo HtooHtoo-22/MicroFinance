@@ -1,0 +1,37 @@
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-center text-gray-800 mb-4">New Transaction</h2>
+  
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+          
+      <!-- Current Account ID -->
+      <div>
+        <label class="block text-sm/6 font-medium text-gray-900">Current Account ID</label>
+        <input type="number" formControlName="currentAccountId"  class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+      </div>
+      
+      <!-- Transaction Type Dropdown -->
+      <div>
+        <label class="block text-sm/6 font-medium text-gray-900">Transaction Type</label>
+        <select formControlName="type" class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+          <option *ngFor="let type of transactionTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+  
+      <!-- Amount Input -->
+      <div>
+        <label class="block text-sm/6 font-medium text-gray-900">Amount</label>
+        <input type="number" formControlName="amount"  class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+        <div *ngIf="transactionForm.get('amount')?.invalid && transactionForm.get('amount')?.touched" class="text-red-500 text-xs">
+          Amount is required and must be greater than 0.
+        </div>
+      </div>
+  
+      <!-- Submit Button -->
+      <button type="submit" 
+      class="w-full mt-2 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+    Submit Transaction
+    </button>
+    </form>
+  </div>
+  

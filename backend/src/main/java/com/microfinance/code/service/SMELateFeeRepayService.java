@@ -98,11 +98,22 @@ public class SMELateFeeRepayService {
 
     private void handlePartialPayment(Integer smeLoanId, List<SMELateFeeCalculation> lateFees, CurrentAccount account,
                                       BigDecimal totalAvailableAmount, SMELateFeeHolding lateFeeHolding) {
+
+        int maxLateDays = lateFees.stream()
+                .mapToInt(SMELateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+
+
         BigDecimal holdAmount = totalAvailableAmount;
+        if(maxLateDays==90){
+            BigDecimal totalBalance = BigDecimal.valueOf(account.getTotalBalence()); // Convert to BigDecimal
+            holdAmount = totalBalance.add(holdAmount); // Add balances
+            account.setTotalBalence(0.0); // Set back as Double if needed
+            accountRepo.save(account);
+        }
         logAmountHeld(holdAmount);
         updateAccountBalance(account, totalAvailableAmount);
-        //BigDecimal princialAmount = lateFeeHolding.getSmeLoan().getPrincipal();
-        //BigDecimal outstandingAmount;
         SMELoan smeLoan = smeLoanRepo.findById(smeLoanId)
                 .orElseThrow(()->new NotFoundException("SME Loan Not Found"));
         incrementLateDaysAndFees(lateFees,smeLoan);

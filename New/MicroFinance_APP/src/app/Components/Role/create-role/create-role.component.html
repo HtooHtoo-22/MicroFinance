@@ -1,0 +1,31 @@
+<div class="max-w-lg mx-auto mt-10 bg-white p-6 shadow-lg rounded-lg">
+  <h2 class="text-3xl font-bold mb-8 text-center text-[#00A1FF]">Create New Role</h2>
+  <form [formGroup]="roleForm" (ngSubmit)="createRole()">
+    <div class="mb-4">
+      <label for="roleName" class="block text-sm/6 font-medium text-gray-900">Role Name:</label>
+      <input
+        type="text"
+        id="roleName"
+        formControlName="roleName"
+        class="w-full px-4 p-1 bg-white border mt-1 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm"
+      />
+    </div>
+
+    <div class="mb-4">
+      <label for="roleDescription" class="block text-sm/6 font-medium text-gray-900">Description:</label>
+      <input
+        type="text"
+        id="roleDescription"
+        formControlName="roleDescription"
+        class="w-full px-4 p-1 bg-white border mt-1 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm"
+      />
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="roleForm.invalid"
+      class="w-full mt-6 p-3 bg-[#00A1FF] text-white font-bold rounded-md hover:bg-[#008BDC] transition">
+      Create Role
+    </button>
+  </form>
+</div>
