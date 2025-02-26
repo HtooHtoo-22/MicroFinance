@@ -39,6 +39,8 @@ public class SMELoanServiceImpl implements SMELoanService {
     private TransactionService transactionService;
     @Autowired
     private SMERepaymentScheduleService scheduleService;
+    @Autowired
+    private TransactionRepository transactionRepository;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -122,11 +124,21 @@ public class SMELoanServiceImpl implements SMELoanService {
         BigDecimal currentPrincipal = smeLoan.getPrincipal();
         BigDecimal newPrincipal = currentPrincipal.subtract(repaidPrincipal);
 
-        // Update the principal in the SME loan
-        //smeLoan.setPrincipal(newPrincipal);
+        // Update the principal in the SME loan (uncomment if needed)
+        // smeLoan.setPrincipal(newPrincipal);
 
-        // Call the editSchedule method to adjust the schedules
+        // Adjust the schedules
         scheduleService.editSchedule(smeLoan, newPrincipal);
+
+        // Retrieve the current account associated with the SME loan
+        CurrentAccount currentAccount = smeLoan.getCurrentAccount();
+
+        // Create and save the transaction
+        Transaction transaction = new Transaction();
+        transaction.setType(transactionType.CR); // Ensure enum matches your transactionType
+        transaction.setAmount(repaidPrincipal);
+        transaction.setCurrentAccountId(currentAccount); // Links to the CurrentAccount
+        transactionRepository.save(transaction);
 
         // Save the updated SME loan
         smeLoanRepository.save(smeLoan);

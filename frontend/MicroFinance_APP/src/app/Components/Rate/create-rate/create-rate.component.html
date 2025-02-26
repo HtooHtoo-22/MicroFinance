@@ -1,0 +1,45 @@
+<form [formGroup]="rateForm" (ngSubmit)="createRate()" class="max-w-2xl w-full mx-auto p-6 bg-white shadow-md rounded-lg border border-gray-300 mt-15">
+  <!-- Centered "Create New Rate" Label -->
+  <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">Create New Rate</h2>
+
+  <div class="space-y-4">
+    <!-- Rate Type -->
+    <div>
+      <label for="rateType" class="block text-sm/6 font-medium text-gray-900">Rate Type</label>
+      <input 
+        type="text" 
+        id="rateType" 
+        formControlName="rateType" 
+        placeholder="Enter rate type"
+        class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+      <div *ngIf="rateForm.get('rateType')?.invalid && rateForm.get('rateType')?.touched" 
+           class="text-red-500 text-xs mt-1">
+        Rate type is required
+      </div>
+    </div>
+
+    <!-- Value -->
+    <div>
+      <label for="value" class="block text-sm/6 font-medium text-gray-900">Value</label>
+      <input 
+        type="number" 
+        id="value" 
+        formControlName="value" 
+        placeholder="Enter value"
+        class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+      <div *ngIf="rateForm.get('value')?.invalid && rateForm.get('value')?.touched" 
+           class="text-red-500 text-xs mt-1">
+        <div *ngIf="rateForm.get('value')?.errors?.['required']">Value is required</div>
+        <div *ngIf="rateForm.get('value')?.errors?.['min']">Value must be greater than or equal to 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button 
+    type="submit" 
+    [disabled]="rateForm.invalid"
+    class="w-full mt-6 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+    Create Rate
+  </button>
+</form>
