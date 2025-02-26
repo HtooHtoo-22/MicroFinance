@@ -92,9 +92,7 @@ public class CIF {
             status = CIFStatus.ACTIVE;
         }
     }
-
-
-    }
+}
 
 
 

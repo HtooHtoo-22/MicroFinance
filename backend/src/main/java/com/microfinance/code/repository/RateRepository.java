@@ -12,6 +12,4 @@ public interface RateRepository extends JpaRepository<Rate, Integer> {
 
     @Query("SELECT r.value FROM Rate r WHERE r.rateType = :rateType")
     Double findValueByRateType(@Param("rateType") String rateType);
-
-
 }

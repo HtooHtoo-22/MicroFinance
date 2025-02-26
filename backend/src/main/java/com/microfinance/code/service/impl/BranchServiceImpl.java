@@ -11,8 +11,10 @@ import com.microfinance.code.model.Branch;
 import com.microfinance.code.model.CollateralType;
 import com.microfinance.code.repository.BranchRepo;
 import com.microfinance.code.service.interFace.BranchService;
+import com.microfinance.code.status.BranchStatus;
 import io.netty.handler.codec.dns.AbstractDnsMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,31 +44,27 @@ public  class BranchServiceImpl implements BranchService {
 
     @Override
     public Branch updateBranch(Integer id, BranchDTO dto) {
-        Optional<Branch> optionalBranch = branchRepo.findById(id);
-        if (!optionalBranch.isPresent()) {
-            return null;
-        }
+        Branch existingBranch = branchRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        Branch branch = optionalBranch.get();
+        // Update fields
+        existingBranch.setCode(dto.getCode());
+        existingBranch.setName(dto.getName());
+        existingBranch.setAddress(dto.getAddress());
+        existingBranch.setState(dto.getState());
+        existingBranch.setTownship(dto.getTownship());
 
-        // Update only non-null fields from DTO to the entity
-        if (dto.getName() != null) {
-            branch.setName(dto.getName());
-        }
-        if (dto.getAddress() != null) {
-            branch.setAddress(dto.getAddress());
-        }
-
-
-        return branchRepo.save(branch);
+        return branchRepo.save(existingBranch);
     }
-
 
     @Override
     public ApiResponse<String> deleteBranch(Integer id) {
-        // Logic to delete branch
-        branchRepo.deleteById(id);
-        return null;
+        try {
+            branchRepo.deleteById(id);
+            return ApiResponse.success(HttpStatus.OK, 200, "Branch deleted successfully", null);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete branch");
+        }
     }
 
     @Override

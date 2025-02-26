@@ -171,6 +171,13 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
         return "CIF-" + branchCode + "-" + userId + "-" + timestamp;
     }
 
+    @Override
+    public CIFDTO getCifById(Integer id) {
+        CIF cif = cifRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("CIF not found with id: " + id));
+
+        return cifMapper.toDTO(cif); // ✅ Convert entity to DTO
+    }
 
 
 }

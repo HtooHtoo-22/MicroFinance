@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "rate")
 public class Rate {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ✅ Ensure ID is auto-generated
     @Column(name = "id")
     private Integer id;
     @Column(name = "rate_type", nullable = false, length = 50)

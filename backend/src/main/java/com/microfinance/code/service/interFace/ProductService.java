@@ -10,11 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductService {
-    public void hello();
     ProductDTO createProduct(ProductDTO productDTO,  MultipartFile Photo) throws IOException;
     List<ProductDTO> getProductsByDealerId(Integer dealerId);
 
-    ProductDTO updateProduct(Integer id, Map<String, Object> updates);
+    ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo);
 
 
     ApiResponse<String> deleteProduct(Integer id);

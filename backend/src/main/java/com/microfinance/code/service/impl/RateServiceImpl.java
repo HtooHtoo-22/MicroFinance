@@ -2,6 +2,7 @@ package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.RateDTO;
 import com.microfinance.code.exception.NotFoundException;
+import com.microfinance.code.mapper.RateMapper; // ✅ Import the mapper
 import com.microfinance.code.model.Rate;
 import com.microfinance.code.repository.RateRepository;
 import com.microfinance.code.service.interFace.RateService;
@@ -17,24 +18,29 @@ public class RateServiceImpl implements RateService {
     @Autowired
     private RateRepository rateRepository;
 
+    @Autowired
+    private RateMapper rateMapper; // ✅ Inject the mapper
+
     @Override
     public List<RateDTO> getAllRates() {
         List<Rate> rates = rateRepository.findAll();
-        return rates.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return rates.stream()
+                .map(rateMapper::toDTO) // ✅ Use the mapper
+                .collect(Collectors.toList());
     }
 
     @Override
     public RateDTO getRateById(Integer id) {
         Rate rate = rateRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Rate not found with id: " + id));
-        return convertToDTO(rate);
+        return rateMapper.toDTO(rate); // ✅ Use the mapper
     }
 
     @Override
     public RateDTO createRate(RateDTO rateDTO) {
-        Rate rate = convertToEntity(rateDTO);
+        Rate rate = rateMapper.toEntity(rateDTO); // ✅ Use the mapper
         Rate savedRate = rateRepository.save(rate);
-        return convertToDTO(savedRate);
+        return rateMapper.toDTO(savedRate); // ✅ Use the mapper
     }
 
     @Override
@@ -42,12 +48,13 @@ public class RateServiceImpl implements RateService {
         Rate rate = rateRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Rate not found with id: " + id));
 
+        // Update fields
         rate.setRateType(rateDTO.getRateType());
         rate.setValue(rateDTO.getValue());
         rate.setStatus(rateDTO.isStatus());
 
         Rate updatedRate = rateRepository.save(rate);
-        return convertToDTO(updatedRate);
+        return rateMapper.toDTO(updatedRate); // ✅ Use the mapper
     }
 
     @Override
@@ -61,22 +68,6 @@ public class RateServiceImpl implements RateService {
         if (rate == null) {
             throw new NotFoundException("Rate not found with type: " + rateType);
         }
-        return convertToDTO(rate);
-    }
-
-    private RateDTO convertToDTO(Rate rate) {
-        RateDTO dto = new RateDTO();
-        dto.setRateType(rate.getRateType());
-        dto.setValue(rate.getValue());
-        dto.setStatus(rate.isStatus());
-        return dto;
-    }
-
-    private Rate convertToEntity(RateDTO dto) {
-        Rate entity = new Rate();
-        entity.setRateType(dto.getRateType());
-        entity.setValue(dto.getValue());
-        entity.setStatus(dto.isStatus());
-        return entity;
+        return rateMapper.toDTO(rate); // ✅ Use the mapper
     }
 }

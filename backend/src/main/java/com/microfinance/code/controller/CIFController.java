@@ -51,6 +51,14 @@ public class CIFController {
         return ApiResponse.success(HttpStatus.OK, 200, "CIF updated successfully", updatedCif);
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<CIFDTO> getCifById(@PathVariable Integer id) {
+        CIFDTO cifDTO = cifService.getCifById(id);
+        if (cifDTO == null) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "CIF not found for id " + id);
+        }
+        return ApiResponse.success(HttpStatus.OK, 200, "CIF found", cifDTO);
+    }
 
     @PatchMapping("/{id}/status")
     public ApiResponse<CIFDTO> updateCIFStatus(@PathVariable Integer id, @RequestParam String status) {

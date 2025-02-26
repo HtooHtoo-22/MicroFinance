@@ -27,9 +27,11 @@ public class SecurityConfig {
             "/api/v1/auth/refresh-token",
             "/api/branches/**",
             "/api/roles/**",
-//            "/api/users/**",
+            "/api/branches/list",
             "/api/users",
             "/ws/**",
+            "/rates",
+            "/api/collateral-types"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -44,7 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/api/cif/**").hasAnyAuthority("ADMIN", "MANAGER") // ✅ Only Admin & Manager
-                                .requestMatchers("/api/users/create").hasAnyAuthority("MANAGER", "ADMIN")
+                                .requestMatchers("/api/users/**").hasAnyAuthority("MANAGER", "ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

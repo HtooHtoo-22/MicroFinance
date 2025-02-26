@@ -32,10 +32,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO dto) {
+        System.out.println("Updating user with ID: " + id);
+        System.out.println("UserDTO: " + dto.toString());
         try {
             UserResponseDTO updatedUser = userService.updateUser(id, dto);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
+            e.printStackTrace(); // Log the exception
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -55,7 +58,12 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Integer id) {
-        ApiResponse<String> response = userService.deleteUser(id);
-        return ResponseEntity.status(response.getHttpStatus()).body(response);
+        try {
+            ApiResponse<String> response = userService.deleteUser(id);
+            return ResponseEntity.status(response.getHttpStatus()).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete user"));
+        }
     }
 }
