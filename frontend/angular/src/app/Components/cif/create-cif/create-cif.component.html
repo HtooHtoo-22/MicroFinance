@@ -1,0 +1,61 @@
+<div class="container">
+
+    <h2>Create CIF</h2>
+    <h2>{{ isEditMode ? 'Update CIF' : 'Create CIF' }}</h2>
+    <form [formGroup]="cifForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+      
+      <label for="cifId">CIF ID</label>
+      <input id="cifId" formControlName="cifId" required />
+  
+      <label for="userName">User Name</label>
+      <input id="userName" formControlName="userName" required />
+  
+      <label for="gender">Gender</label>
+      <select id="gender" formControlName="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+  
+      <label for="job">Job</label>
+      <input id="job" formControlName="job" required />
+  
+      <label for="incomeAmount">Income Amount</label>
+      <input id="incomeAmount" type="number" formControlName="incomeAmount" required />
+  
+      <label for="nrc">NRC</label>
+      <input id="nrc" formControlName="nrc" required />
+  
+      <label for="phone">Phone</label>
+      <input id="phone" formControlName="phone" required />
+  
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" required />
+  
+      <label for="state">State</label>
+      <input id="state" formControlName="state" required />
+  
+      <label for="township">Township</label>
+      <input id="township" formControlName="township" required />
+  
+      <label for="address">Address</label>
+      <input id="address" formControlName="address" required />
+  
+      <label for="branchId">Branch ID</label>
+      <input id="branchId" type="number" formControlName="branchId" required />
+  
+      <label for="userId">User ID</label>
+      <input id="userId" type="number" formControlName="userId" required />
+  
+      <label for="frontNRC">Front NRC Photo</label>
+      <input id="frontNRC" type="file" (change)="onFileSelected($event, 'frontNRC')" required />
+  
+      <label for="backNRC">Back NRC Photo</label>
+      <input id="backNRC" type="file" (change)="onFileSelected($event, 'backNRC')" required />
+  
+      <label for="userPhoto">User Photo</label>
+      <input id="userPhoto" type="file" (change)="onFileSelected($event, 'userPhoto')" required />
+  
+      <button type="submit" [disabled]="cifForm.invalid">Create CIF</button>
+    </form>
+  </div>
+  

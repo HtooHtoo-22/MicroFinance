@@ -14,6 +14,9 @@ import { UpdateBranchComponent } from './Components/branch/update-branch/update-
 import { ListProductComponent } from './Components/product/list-product/list-product.component';
 import { CreateProductComponent } from './Components/product/create-product/create-product.component';
 import { EditProductComponent } from './Components/product/edit-product/edit-product.component';
+import { ListCifComponent } from './Components/cif/list-cif/list-cif.component';
+import { CreateCifComponent } from './Components/cif/create-cif/create-cif.component';
+import { LoginComponent } from './Components/login/login.component';
 
 
 @NgModule({
@@ -24,7 +27,10 @@ import { EditProductComponent } from './Components/product/edit-product/edit-pro
     UpdateBranchComponent,
     ListProductComponent,
     CreateProductComponent,
-    EditProductComponent
+    EditProductComponent,
+    CreateCifComponent,
+    ListCifComponent,
+    LoginComponent
   
   ],
   imports: [
