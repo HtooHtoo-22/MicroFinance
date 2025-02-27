@@ -35,6 +35,9 @@ import { CollateralTypeUpdateComponent } from './Components/collateral_Type/coll
 import { CreateCollateralComponent } from './Components/Collateral/create-collateral/create-collateral.component';
 import { CreateCifComponent } from './Components/CIF/create-cif/create-cif.component';
 import { CifListComponent } from './Components/CIF/cif-list/cif-list.component';
+import { CreateComponent } from './Components/CurrentACC/create/create.component';
+import { ListComponent } from './Components/CurrentACC/list/list.component';
+import { UpdateComponent } from './Components/CurrentACC/update/update.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +69,9 @@ import { CifListComponent } from './Components/CIF/cif-list/cif-list.component';
     CreateCollateralComponent,
     CreateCifComponent,
     CifListComponent,
+    CreateComponent,
+    ListComponent,
+    UpdateComponent,
 
   ],
   imports: [

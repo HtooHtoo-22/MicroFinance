@@ -1,10 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Cif } from '../../../model/CIF';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CifService } from '../../../service/cif.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Branch } from '../../../model/user';
-import { UserService } from '../../../service/user.service';
 import { AuthService } from '../../../service/auth.service';
 
 @Component({
@@ -13,9 +11,8 @@ import { AuthService } from '../../../service/auth.service';
   templateUrl: './create-cif.component.html',
   styleUrl: './create-cif.component.css'
 })
-export class CreateCifComponent {
+export class CreateCifComponent implements OnInit {
   cifForm: FormGroup;
-  branches: Branch[] = [];
   frontNRCFile?: File;
   backNRCFile?: File;
   userPhotoFile?: File;
@@ -25,13 +22,13 @@ export class CreateCifComponent {
   errorMessage = '';
   submitted = false;
 
-  constructor(private fb: FormBuilder,
-              private cifService: CifService,
-              private route: ActivatedRoute,
-              private router: Router,
-              private userService: UserService,
-              private authService: AuthService,
-            ) {
+  constructor(
+    private fb: FormBuilder,
+    private cifService: CifService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService,
+  ) {
     this.cifForm = this.fb.group({
       userName: ['', Validators.required],
       gender: ['', Validators.required],
@@ -43,70 +40,42 @@ export class CreateCifComponent {
       state: ['', Validators.required],
       township: ['', Validators.required],
       address: ['', Validators.required],
-      branchId: [null, Validators.required],
-      code: [''],
-      userId: [this.authService.getCurrentUserId(), Validators.required],
     });
   }
+
   ngOnInit() {
-    this.loadBranches();
-    // Check if we are in edit mode (via the route params)
     this.cifId = Number(this.route.snapshot.paramMap.get('id'));
     if (this.cifId) {
       this.isEditMode = true;
-      this.loadCifData(this.cifId); // Load the CIF data to pre-fill the form
+      this.loadCifData(this.cifId);
     }
   }
 
-  private loadBranches() {
-    this.loading = true;
-    this.errorMessage = '';
-
-    this.userService.getBranches().subscribe({
-      next: (branches) => {
-        this.branches = branches;
-        console.log('Loaded branches:', branches);
-      },
-      error: (error) => {
-        this.errorMessage = 'Failed to load branches: ' + error;
-        console.error('Branch loading error:', error);
-      },
-      complete: () => this.loading = false
-    });
-  }
-
-  // Load CIF data for editing
   loadCifData(id: number) {
     this.cifService.getCifById(id).subscribe({
       next: (cif) => {
-        console.log("Loaded CIF from API:", cif); // Debugging
-        if (!cif) {
-          console.warn("CIF data is undefined! Check API response.");
-        }
-        this.cifForm.patchValue(
-          {
-            cifId: cif.cifId,
-            userName: cif.userName,
-            gender :cif.gender,
-            job:cif.job,
-            incomeAmount:cif.incomeAmount,
-            nrc:cif.nrc,
-            phone:cif.phone,
-            email:cif.email,
-            state:cif.state,
-            township:cif.township,
-            address:cif.address,
-            status: this.cifForm.value.status.toUpperCase(), // Convert to uppercase (e.g., "ACTIVE")
-            branchId:cif.branchId,
-       } );
+        console.log("Loaded CIF from API:", cif);
+        this.cifForm.patchValue({
+          cifId: cif.cifId,
+          userName: cif.userName,
+          gender: cif.gender,
+          job: cif.job,
+          incomeAmount: cif.incomeAmount,
+          nrc: cif.nrc,
+          phone: cif.phone,
+          email: cif.email,
+          state: cif.state,
+          township: cif.township,
+          address: cif.address,
+          status: this.cifForm.value.status.toUpperCase(),
+        });
       },
       error: (err) => {
         console.error("Error loading CIF data", err);
       }
     });
   }
-  
-  // Handle file selection
+
   onFileSelected(event: any, fileType: string) {
     const file = event.target.files[0];
     if (fileType === 'frontNRC') {
@@ -118,26 +87,28 @@ export class CreateCifComponent {
     }
   }
 
-  // Method to create a new CIF
   createCif() {
     if (this.cifForm.valid && this.frontNRCFile && this.backNRCFile && this.userPhotoFile) {
       const userId = this.authService.getCurrentUserId();
-      if (!userId) {
-        console.error('No user ID found. Please log in again.');
+      const branchId = this.authService.getCurrentUserBranchId();
+  
+      if (!userId || !branchId) {
+        console.error('No user ID or branch ID found. Please log in again.');
         this.router.navigate(['/login']);
         return;
       }
-
+  
       const cifData: Cif = {
         ...this.cifForm.value,
-        userId: userId
+        userId: userId,
+        branchId: branchId
       };
-
+  
       this.cifService.createCif(cifData, this.frontNRCFile, this.backNRCFile, this.userPhotoFile).subscribe({
         next: (response) => {
           console.log('CIF created successfully', response);
           this.cifForm.reset();
-          this.router.navigate(['/list-cif']);
+          this.router.navigate(['/dashboard/cif-list']);
         },
         error: (err) => {
           console.error('Error creating CIF:', err);
@@ -154,8 +125,6 @@ export class CreateCifComponent {
     }
   }
 
-  
-  // Method to update an existing CIF
   updateCif() {
     if (this.cifForm.valid) {
       const cifData: Cif = this.cifForm.value;
@@ -163,7 +132,7 @@ export class CreateCifComponent {
         next: (response) => {
           console.log('CIF updated successfully', response);
           this.cifForm.reset();
-          this.router.navigate(['/list-cif']); // Navigate to the list of CIFs after successful update
+          this.router.navigate(['/dashboard/cif-list']);
         },
         error: (err) => {
           console.error('Error updating CIF', err);
@@ -171,16 +140,13 @@ export class CreateCifComponent {
       });
     }
   }
+
   onSubmit() {
+    this.submitted = true;
     if (this.isEditMode) {
-      this.updateCif(); // Call update function if editing
+      this.updateCif();
     } else {
-      this.createCif(); // Call create function if adding new CIF
+      this.createCif();
     }
-  }
-  
-  // Add getter for branchIdControl
-  get branchIdControl() {
-    return this.cifForm.get('branchId');
   }
 }

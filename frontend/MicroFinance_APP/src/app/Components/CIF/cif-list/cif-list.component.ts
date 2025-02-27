@@ -21,7 +21,7 @@ export class CifListComponent implements OnInit {
     this.cifService.listCif().subscribe({
       next: (response) => {
         if (response && response.data) {
-          this.cifs = response.data; // ✅ Extracting the array from response
+          this.cifs = response.data; 
         } else {
           this.cifs = [];
         }

@@ -29,6 +29,9 @@ export class AuthService {
       tap(response => {
         if (response.access_token) {
           this.setTokens(response.access_token, response.refresh_token);
+
+          this.storageService.setItem('userId', response.userId);
+          this.storageService.setItem('branchId', response.branchId);
         }
       })
     );
@@ -36,6 +39,10 @@ export class AuthService {
 
   getCurrentUserId(): string | null {
     return this.storageService.getItem('userId');
+  }
+
+  getCurrentUserBranchId(): string | null {
+    return this.storageService.getItem('branchId');
   }
 
   logout() {

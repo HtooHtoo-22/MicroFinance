@@ -19,5 +19,7 @@ export interface Cif {
     branchId: number;
     code: string;
     userId: number;
+    branchName: string;
+    userFullName: string;
   }
   

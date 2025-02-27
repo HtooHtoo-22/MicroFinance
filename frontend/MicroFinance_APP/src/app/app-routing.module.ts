@@ -63,7 +63,6 @@ const routes: Routes = [
       { path: 'cif-list', component: CifListComponent },
       { path: 'create-cif', component: CreateCifComponent },
 
-
     ]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' }

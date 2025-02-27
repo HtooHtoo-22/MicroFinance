@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CollateralTypeDTO } from '../model/Collateral';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,15 @@ export class CollateralService {
   constructor(private http: HttpClient) { }
 
   getAllCollateralTypes(): Observable<CollateralTypeDTO[]> {
-    return this.http.get<CollateralTypeDTO[]>(`${this.apiUrl}/all`);
+    return this.http.get<{ data: CollateralTypeDTO[] }>(`${this.apiUrl}/all`).pipe(
+      map((response: { data: CollateralTypeDTO[] }) => response.data)
+    );
   }
 
   getCollateralTypeById(id: number): Observable<CollateralTypeDTO> {
-    return this.http.get<CollateralTypeDTO>(`${this.apiUrl}/${id}`);
+    return this.http.get<{ data: CollateralTypeDTO }>(`${this.apiUrl}/${id}`).pipe(
+      map((response: { data: CollateralTypeDTO }) => response.data)
+    );
   }
 
   createCollateralType(collateralType: CollateralTypeDTO): Observable<CollateralTypeDTO> {
