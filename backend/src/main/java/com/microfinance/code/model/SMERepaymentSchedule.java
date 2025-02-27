@@ -60,5 +60,12 @@ public class SMERepaymentSchedule {
         if (status == null){
             status = RepaymentStatus.NOT_DUE_YET;
         }
+        if (totalRepaidAmount == null || totalRepaidAmount.compareTo(BigDecimal.ZERO) == 0) {
+            totalRepaidAmount = BigDecimal.ZERO;
+        }
+        if (interestODAmount == null || interestODAmount.compareTo(BigDecimal.ZERO) == 0) {
+            interestODAmount = BigDecimal.ZERO;
+        }
+
     }
 }

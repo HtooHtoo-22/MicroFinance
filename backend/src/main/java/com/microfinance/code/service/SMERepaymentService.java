@@ -54,7 +54,7 @@ public class SMERepaymentService {
     }
     @Transactional
     public void processScheduledRepayments(LocalDate today) {
-        List<SMERepaymentSchedule> schedules = repaymentScheduleRepository.findByDueDateOrGracePeriodEndDateAndStatus(today,today,RepaymentStatus.NOT_DUE_YET);
+        List<SMERepaymentSchedule> schedules = repaymentScheduleRepository.findByDueDateOrGracePeriodEndDateAndStatusIn(today,today,List.of(RepaymentStatus.NOT_DUE_YET,RepaymentStatus.IN_GRACE_PERIOD));
 
         if (schedules.isEmpty()) {
             System.out.println("No repayments due today.");

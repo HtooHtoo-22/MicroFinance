@@ -14,7 +14,8 @@ import java.util.List;
 @Repository
 public interface SMERepaymentScheduleRepo extends JpaRepository<SMERepaymentSchedule,Integer> {
     List<SMERepaymentSchedule> findByDueDate(LocalDate dueDate);
-    List<SMERepaymentSchedule> findByDueDateOrGracePeriodEndDateAndStatus(LocalDate dueDate , LocalDate gracePeriodEndDate,RepaymentStatus status);
+    List<SMERepaymentSchedule> findByDueDateOrGracePeriodEndDateAndStatusIn(LocalDate dueDate, LocalDate gracePeriodEndDate, List<RepaymentStatus> statuses);
+
     List<SMERepaymentSchedule> findByStatusInAndLateFeeStatus(List<RepaymentStatus> statuses, boolean lateFeeStatus);
 
     @Query("SELECT s FROM SMERepaymentSchedule s WHERE s.smeLoan.id = :smeLoanId AND s.status IN :statuses")

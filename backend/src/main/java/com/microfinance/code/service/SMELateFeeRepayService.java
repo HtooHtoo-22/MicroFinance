@@ -9,11 +9,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SMELateFeeRepayService {
@@ -173,7 +175,8 @@ public class SMELateFeeRepayService {
         return lateFeeHolding;
     }
 
-    private void incrementLateDaysAndFees(List<SMELateFeeCalculation> lateFees, SMELoan smeLoan) {
+    @Transactional
+    public void incrementLateDaysAndFees(List<SMELateFeeCalculation> lateFees, SMELoan smeLoan) {
         if (lateFees.isEmpty()) {
             return;
         }
@@ -188,10 +191,17 @@ public class SMELateFeeRepayService {
         BigDecimal outstandingAmount = calculateOutstandingAmount(smeLoan);
 
         for (SMELateFeeCalculation lateFee : lateFees) {
-            lateFee.setLateDays(lateFee.getLateDays() + 1); // Increment late days
+            // Re-fetch the entity to ensure it exists
+            Optional<SMELateFeeCalculation> existingFeeOpt = lateFeeCalculationRepo.findById(lateFee.getId());
+            if (existingFeeOpt.isEmpty()) {
+                continue; // Skip if the entity was deleted by another transaction
+            }
+
+            SMELateFeeCalculation existingFee = existingFeeOpt.get();
+            existingFee.setLateDays(existingFee.getLateDays() + 1); // Increment late days
 
             BigDecimal additionalFee;
-            if (maxLateDays >= 90 && lateFee.getLateDays() > 90) {
+            if (maxLateDays >= 90 && existingFee.getLateDays() > 90) {
                 // Apply additional fee for late days above 90
                 additionalFee = outstandingAmount.multiply(BigDecimal.valueOf(0.002));
                 System.out.println("Outstanding Amount : " + outstandingAmount);
@@ -199,21 +209,24 @@ public class SMELateFeeRepayService {
 
                 if (maxLateDays == 90) {
                     System.out.println("Hello");
-                    lateFee.setLateFees(additionalFee);
-                    lateFeeCalculationRepo.save(lateFee);
-                    lateFeeCalculationRepo.deleteOldLateFeesBySchedule(lateFee.getSmeRepaymentSchedule().getSmeLoan());
+                    existingFee.setLateFees(additionalFee);
+                    lateFeeCalculationRepo.save(existingFee); // Save first before delete
+                    lateFeeCalculationRepo.deleteOldLateFeesBySchedule(existingFee.getSmeRepaymentSchedule().getSmeLoan());
+
+                    break;
                 } else {
-                    lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
+                    existingFee.setLateFees(existingFee.getLateFees().add(additionalFee));
                 }
+
             } else {
                 // Apply normal additional fee calculation for late days below or equal to 90
-                additionalFee = calculateAdditionalFee(lateFee);
-                lateFee.setLateFees(lateFee.getLateFees().add(additionalFee));
+                additionalFee = calculateAdditionalFee(existingFee);
+                existingFee.setLateFees(existingFee.getLateFees().add(additionalFee));
             }
+
+            lateFeeCalculationRepo.save(existingFee);
         }
     }
-
-
 
     private BigDecimal calculateAdditionalFee(SMELateFeeCalculation lateFee) {
         return lateFee.getSmeRepaymentSchedule().getInterestODAmount()
