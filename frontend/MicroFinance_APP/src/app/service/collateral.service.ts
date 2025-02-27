@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CollateralService {
-  private apiUrl = 'http://localhost:8080/api/collateral-types';
+  private apiUrl = 'http://localhost:8081/api/collateral-types';
 
   constructor(private http: HttpClient) { }
 

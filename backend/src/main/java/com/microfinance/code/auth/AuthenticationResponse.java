@@ -14,4 +14,8 @@ public class AuthenticationResponse {
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
+    @JsonProperty("userId")
+    private String userId;
+    @JsonProperty("branchId")
+    private String branchId;
 }

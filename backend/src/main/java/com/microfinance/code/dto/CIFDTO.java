@@ -25,8 +25,7 @@ public class CIFDTO {
     private String township;
     private String address;
     private String status;
-    private Integer branchId;
-    private String code;
-    private Integer userId;
+    private String branchName;
+    private String userFullName;
 
 }

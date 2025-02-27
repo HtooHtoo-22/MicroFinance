@@ -1,7 +1,6 @@
 package com.microfinance.code.service.impl;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.exception.AlreadyExistException;
 import com.microfinance.code.exception.NotFoundException;
@@ -49,35 +48,40 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
     @Autowired
     private UserRepo userRepo;
 
-    public CIFDTO createCIF(CIFDTO dto, MultipartFile frontNRC, MultipartFile backNRC, MultipartFile userPhoto) throws IOException {
+
+    public CIFDTO createCIF(CIFDTO dto, MultipartFile frontNRC, MultipartFile backNRC, MultipartFile userPhoto, User user) throws IOException {
 
         if (cifRepo.existsByNRC(dto.getNrc())) {
             throw new AlreadyExistException("NRC number already exists: " + dto.getNrc());
         }
 
-
         if (cifRepo.existsByEmail(dto.getEmail())) {
             throw new AlreadyExistException("Email already exists: " + dto.getEmail());
         }
 
-        Branch branch = branchRepo.findById(dto.getBranchId())
-                .orElseThrow(() -> new NotFoundException("Branch not found with ID: " + dto.getBranchId()));
+        Branch branch = user.getBranch(); // Assuming User has a method getBranch()
+        if (branch == null) {
+            throw new NotFoundException("Branch not found for user: " + user.getId());
+        }
 
-        // Fetch User from DB using userId
-        User user = userRepo.findById(dto.getUserId())
-                .orElseThrow(() -> new NotFoundException("User not found with ID: " + dto.getUserId()));
-
-        // Generate CIF ID dynamically
-        String cifId = generateCIFId(branch.getCode(), dto.getUserId());
-
+        String cifId = generateCIFId(branch.getCode());
 
         CIF cif = cifMapper.toEntity(dto);
 
         cif.setCifId(cifId);
-        cif.setFrontNRCUrl(cloudinaryService.uploadFile(frontNRC));
-        cif.setBackNRCUrl(cloudinaryService.uploadFile(backNRC));
-        cif.setUserPhotoURL(cloudinaryService.uploadFile(userPhoto));
+        cif.setBranch(branch);
+        cif.setUser(user);
+        String frontNRCUrl = cloudinaryService.uploadFile(frontNRC);
+        System.out.println("Front NRC URL: " + frontNRCUrl);
+        cif.setFrontNRCUrl(frontNRCUrl);
 
+        String backNRCUrl = cloudinaryService.uploadFile(backNRC);
+        System.out.println("Back NRC URL: " + backNRCUrl);
+        cif.setBackNRCUrl(backNRCUrl);
+
+        String userPhotoURL = cloudinaryService.uploadFile(userPhoto);
+        System.out.println("User Photo URL: " + userPhotoURL);
+        cif.setUserPhotoURL(userPhotoURL);
 
         CIF savedCif = cifRepo.save(cif);
         return cifMapper.toDTO(savedCif);
@@ -108,7 +112,6 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
             }
         }
 
-        // Check if Email is being updated and if it already exists in another CIF
         if (updates.containsKey("email")) {
             String newEmail = updates.get("email").toString();
             if (cifRepo.existsByEmailAndIdNot(newEmail, id)) {
@@ -166,9 +169,9 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
                 .map(cifMapper::toDTO)
                 .collect(Collectors.toList());
     }
-    private String generateCIFId(String branchCode, Integer userId) {
+    private String generateCIFId(String branchCode) {
         String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
-        return "CIF-" + branchCode + "-" + userId + "-" + timestamp;
+        return "CIF-" + branchCode + "-" + timestamp;
     }
 
     @Override

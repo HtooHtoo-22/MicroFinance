@@ -3,9 +3,11 @@ package com.microfinance.code.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.model.User;
 import com.microfinance.code.service.interFace.CIFService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,22 +24,44 @@ public class CIFController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ApiResponse<CIFDTO> createCif(
-            @RequestParam("cif") String cifJson,
+            @RequestParam("userName") String userName,
+            @RequestParam("gender") String gender,
+            @RequestParam("job") String job,
+            @RequestParam("incomeAmount") Double incomeAmount,
+            @RequestParam("nrc") String nrc,
+            @RequestParam("phone") String phone,
+            @RequestParam("email") String email,
+            @RequestParam("state") String state,
+            @RequestParam("township") String township,
+            @RequestParam("address") String address,
             @RequestPart("frontNRC") MultipartFile frontNRC,
             @RequestPart("backNRC") MultipartFile backNRC,
-            @RequestPart("userPhoto") MultipartFile userPhoto) {
+            @RequestPart("userPhoto") MultipartFile userPhoto,
+            Authentication authentication) {
         try {
-            System.out.println("Received JSON: " + cifJson); // Debugging log
-            System.out.println("Front Nrc: " + frontNRC);
-            ObjectMapper objectMapper = new ObjectMapper();
-            CIFDTO cifDTO = objectMapper.readValue(cifJson, CIFDTO.class);
+            User user = (User ) authentication.getPrincipal(); // Assuming User is the principal
 
-            CIFDTO createdCif = cifService.createCIF(cifDTO, frontNRC, backNRC, userPhoto);
+            // Create a new CIFDTO object
+            CIFDTO cifDTO = new CIFDTO();
+            cifDTO.setUserName(userName);
+            cifDTO.setGender(gender);
+            cifDTO.setJob(job);
+            cifDTO.setIncomeAmount(incomeAmount);
+            cifDTO.setNrc(nrc);
+            cifDTO.setPhone(phone);
+            cifDTO.setEmail(email);
+            cifDTO.setState(state);
+            cifDTO.setTownship(township);
+            cifDTO.setAddress(address);
+
+            // Call the service to create the CIF
+            CIFDTO createdCif = cifService.createCIF(cifDTO, frontNRC, backNRC, userPhoto, user);
             return ApiResponse.success(HttpStatus.CREATED, 201, "CIF created successfully", createdCif);
         } catch (IOException e) {
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Invalid JSON format: " + e.getMessage());
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Error processing files: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/list")
     public ApiResponse<List<CIFDTO>> getAllCIFs() {

@@ -28,7 +28,7 @@ export class CreateCollateralTypeComponent implements OnInit {
   onSubmit(): void {
     if (this.collateralTypeForm.valid) {
       this.CollateralType.createCollateralType(this.collateralTypeForm.value).subscribe(
-        () => this.router.navigate(['/list']),
+        () => this.router.navigate(['dashboard/collateral-type/all']),
         error => console.error('Error creating collateral type', error)
       );
     }
