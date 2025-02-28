@@ -61,11 +61,12 @@ public class SMELoanServiceImpl implements SMELoanService {
         smeLoan.setEntryUser(entryUser);
         smeLoan.setApprovedUser(approvedUser);
         smeLoan.setCurrentAccount(currentAcc);
-        Double serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate") / 100;
-        BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
-        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRateBD);
+        BigDecimal serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate").divide(BigDecimal.valueOf(100));
+        //BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
+        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRate);
         smeLoan.setServiceCharge(serviceCharges);
-
+        BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
+        smeLoan.setInterestRate(interestRate);
         BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
 
         // Validate if the collateral is enough for the loan amount
@@ -120,9 +121,11 @@ public class SMELoanServiceImpl implements SMELoanService {
         SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
                 .orElseThrow(() -> new RuntimeException("SME Loan not found"));
 
+
         // Subtract the repaid principal from the current principal
         BigDecimal currentPrincipal = smeLoan.getPrincipal();
         BigDecimal newPrincipal = currentPrincipal.subtract(repaidPrincipal);
+        smeLoan.setPrincipal(newPrincipal);
 
         // Update the principal in the SME loan (uncomment if needed)
         // smeLoan.setPrincipal(newPrincipal);

@@ -33,7 +33,7 @@ public class SMELoanController {
         return ApiResponse.success(HttpStatus.OK,HttpStatus.OK.value(), "Successfully Reject!");
     }
     @PostMapping("/repayPrincipal/{smeLoanId}")
-    public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
+        public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
         smeLoanService.repayPrincipal(loanId,repaidPrincipal);
         return null;
     }

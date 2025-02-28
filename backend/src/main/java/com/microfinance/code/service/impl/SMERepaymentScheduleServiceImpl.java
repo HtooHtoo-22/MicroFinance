@@ -3,6 +3,7 @@ package com.microfinance.code.service.impl;
 import com.microfinance.code.model.SMELoan;
 import com.microfinance.code.model.SMERepaymentSchedule;
 import com.microfinance.code.repository.HolidayRepository;
+import com.microfinance.code.repository.RateRepository;
 import com.microfinance.code.repository.SMELoanRepo;
 import com.microfinance.code.repository.SMERepaymentScheduleRepo;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -23,6 +25,8 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
     private HolidayRepository holidayRepo;
     @Autowired
     private SMELoanRepo smeLoanRepo;
+    @Autowired
+    private RateRepository rateRepo;
     @Override
     public void createSchedule(SMELoan smeLoan) {
         // 1. Validate the input
@@ -38,8 +42,9 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
         for (int term = 1; term <= smeLoan.getDuration(); term++) {
             LocalDate dueDate = firstDueDate.plusMonths(term - 1); // Monthly due date (LocalDate)
             dueDate = adjustForHoliday(dueDate);
+            BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
             // 4. Calculate interest amount
-            BigDecimal interestAmount = calculateInterest(smeLoan.getLoanAmount(), smeLoan.getInterestRate(), dueDate);
+            BigDecimal interestAmount = calculateInterest(smeLoan.getLoanAmount(), interestRate, dueDate,smeLoan.getDuration());
             // 4.5. Calculate grace period end date
             LocalDate gracePeriodEndDate = null;
             if (smeLoan.getGracePeriod()>0) {
@@ -82,8 +87,8 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             schedule.setPrincipal(changedPrincipal);
             System.out.println("Changed Principal : "+changedPrincipal);
             // Recalculate the interest based on the new principal
-            BigDecimal interestRate = smeLoan.getInterestRate();
-            BigDecimal newInterest = calculateInterest(changedPrincipal,interestRate,schedule.getDueDate());
+            BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
+            BigDecimal newInterest = calculateInterest(changedPrincipal,interestRate,schedule.getDueDate(),smeLoan.getDuration());
             System.out.println("New interest : "+newInterest);
             // Update the interest in the schedule
             schedule.setInterestAmount(newInterest);
@@ -92,16 +97,21 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             smeRepaymentScheduleRepo.save(schedule);
         }
     }
-    private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate) {
+    private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate,int duration) {
         // Get number of days in the month
         int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());
-
+        int totalDays = getTotalDaysForLoanDuration(duration, dueDate);
         // Interest Formula: (Loan Amount * Interest Rate / 100) / 365 * Days in Month
         return loanAmount.multiply(interestRate)
                 .divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(365), 6, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(totalDays), 6, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(daysInMonth));
     }
+    private int getTotalDaysForLoanDuration(int durationInMonths, LocalDate startDate) {
+        LocalDate endDate = startDate.plusMonths(durationInMonths);
+        return (int) ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
     private LocalDate adjustForHoliday(LocalDate dueDate) {
         while (isHoliday(dueDate)) {
             dueDate = dueDate.plusDays(1); // Move to the next day if it's a holiday

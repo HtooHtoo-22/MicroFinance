@@ -44,6 +44,8 @@ public class SMELateFeeRepayService {
     @Autowired
     private SMELateFeeHoldingRepo lateFeeHoldingRepo;
 
+    @Autowired
+    private RateRepository rateRepo;
     @Transactional
     @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
     public void processLateFees() {
@@ -203,7 +205,8 @@ public class SMELateFeeRepayService {
             BigDecimal additionalFee;
             if (maxLateDays >= 90 && existingFee.getLateDays() > 90) {
                 // Apply additional fee for late days above 90
-                additionalFee = outstandingAmount.multiply(BigDecimal.valueOf(0.002));
+                BigDecimal lateFeeAfter90Rate  = rateRepo.findValueByRateType("SME Late Fee After 90 Days").divide(BigDecimal.valueOf(100));
+                additionalFee = outstandingAmount.multiply(lateFeeAfter90Rate);
                 System.out.println("Outstanding Amount : " + outstandingAmount);
                 System.out.println("Additional Fee : " + additionalFee);
 
@@ -212,7 +215,6 @@ public class SMELateFeeRepayService {
                     existingFee.setLateFees(additionalFee);
                     lateFeeCalculationRepo.save(existingFee); // Save first before delete
                     lateFeeCalculationRepo.deleteOldLateFeesBySchedule(existingFee.getSmeRepaymentSchedule().getSmeLoan());
-
                     break;
                 } else {
                     existingFee.setLateFees(existingFee.getLateFees().add(additionalFee));
@@ -229,8 +231,10 @@ public class SMELateFeeRepayService {
     }
 
     private BigDecimal calculateAdditionalFee(SMELateFeeCalculation lateFee) {
+
+        BigDecimal lateFeeBefore90Rate  = rateRepo.findValueByRateType("SME Late Fee Before 90 Days").divide(BigDecimal.valueOf(100));
         return lateFee.getSmeRepaymentSchedule().getInterestODAmount()
-                .multiply(new BigDecimal("0.001"))
+                .multiply(lateFeeBefore90Rate)
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
