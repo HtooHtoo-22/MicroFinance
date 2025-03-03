@@ -67,8 +67,11 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             schedule.setTermNumber(term);
             schedule.setDueDate(dueDate); // Use LocalDate for dueDate
             schedule.setInterestAmount(interestAmount);
-            int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());
-            schedule.setTotalDays(daysInMonth);
+            int daysInMonth = dueDate.getMonth().minus(1).length(dueDate.isLeapYear());
+            // If you need to calculate the exact number of days between dates (e.g., from Jan 27 to Feb 27), do the following:
+            LocalDate previousMonthDueDate = dueDate.minusMonths(1);
+            int daysBetween = (int) ChronoUnit.DAYS.between(previousMonthDueDate, dueDate);
+            schedule.setTotalDays(daysBetween);
             schedule.setPrincipal(smeLoan.getPrincipal()); // Update based on your logic
             schedule.setStatus(RepaymentStatus.NOT_DUE_YET);
 

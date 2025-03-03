@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5de57c2c-94d5-4080-a6cf-bef559d5e9b5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/HPLoan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/HPLoan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMERepaymentScheduleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMERepaymentScheduleServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +80,33 @@
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.MicroFinanceApplication">
+    <configuration name="EMICalculator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.microfinance.code.etc.EMICalculator" />
+      <module name="MicroFinance" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microfinance.code.etc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LoanRateCalculator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.microfinance.code.etc.LoanRateCalculator" />
+      <module name="MicroFinance" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microfinance.code.etc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MicroFinanceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="MicroFinance" />
@@ -96,6 +124,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.MicroFinanceApplication" />
+        <item itemvalue="Application.EMICalculator" />
+        <item itemvalue="Application.LoanRateCalculator" />
       </list>
     </recent_temporary>
   </component>
@@ -131,6 +161,10 @@
       <workItem from="1740645513116" duration="1843000" />
       <workItem from="1740711677074" duration="6407000" />
       <workItem from="1740729524762" duration="967000" />
+      <workItem from="1740972522817" duration="6877000" />
+      <workItem from="1740984329056" duration="6244000" />
+      <workItem from="1741008595151" duration="5630000" />
+      <workItem from="1741019485666" duration="2726000" />
     </task>
     <servers />
   </component>
