@@ -39,11 +39,11 @@ public class SMERepaymentService {
         LocalDate today = LocalDate.now();
 
         // Check if today is a holiday
-//        boolean isHoliday = isHoliday(today);
-//        if (isHoliday) {
-//            System.out.println("Today is a holiday. Skipping repayments.");
-//            return;
-//        }
+        boolean isHoliday = isHoliday(today);
+        if (isHoliday) {
+            System.out.println("Today is a holiday. Skipping repayments.");
+            return;
+        }
         System.out.println("___________________________Auto Pay__________________________________________");
         // Proceed if it's not a holiday
         processScheduledRepayments(today);

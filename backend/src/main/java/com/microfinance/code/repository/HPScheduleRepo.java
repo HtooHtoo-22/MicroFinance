@@ -16,7 +16,12 @@ import java.util.List;
 @Repository
 public interface HPScheduleRepo extends JpaRepository<HPSchedule,Integer> {
     List<HPSchedule> findByDueDate(LocalDate dueDate);
-    List<HPSchedule> findByDueDateAndGracePeriodEndDateAndStatusIn(LocalDate dueDate, LocalDate gracePeriodEndDate, List<RepaymentStatus> statuses);
+    @Query("SELECT h FROM HPSchedule h WHERE (h.dueDate = :date OR h.gracePeriodEndDate = :date) AND h.status IN :statuses")
+    List<HPSchedule> findByDueDateOrGracePeriodEndDateAndStatusIn(
+            @Param("date") LocalDate date,
+            @Param("statuses") List<RepaymentStatus> statuses
+    );
+
 
     List<HPSchedule> findByStatusInAndLateFeeStatus(List<RepaymentStatus> statuses, boolean lateFeeStatus);
 
