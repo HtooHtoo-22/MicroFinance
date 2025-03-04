@@ -7,7 +7,10 @@ public enum RepaymentStatus {
     PARTIAL_OVERDUE("Partial Overdue"),
     PAID("Paid"),             // Fully paid
     DEFAULTED("Defaulted"),
-    CANCELED("Canceled");
+    CANCELED("Canceled"),
+    INTEREST_PAID_PRINCIPAL_OD("Interest Paid, Principal OD"),
+    INTEREST_OD_PRINCIPAL_OD("Neither Interest nor Principal Paid"),
+    ALL_PAID("All Paid"); // Interest and principal fully paid off without OD
 
     private final String displayName;
 
