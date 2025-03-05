@@ -98,7 +98,7 @@ public class HPLateFeeRepayService {
             lateFeeHoldingRepo.delete(lateFeeHolding);
         }
 
-       // odService.processODRepayment(totalAvailableAmount, hpLoanId);
+        odService.processODRepayment(totalAvailableAmount, hpLoanId);
     }
     private void handlePartialPayment(Integer hpLoanId, List<HPLateFeeCalculation> lateFees, CurrentAccount account,
                                       BigDecimal totalAvailableAmount, HPLateFeeHolding lateFeeHolding) {
@@ -155,7 +155,7 @@ public class HPLateFeeRepayService {
             BigDecimal additionalFee;
             if (maxLateDays >= 90 && existingFee.getLateDays() > 90) {
                 // Apply additional fee for late days above 90
-                BigDecimal lateFeeAfter90Rate  = rateRepo.findValueByRateType("HP Late Fee After 90 Days").divide(BigDecimal.valueOf(100));
+                BigDecimal lateFeeAfter90Rate  = rateRepo.findValueByRateType("SME Late Fee After 90 Days").divide(BigDecimal.valueOf(100));
                 additionalFee = outstandingAmount.multiply(lateFeeAfter90Rate);
                 System.out.println("Outstanding Amount : " + outstandingAmount);
                 System.out.println("Additional Fee : " + additionalFee);
@@ -273,7 +273,7 @@ public class HPLateFeeRepayService {
     }
     private BigDecimal calculateTotalLateFees(List<HPLateFeeCalculation> lateFees) {
         return lateFees.stream()
-                .map(fee -> fee.getInterestLateFee().add(fee.getPrincipalLateFee())) // Corrected summation
+                .map(HPLateFeeCalculation::getTotalLateFee) // Using method reference for clarity
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     private CurrentAccount fetchCurrentAccountByHpLoanId(Integer hpLoanId) {

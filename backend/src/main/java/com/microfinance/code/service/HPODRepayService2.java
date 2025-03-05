@@ -36,7 +36,7 @@ public class HPODRepayService2 {
     }
 
     @Transactional
-    @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
+    // @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
     public void processODRepayment() {
         System.out.println("++++++++++++++++++++++++++Processing OD Repayment++++++++++++++++++++++++++++++");
         List<HPSchedule> overdueSchedules = scheduleRepo.findByStatusInAndLateFeeStatus(

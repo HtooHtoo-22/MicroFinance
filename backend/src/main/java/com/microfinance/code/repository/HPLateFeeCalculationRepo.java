@@ -2,6 +2,7 @@ package com.microfinance.code.repository;
 
 import com.microfinance.code.model.HPLateFeeCalculation;
 import com.microfinance.code.model.HPLoan;
+import com.microfinance.code.model.HPSchedule;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HPLateFeeCalculationRepo extends JpaRepository<HPLateFeeCalculation,Integer> {
@@ -37,4 +39,6 @@ public interface HPLateFeeCalculationRepo extends JpaRepository<HPLateFeeCalcula
     @Modifying
     @Query("DELETE FROM HPLateFeeCalculation h WHERE h.lateDays < 91 AND h.hpRepaymentSchedule.hpLoan = :hpLoan")
     void deleteOldLateFeesBySchedule(@Param("hpLoan") HPLoan hpLoan);
+
+    Optional<HPLateFeeCalculation> findByHpRepaymentSchedule(HPSchedule schedule);
 }
