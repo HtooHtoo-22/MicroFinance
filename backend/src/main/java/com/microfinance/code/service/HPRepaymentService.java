@@ -174,6 +174,7 @@ public class HPRepaymentService {
                     .multiply(BigDecimal.valueOf(lateDays));
             lateFee.setInterestLateFee(interestLateFee);
             lateFee.setPrincipalLateFee(principalLateFee);
+            lateFee.setTotalLateFee(interestLateFee.add(principalLateFee));
             lateFeeRepo.save(lateFee);
         }
     }

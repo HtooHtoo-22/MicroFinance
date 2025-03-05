@@ -22,7 +22,12 @@ public class HPLateFeeCalculation {
     @Column(name = "principal_late_fee", precision = 19, scale = 2)
     private BigDecimal principalLateFee;
 
+    @Column(name = "total_late_fee", precision = 19, scale = 2)
+    private BigDecimal totalLateFee;
+
     @OneToOne
     @JoinColumn(name = "hp_repayment_schedule_id")
     private HPSchedule hpRepaymentSchedule;
+
+
 }

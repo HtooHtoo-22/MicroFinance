@@ -163,7 +163,7 @@ public class HPODRepayService2 {
         lateFee.setLateDays(1);
         lateFee.setInterestLateFee(interestLateFee);
         lateFee.setPrincipalLateFee(principalLateFee);
-
+        lateFee.setTotalLateFee(interestLateFee.add(principalLateFee));
         lateFeeRepo.save(lateFee);
     }
 
