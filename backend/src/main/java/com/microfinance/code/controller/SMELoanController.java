@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/sme-loans")
 public class SMELoanController {
@@ -29,5 +31,10 @@ public class SMELoanController {
     public ApiResponse rejectLoan(@PathVariable("id")Integer loanId){
         smeLoanService.rejectSMELoan(loanId);
         return ApiResponse.success(HttpStatus.OK,HttpStatus.OK.value(), "Successfully Reject!");
+    }
+    @PostMapping("/repayPrincipal/{smeLoanId}")
+        public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
+        smeLoanService.repayPrincipal(loanId,repaidPrincipal);
+        return null;
     }
 }

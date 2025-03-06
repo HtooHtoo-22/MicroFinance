@@ -16,8 +16,8 @@ export class CifService {
   getCifById(id: number): Observable<Cif> {
     return this.http.get<{ data: Cif }>(`${this.apiUrl}/${id}`).pipe(
       map(response => {
-        console.log("API Response:", response); 
-        return response.data; 
+        console.log("API Response:", response);
+        return response.data;
       })
     );
   }
@@ -40,7 +40,7 @@ export class CifService {
     formData.append('branchName', cifData.branchName);
     formData.append('userFullName', cifData.userFullName);
 
-   
+
 
     return this.http.post(`${this.apiUrl}`, formData);
 }
@@ -48,11 +48,11 @@ export class CifService {
   updateCif(id: number, cifData: Cif): Observable<any> {
     const updatedData = {
       ...cifData,
-      incomeAmount: Number(cifData.incomeAmount) 
+      incomeAmount: Number(cifData.incomeAmount)
     };
     return this.http.patch(`${this.apiUrl}/${id}`, updatedData);
   }
-  
+
   listCif(): Observable<ApiResponse<Cif[]>> {
     const branchId = this.authService.getCurrentUserBranchId();
     const isAdmin = this.authService.getCurrentUserRole() === 'ADMIN'; // Add a method to get the user's role

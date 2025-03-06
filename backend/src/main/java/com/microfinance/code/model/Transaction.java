@@ -1,5 +1,6 @@
 package com.microfinance.code.model;
 
+import com.microfinance.code.status.TransactionStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,7 +32,6 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "currentACC_id", nullable = false)
     private CurrentAccount currentAccountId;
-
 
     @PrePersist
     protected void onCreate() {

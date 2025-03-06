@@ -93,7 +93,7 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
     ConfirmDialogComponent,
     BranchAccountCountComponent,
     BranchUserCountComponent,
-    
+
   ],
   imports: [
     BrowserModule,

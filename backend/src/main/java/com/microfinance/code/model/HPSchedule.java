@@ -6,12 +6,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "sme_repayment_schedule")
-public class SMERepaymentSchedule {
+@Table(name = "hp_schedule")
+public class HPSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -19,17 +18,26 @@ public class SMERepaymentSchedule {
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-    @Column(name = "total_days", nullable = false)
-    private int totalDays;
+    @Column(name = "grace_period_end_date")  // Renamed for clarity
+    private LocalDate gracePeriodEndDate;
 
     @Column(name = "term_number", nullable = false)
     private int termNumber;
 
+    @Column(name = "total_days", nullable = false)
+    private int totalDays;
+
     @Column(name = "principal", length = 45, nullable = false)
     private BigDecimal principal;
 
-    @Column(name = "interest_amount", precision = 12, scale = 2, nullable = false)
+    @Column(name = "interest_amount", nullable = false)
     private BigDecimal interestAmount;
+
+    @Column(name = "installment", precision = 12, scale = 2, nullable = false)
+    private BigDecimal installment;
+
+    @Column(name = "principal_OD_amount", precision = 12, scale = 2, nullable = true)
+    private BigDecimal principalODAmount;
 
     @Column(name = "interest_OD_amount", precision = 12, scale = 2, nullable = true)
     private BigDecimal interestODAmount;
@@ -41,9 +49,6 @@ public class SMERepaymentSchedule {
     @Column(name = "status", length = 45, nullable = false)
     private RepaymentStatus status;
 
-    @Column(name = "grace_period_end_date")  // Renamed for clarity
-    private LocalDate gracePeriodEndDate;
-
     @Column(name = "fully_paid_date")
     @Temporal(TemporalType.DATE)
     private LocalDate fullyPaidDate;
@@ -52,8 +57,8 @@ public class SMERepaymentSchedule {
     private boolean lateFeeStatus;
 
     @ManyToOne
-    @JoinColumn(name = "sme_loan_id",nullable = false)
-    private SMELoan smeLoan;
+    @JoinColumn(name = "hp_loan_id",nullable = false)
+    private HPLoan hpLoan;
 
     @PrePersist
     public void onCreate(){
@@ -66,6 +71,8 @@ public class SMERepaymentSchedule {
         if (interestODAmount == null || interestODAmount.compareTo(BigDecimal.ZERO) == 0) {
             interestODAmount = BigDecimal.ZERO;
         }
-
+        if (principalODAmount == null || principalODAmount.compareTo(BigDecimal.ZERO) == 0) {
+            principalODAmount = BigDecimal.ZERO;
+        }
     }
 }

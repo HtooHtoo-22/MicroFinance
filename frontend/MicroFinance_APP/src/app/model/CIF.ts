@@ -23,4 +23,4 @@ export interface Cif {
     branchName: string;
     userFullName: string;
   }
-  
+

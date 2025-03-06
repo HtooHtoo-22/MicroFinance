@@ -22,7 +22,7 @@ export class AuthService {
   login(username: string, password: string) {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post<any>(
-      `${this.apiUrl}/authenticate`, 
+      `${this.apiUrl}/authenticate`,
       { username, password },
       { headers }
     ).pipe(

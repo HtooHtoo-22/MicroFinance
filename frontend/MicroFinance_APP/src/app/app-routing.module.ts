@@ -40,8 +40,8 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { 
-    path: 'dashboard', 
+  {
+    path: 'dashboard',
     component: DashboardComponent, canActivate: [AuthGuard],
     children: [
       { path: 'home', component: BranchAccountCountComponent },
@@ -74,9 +74,9 @@ const routes: Routes = [
       { path: 'create-cif', component: CreateCifComponent },
       { path: 'updated-cif/:id', component: CreateCifComponent },
       { path: 'create-current-account/:cifId', component: CreateComponent },
-      { path: 'current-acc-list', component: ListComponent }, 
-      { path: 'update-current-account/:id', component: UpdateComponent }, 
-      { path: 'cif-details/:id', component: CustomerDetailComponent }, 
+      { path: 'current-acc-list', component: ListComponent },
+      { path: 'update-current-account/:id', component: UpdateComponent },
+      { path: 'cif-details/:id', component: CustomerDetailComponent },
       { path: 'create-dealer', component: CreateDealerComponent },
       { path: 'dealer-list', component: DealerListComponent }
     ]
