@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="" />
+    <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.bin/autoprefixer" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.bin/autoprefixer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.bin/browserslist" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.bin/browserslist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.bin/nanoid" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.bin/nanoid" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.bin/update-browserslist-db" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.bin/update-browserslist-db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/autoprefixer/bin/autoprefixer" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/autoprefixer/bin/autoprefixer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/browserslist/cli.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/browserslist/cli.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/nanoid/bin/nanoid.cjs" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/nanoid/bin/nanoid.cjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/postcss/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/postcss/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/update-browserslist-db/cli.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/update-browserslist-db/cli.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +47,7 @@
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+        <option name="mavenHome" value="Use Maven wrapper" />
       </MavenGeneralSettings>
     </option>
   </component>
@@ -52,31 +65,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MicroFinanceApplication.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "HtooHtoo",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/user/Documents/springboot/Microfinance/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.1019368",
-    "project.structure.side.proportion": "0.32494006",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
-    "spring.configuration.checksum": "0e017c4f537886ac610bece265d80b59",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MicroFinanceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;HtooHtoo&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/OMK/OJT Batch-17/MicroFinance1/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.1019368&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.32494006&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;0e017c4f537886ac610bece265d80b59&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration name="MicroFinanceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="MicroFinance" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.microfinance.code.MicroFinanceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -86,6 +109,8 @@
       <option name="presentableId" value="Default" />
       <updated>1724680484294</updated>
       <workItem from="1739360741710" duration="10340000" />
+      <workItem from="1741238673126" duration="468000" />
+      <workItem from="1741241769236" duration="332000" />
     </task>
     <servers />
   </component>
