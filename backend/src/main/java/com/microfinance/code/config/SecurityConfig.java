@@ -29,7 +29,11 @@ public class SecurityConfig {
             "/api/users",
             "/ws/**",
             "/rates",
-            "/api/collateral-types/**"
+            "/api/collateral-types/**",
+            "/accounts/currentAcc",
+            "/transactions/list",
+            "/api/dealers/**"
+
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -45,6 +49,10 @@ public class SecurityConfig {
                         req.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/api/cif/**").hasAnyAuthority("ADMIN", "MANAGER") // ✅ Only Admin & Manager
                                 .requestMatchers("/api/users/**").hasAnyAuthority("MANAGER", "ADMIN")
+                                .requestMatchers("/accounts/**").hasAnyAuthority("MANAGER", "ADMIN")
+                                .requestMatchers("/transactions/**").hasAnyAuthority("MANAGER", "ADMIN")
+
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CurrentAccRegisterComponent } from './current-acc-register.component';
+import { CurrentAccountRegisterComponent } from './current-acc-register.component';
 
-describe('CurrentAccRegisterComponent', () => {
-  let component: CurrentAccRegisterComponent;
-  let fixture: ComponentFixture<CurrentAccRegisterComponent>;
+describe('CurrentAccountRegisterComponent', () => {
+  let component: CurrentAccountRegisterComponent;
+  let fixture: ComponentFixture<CurrentAccountRegisterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CurrentAccRegisterComponent]
+      declarations: [CurrentAccountRegisterComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CurrentAccRegisterComponent);
+    fixture = TestBed.createComponent(CurrentAccountRegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

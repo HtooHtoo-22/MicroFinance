@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.model.User;
+import com.microfinance.code.repository.CIFRepo;
 import com.microfinance.code.service.interFace.CIFService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+
 @RequestMapping("/api/cif")
 public class CIFController {
 
     @Autowired
     private CIFService cifService;
+
+    @Autowired
+    private CIFRepo cifRepo;
 
     @PostMapping(consumes = "multipart/form-data")
     public ApiResponse<CIFDTO> createCif(
@@ -62,10 +69,28 @@ public class CIFController {
         }
     }
 
+    @GetMapping("/check-nrc")
+    public ResponseEntity<Boolean> checkNRC(@RequestParam String nrc) {
+        return ResponseEntity.ok(cifRepo.existsByNRC(nrc));
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(cifRepo.existsByEmail(email));
+    }
+
 
     @GetMapping("/list")
-    public ApiResponse<List<CIFDTO>> getAllCIFs() {
-        List<CIFDTO> cifs = cifService.getAllCIFs();
+    public ApiResponse<List<CIFDTO>> getCIFsByBranch(
+            @RequestParam(required = false) Integer branchId,
+            @AuthenticationPrincipal User loggedInUser
+    ) {
+        List<CIFDTO> cifs;
+        if (loggedInUser.getRole().getRoleName().equals("ADMIN")) {
+            cifs = cifService.getAllCIFs(); // Return all CIFs for admin
+        } else {
+            cifs = cifService.getCIFsByBranchId(loggedInUser.getBranch().getId()); // Return CIFs for the user's branch
+        }
         return ApiResponse.success(HttpStatus.OK, 200, "CIFs retrieved successfully", cifs);
     }
 

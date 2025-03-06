@@ -96,6 +96,14 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
     }
 
     @Override
+    public List<CIFDTO> getCIFsByBranchId(Integer branchId) {
+        return cifRepo.findByBranchId(branchId)
+                .stream()
+                .map(cifMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CIFDTO updateCIF(Integer id, Map<String, Object> updates) {
         Optional<CIF> optionalCIF = cifRepo.findById(id);
         if (optionalCIF.isEmpty()) {
@@ -112,6 +120,7 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
             }
         }
 
+
         if (updates.containsKey("email")) {
             String newEmail = updates.get("email").toString();
             if (cifRepo.existsByEmailAndIdNot(newEmail, id)) {
@@ -124,12 +133,33 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
             Field field = getField(CIF.class, key); // Custom method to get the field
             if (field != null) {
                 field.setAccessible(true);
-                ReflectionUtils.setField(field, cif, value);
+                Object convertedValue = convertValue(field, value);
+                ReflectionUtils.setField(field, cif, convertedValue);
             }
         });
 
         CIF updatedCif = cifRepo.save(cif);
         return cifMapper.toDTO(updatedCif);
+    }
+
+    private Object convertValue(Field field, Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        Class<?> fieldType = field.getType();
+
+        // Convert Integer to Double if needed
+        if (fieldType == Double.class && value instanceof Integer) {
+            return ((Integer) value).doubleValue();
+        }
+
+        // Convert other types if needed
+        if (fieldType == Long.class && value instanceof Integer) {
+            return ((Integer) value).longValue();
+        }
+
+        return value; // Otherwise, return as is
     }
 
 

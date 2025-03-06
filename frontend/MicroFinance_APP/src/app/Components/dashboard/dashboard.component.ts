@@ -14,6 +14,8 @@ export class DashboardComponent {
   isBranchDropdownOpen: boolean = false;
   isRateDropdownOpen: boolean = false;
   isCifDropdownOpen: boolean = false;
+  isDealerDropdownOpen: boolean = false;
+  imagePath: string = "image/richcon-logo.png";
   // Add method to toggle dropdown
   toggleRoleDropdown(): void {
     this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
@@ -41,5 +43,9 @@ export class DashboardComponent {
 
   toggleCifDropdown(): void{
     this.isCifDropdownOpen = !this.isCifDropdownOpen;
+  }
+
+  toggleDealerDropdown(): void{
+    this.isDealerDropdownOpen = !this.isDealerDropdownOpen;
   }
 }

@@ -78,6 +78,7 @@ public class AuthenticationService {
                 .refreshToken(refreshToken)
                 .userId(user.getUserId()) // Add userId
                 .branchId(user.getBranch().getId().toString())
+                .role(user.getRole().getId().toString())
                 .build();
     }
 

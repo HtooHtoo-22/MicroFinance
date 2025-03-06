@@ -14,11 +14,11 @@ export class CurrentAccountRegisterComponent {
 
   ngOnInit(): void {
     this.currentAccountForm = this.fb.group({
-      accountId: ['', [Validators.required, Validators.maxLength(30)]],
+      accountId: ['', [ Validators.maxLength(30)]],
       maxAmount: ['', [Validators.required, Validators.min(0)]],
       minAmount: ['', [Validators.required, Validators.min(0)]],
-      createdDate: ['', Validators.required],
-      totalBalence: ['', [Validators.required, Validators.min(0)]],
+      createdDate: [new Date().toISOString().split('T')[0]], // Set today's date as default
+      totalBalence: ['', [ Validators.min(0)]],
       freezeStatus: [false],
       cifId: ['', Validators.required]
     });

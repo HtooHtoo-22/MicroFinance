@@ -11,6 +11,9 @@ import com.microfinance.code.service.interFace.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class CurrentAccountServiceImpl implements CurrentAccountService {
@@ -30,6 +33,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         dto.setAccountId(accountId);
         CurrentAccount account = CurrentAccountMapper.toEntity(dto);
         account.setCif(cif); // Set the CIF entity
+        account.setFreezeStatus(true);
         CurrentAccount savedAccount = currentAccountRepository.save(account);
         return CurrentAccountMapper.toDTO(savedAccount);
     }
@@ -45,4 +49,65 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
         return "ACC-" + cifId + "-" + timestamp;
     }
+
+    @Override
+    public CurrentAccountDTO updateCurrentAccount(String accountId, CurrentAccountDTO dto) {
+        CurrentAccount existingAccount = currentAccountRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new NotFoundException("Account not found with accountId: " + accountId));
+
+        // Update the fields if they are provided
+        if (dto.getMaxAmount() != null) existingAccount.setMaxAmount(dto.getMaxAmount());
+        if (dto.getMinAmount() != null) existingAccount.setMinAmount(dto.getMinAmount());
+        if (dto.getTotalBalance() != null) existingAccount.setTotalBalence(dto.getTotalBalance());
+//        if (dto.isFreezeStatus()) existingAccount.setFreezeStatus(dto.isFreezeStatus());
+
+        // If CIF ID is provided, update the CIF reference
+        if (dto.getCifId() != null) {
+            CIF cif = cifRepo.findById(dto.getCifId())
+                    .orElseThrow(() -> new NotFoundException("CIF not found with id: " + dto.getCifId()));
+            existingAccount.setCif(cif);
+        }
+
+        // Save and return updated entity
+        CurrentAccount updatedAccount = currentAccountRepository.save(existingAccount);
+        return CurrentAccountMapper.toDTO(updatedAccount);
+    }
+
+    @Override
+    public List<CurrentAccountDTO> getAllCurrentACC() {
+        return currentAccountRepository.findAll()
+                .stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // CurrentAccountServiceImpl.java
+    @Override
+    public List<CurrentAccountDTO> getAccountsByCifId(Integer cifId) {
+        System.out.println("Fetching accounts for CIF ID: " + cifId); // Log the CIF ID
+        List<CurrentAccount> accounts = currentAccountRepository.findByCif_Id(cifId);
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found for CIF ID: " + cifId); // Log if no accounts are found
+        }
+        return accounts.stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long getCurrentAccountCountByBranch(Integer branchId) {
+        return currentAccountRepository.countByBranchId(branchId);
+    }
+
+    @Override
+    public CurrentAccountDTO updateFreezeStatus(String accountId, boolean freeze) {
+        CurrentAccount account = currentAccountRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new NotFoundException("Account not found with accountId: " + accountId));
+
+        account.setFreezeStatus(freeze);
+        CurrentAccount updatedAccount = currentAccountRepository.save(account);
+
+        return CurrentAccountMapper.toDTO(updatedAccount);
+    }
+
 }

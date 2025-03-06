@@ -1,37 +1,37 @@
 package com.microfinance.code.service.impl;
 
-import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.dto.DealerDTO;
 import com.microfinance.code.exception.AlreadyExistException;
-import com.microfinance.code.exception.BadRequestException;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.DealerMapper;
-import com.microfinance.code.model.CIF;
-import com.microfinance.code.model.Dealer;
+import com.microfinance.code.model.*;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.DealerRepo;
+import com.microfinance.code.repository.RoleRepository;
+import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.interFace.DealerService;
-import com.microfinance.code.status.CIFStatus;
-import com.microfinance.code.status.DealerStatus;
+import com.microfinance.code.status.DEALER;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.springframework.security.util.FieldUtils.getField;
 
 @Service
 public class DealerServiceImpl implements DealerService {
 
     @Autowired
     private DealerRepo dealerRepo;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private DealerMapper dealerMapper;
@@ -44,22 +44,112 @@ public class DealerServiceImpl implements DealerService {
 
     @Override
     public DealerDTO createDealer(DealerDTO dealerDTO) {
-        // Check if email already exists
-        Optional<Dealer> existingDealer = dealerRepo.findByEmail(dealerDTO.getEmail());
-        if (existingDealer.isPresent()) {
-            throw new AlreadyExistException("Dealer with this email already exists");
+        // Check if email exists
+        if (dealerRepo.findByEmail(dealerDTO.getEmail()).isPresent()) {
+            throw new AlreadyExistException("Dealer email already exists");
         }
 
-        Dealer dealer = dealerMapper.toEntity(dealerDTO);
-        dealer.setRegisterDate(LocalDate.now());
-        dealer.setStatus(DealerStatus.ACTIVE); // Default status ACTIVE
-        dealer.setPassword(passwordEncoder.encode(dealerDTO.getPassword())); // Hash password
+        // Get current account by accountId string
+        CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccountId())
+                .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccountId()));
+        CIF cif = currentAccount.getCif(); // Get CIF from CurrentAccount
+        if (cif == null) {
+                 throw new NotFoundException("CIF not found for current account");
+        }
 
-        dealer.setCurrentAccount(currentAccountRepo.findById(dealerDTO.getCurrentAccountId())
-                .orElseThrow(() -> new NotFoundException("Current Account not found")));
+        Branch branch = cif.getBranch();
+         if (branch == null) {
+                 throw new IllegalStateException("CIF is not associated with any branch");
+         }
+
+
+        Dealer dealer = dealerMapper.toEntity(dealerDTO);
+        dealer.setCurrentAccount(currentAccount);
+        dealer.setRegisterDate(LocalDate.now());
+        dealer.setStatusforDelar(DEALER.PENDING);
 
         Dealer savedDealer = dealerRepo.save(dealer);
+
+        // Create user
+        String cleanBusinessName = dealer.getBusinessName().toLowerCase()
+                .replaceAll("\\s+", "_")
+                .replaceAll("[^a-z0-9_]", "");
+
+        User user = new User();
+        user.setUserId(generateUserId(currentAccount.getAccountId()));
+        user.setName(dealer.getBusinessName());
+        user.setEmail(cleanBusinessName + "@richcoin.com");
+        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
+            throw new AlreadyExistException(" email already exists");
+        }
+        user.setPassword(passwordEncoder.encode("dealer@richcoin"));
+        user.setRole(roleRepository.findByRoleName("DEALER")
+                .orElseThrow(() -> new NotFoundException("DEALER role not found")));
+        user.setActive(false);
+        user.setCreateDate(LocalDateTime.now());
+        user.setBranch(branch);
+
+        userRepo.save(user);
+
         return dealerMapper.toDTO(savedDealer);
+    }
+
+    private String generateUserId(String accountId) {
+        return "DLR-" + accountId + "-" + System.currentTimeMillis();
+    }
+
+// In DealerServiceImpl.java
+
+    @Override
+    @Transactional
+    public DealerDTO approveDealer(Integer dealerId) {
+        Dealer dealer = dealerRepo.findById(dealerId)
+                .orElseThrow(() -> new NotFoundException("Dealer not found"));
+
+        dealer.setStatusforDelar(DEALER.ACTIVE);
+        Dealer updatedDealer = dealerRepo.save(dealer);
+
+        // Generate user email from business name (same as during creation)
+        String userEmail = generateUserEmail(dealer.getBusinessName());
+
+        // Activate user using the correct email
+        userRepo.findByEmail(userEmail)
+                .ifPresent(user -> {
+                    user.setActive(true);
+                    userRepo.save(user);
+                });
+
+        return dealerMapper.toDTO(updatedDealer);
+    }
+
+    @Override
+    @Transactional
+    public DealerDTO rejectDealer(Integer dealerId) {
+        Dealer dealer = dealerRepo.findById(dealerId)
+                .orElseThrow(() -> new NotFoundException("Dealer not found"));
+
+        dealer.setStatusforDelar(DEALER.REJECTED);
+        Dealer updatedDealer = dealerRepo.save(dealer);
+
+        // Generate user email from business name (same as during creation)
+        String userEmail = generateUserEmail(dealer.getBusinessName());
+
+        // Deactivate user using the correct email
+        userRepo.findByEmail(userEmail)
+                .ifPresent(user -> {
+                    user.setActive(false);
+                    userRepo.save(user);
+                });
+
+        return dealerMapper.toDTO(updatedDealer);
+    }
+
+    // Helper method to generate user email (same as in createDealer)
+    private String generateUserEmail(String businessName) {
+        String cleanBusinessName = businessName.toLowerCase()
+                .replaceAll("\\s+", "_")
+                .replaceAll("[^a-z0-9_]", "");
+        return cleanBusinessName + "@richcoin.com";
     }
 
     @Override
@@ -70,71 +160,5 @@ public class DealerServiceImpl implements DealerService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public DealerDTO updateDealer(Integer id, Map<String, Object> updates) {
-        Dealer dealer = dealerRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException("Dealer not found"));
-
-
-        if (updates.containsKey("oldPassword") && updates.containsKey("newPassword")) {
-            String oldPassword = updates.get("oldPassword").toString();
-            String newPassword = updates.get("newPassword").toString();
-
-
-            if (!passwordEncoder.matches(oldPassword, dealer.getPassword())) {
-                throw new BadRequestException("Old password is incorrect!");
-            }
-
-
-            dealer.setPassword(passwordEncoder.encode(newPassword));
-
-
-            updates.remove("oldPassword");
-            updates.remove("newPassword");
-        }
-
-
-        updates.forEach((key, value) -> {
-            Field field = getField(Dealer.class, key);
-            if (field != null) {
-                field.setAccessible(true);
-                ReflectionUtils.setField(field, dealer, value);
-            }
-        });
-
-
-
-        Dealer updatedDealer = dealerRepo.save(dealer);
-        return dealerMapper.toDTO(updatedDealer);
-    }
-
-    @Override
-    public DealerDTO updateDealerStatus(Integer id, String status) {
-        Dealer dealer = dealerRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException("Dealer not found with id: " + id));
-
-        // Use the safe enum conversion method
-        dealer.setStatus(DealerStatus.fromString(status));
-
-        dealerRepo.save(dealer);
-        return dealerMapper.toDTO(dealer);
-    }
-
-
-    @Override
-    public List<DealerDTO> getActiveDealers() {
-        List<Dealer> activeDealers = dealerRepo.findByStatus(DealerStatus.ACTIVE.ACTIVE);
-        return activeDealers.stream()
-                .map(dealerMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DealerDTO> getDeleteDealers() {
-        List<Dealer> deleteDealers = dealerRepo.findByStatus(DealerStatus.ACTIVE.STOP);
-        return deleteDealers.stream()
-                .map(dealerMapper::toDTO)
-                .collect(Collectors.toList());
-    }
 
 }

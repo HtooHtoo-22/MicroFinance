@@ -1,0 +1,20 @@
+<div class="p-6 bg-white rounded-lg shadow-lg">
+    <p class="text-lg font-semibold text-gray-900">{{ data.message }}</p>
+  
+    <div *ngIf="data.accountId">
+      <p><strong>Account ID:</strong> {{ data.accountId }}</p>
+    </div>
+    
+    <div *ngIf="data.userName">
+      <p><strong>User Name:</strong> {{ data.userName }}</p>
+    </div>
+    
+    <div *ngIf="data.totalBalance">
+      <p><strong>Total Balance:</strong> {{ data.totalBalance }}</p>
+    </div>
+    <div class="flex justify-end space-x-4 mt-6">
+      <button (click)="cancel()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancel</button>
+      <button (click)="confirm()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Yes</button>
+    </div>
+  </div>
+  

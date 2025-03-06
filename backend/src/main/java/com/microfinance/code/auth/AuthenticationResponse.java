@@ -18,4 +18,6 @@ public class AuthenticationResponse {
     private String userId;
     @JsonProperty("branchId")
     private String branchId;
+    @JsonProperty("role")
+    private String role;
 }

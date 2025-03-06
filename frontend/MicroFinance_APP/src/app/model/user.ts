@@ -1,5 +1,6 @@
 // interfaces/user.ts
 export interface UserDTO {
+    id?: number;
     name: string;
     active: boolean;
     branchId: number;
@@ -18,6 +19,7 @@ export interface UserDTO {
   }
   
   export interface UserResponseDTO {
+    active: any;
     id: number;
     userId: string;
     name: string;

@@ -66,4 +66,9 @@ public class UserController {
                     .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete user"));
         }
     }
+
+    @GetMapping("/active/count/{branchId}")
+    public Long getActiveUserCountByBranch(@PathVariable Integer branchId) {
+        return userService.getActiveUserCountByBranch(branchId);
+    }
 }

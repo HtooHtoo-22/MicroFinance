@@ -16,4 +16,5 @@ public interface CIFService {
      List<CIFDTO> getActiveCIFs();
      List<CIFDTO> getDeleteCIFs();
     CIFDTO getCifById(Integer id);
+     List<CIFDTO> getCIFsByBranchId(Integer id);
 }

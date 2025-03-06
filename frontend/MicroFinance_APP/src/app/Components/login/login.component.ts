@@ -14,7 +14,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   errorMessage = '';
-
+  imagePath: string = "image/richcon-logo.png";
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,

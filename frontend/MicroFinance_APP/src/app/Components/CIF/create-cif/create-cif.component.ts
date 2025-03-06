@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Cif } from '../../../model/CIF';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CifService } from '../../../service/cif.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../service/auth.service';
+import { debounceTime, map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-create-cif',
@@ -16,11 +17,16 @@ export class CreateCifComponent implements OnInit {
   frontNRCFile?: File;
   backNRCFile?: File;
   userPhotoFile?: File;
+  id?: number;
   cifId?: number;
   isEditMode = false;
   loading = false;
   errorMessage = '';
   submitted = false;
+  showSuccessModal = false;
+  showAlert = false;
+  alertType = '';
+  alertMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -34,20 +40,41 @@ export class CreateCifComponent implements OnInit {
       gender: ['', Validators.required],
       job: ['', Validators.required],
       incomeAmount: [null, [Validators.required, Validators.min(0)]],
-      nrc: ['', Validators.required],
+      nrc: ['', Validators.required, this.isEditMode ? [] : [this.nrcExistsValidator()]], // Only apply validator in create mode
+    email: ['', [Validators.required, Validators.email], this.isEditMode ? [] : [this.emailExistsValidator()]],
       phone: ['+95 ', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
       state: ['', Validators.required],
       township: ['', Validators.required],
       address: ['', Validators.required],
     });
   }
 
+  nrcExistsValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      return this.cifService.checkNRC(control.value).pipe(
+        debounceTime(500), // Delay validation to prevent instant trigger
+      take(1),
+      map(exists => (exists ? { nrcExists: true } : null))
+      );
+    };
+  }
+
+    // Async Validator for Email
+    emailExistsValidator(): AsyncValidatorFn {
+      return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+        return this.cifService.checkEmail(control.value).pipe(
+          debounceTime(500), // Delay validation to prevent instant trigger
+        take(1),
+        map(exists => (exists ? { emailExists: true } : null))
+        );
+      };
+    }
+
   ngOnInit() {
-    this.cifId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.cifId) {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.id) {
       this.isEditMode = true;
-      this.loadCifData(this.cifId);
+      this.loadCifData(this.id);
     }
   }
 
@@ -67,8 +94,13 @@ export class CreateCifComponent implements OnInit {
           state: cif.state,
           township: cif.township,
           address: cif.address,
-          status: this.cifForm.value.status.toUpperCase(),
+          status: cif.status.toUpperCase(),
         });
+
+        this.cifForm.get('nrc')?.clearAsyncValidators();
+        this.cifForm.get('email')?.clearAsyncValidators();
+        this.cifForm.get('nrc')?.updateValueAndValidity();
+        this.cifForm.get('email')?.updateValueAndValidity();
       },
       error: (err) => {
         console.error("Error loading CIF data", err);
@@ -128,18 +160,28 @@ export class CreateCifComponent implements OnInit {
   updateCif() {
     if (this.cifForm.valid) {
       const cifData: Cif = this.cifForm.value;
-      this.cifService.updateCif(this.cifId!, cifData).subscribe({
+      this.cifService.updateCif(this.id!, cifData).subscribe({
         next: (response) => {
           console.log('CIF updated successfully', response);
-          this.cifForm.reset();
-          this.router.navigate(['/dashboard/cif-list']);
+          this.alertType = 'success';
+          this.alertMessage = 'CIF record updated successfully!';
+          this.showSuccessModal = true;
         },
         error: (err) => {
-          console.error('Error updating CIF', err);
-        }
+          console.error('Error creating CIF:', err);
+          if (err.error?.message.includes("Email already exists")) {
+            this.alertType = 'error';
+            this.alertMessage = 'Email already exists. Please use a different email.';
+            this.showAlert = true;
+          } else {
+            this.alertType = 'error';
+            this.alertMessage = 'Error creating CIF record.';
+            this.showAlert = true;
+          }}
       });
     }
   }
+
 
   onSubmit() {
     this.submitted = true;
@@ -149,4 +191,10 @@ export class CreateCifComponent implements OnInit {
       this.createCif();
     }
   }
+
+  closeModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/dashboard/cif-list']);
+  }
+  
 }

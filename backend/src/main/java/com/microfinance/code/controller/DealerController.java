@@ -24,37 +24,21 @@ public class DealerController {
         return ApiResponse.success(HttpStatus.CREATED, 201, "Dealer created successfully", savedDealer);
     }
 
-    @GetMapping
+    @PutMapping("/{dealerId}/approve")
+    public ApiResponse<DealerDTO> approveDealer(@PathVariable Integer dealerId) {
+        DealerDTO updatedDealer = dealerService.approveDealer(dealerId);
+        return ApiResponse.success(HttpStatus.OK, 200, "Dealer approved", updatedDealer);
+    }
+
+    @PutMapping("/{dealerId}/reject")
+    public ApiResponse<DealerDTO> rejectDealer(@PathVariable Integer dealerId) {
+        DealerDTO updatedDealer = dealerService.rejectDealer(dealerId);
+        return ApiResponse.success(HttpStatus.OK, 200, "Dealer rejected", updatedDealer);
+    }
+
+    @GetMapping("/list")
     public ApiResponse<List<DealerDTO>> getAllDealers() {
         List<DealerDTO> dealers = dealerService.getAllDealers();
         return ApiResponse.success(HttpStatus.OK, 200, "Dealers retrieved successfully", dealers);
     }
-
-    @PatchMapping("/{id}")  // Use PATCH for partial updates
-    public ApiResponse<DealerDTO> updateDealer(
-            @PathVariable Integer id,
-            @RequestBody Map<String, Object> updates) {
-
-        DealerDTO updatedDealer = dealerService.updateDealer(id, updates);
-        return ApiResponse.success(HttpStatus.OK, 200, "Dealer updated successfully", updatedDealer);
-    }
-
-    @PatchMapping("/{id}/status")
-    public ApiResponse<DealerDTO> updateDealerStatus(@PathVariable Integer id, @RequestParam String status) {
-        DealerDTO updatedDealer = dealerService.updateDealerStatus(id, status);
-        return ApiResponse.success(HttpStatus.OK, 200, "Dealer status updated successfully", updatedDealer);
-    }
-
-    @GetMapping("/active")
-    public ApiResponse<List<DealerDTO>> getActiveDealers() {
-        List<DealerDTO> activeDealers = dealerService.getActiveDealers();
-        return ApiResponse.success(HttpStatus.OK, 200, "Active Dealer retrieved successfully", activeDealers);
-    }
-
-    @GetMapping("/stop")
-    public ApiResponse<List<DealerDTO>> getDeleteDealers() {
-        List<DealerDTO> stopDalers = dealerService.getDeleteDealers();
-        return ApiResponse.success(HttpStatus.OK, 200, "Stopping Dealer retrieved successfully", stopDalers);
-    }
-
 }

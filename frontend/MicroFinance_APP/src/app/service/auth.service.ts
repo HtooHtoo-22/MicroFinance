@@ -30,12 +30,14 @@ export class AuthService {
         if (response.access_token) {
           this.setTokens(response.access_token, response.refresh_token);
 
+          // Ensure these lines are executed
           this.storageService.setItem('userId', response.userId);
           this.storageService.setItem('branchId', response.branchId);
+          this.storageService.setItem('role', response.role); // This should set the role
         }
       })
     );
-  }
+}
 
   getCurrentUserId(): string | null {
     return this.storageService.getItem('userId');
@@ -44,6 +46,10 @@ export class AuthService {
   getCurrentUserBranchId(): string | null {
     return this.storageService.getItem('branchId');
   }
+
+  getCurrentUserRole(): string | null {
+    return this.storageService.getItem('role'); // Ensure this matches the key used in setItem
+}
 
   logout() {
     this.storageService.removeItem('access_token');

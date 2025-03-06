@@ -1,4 +1,5 @@
 export interface Cif {
+    data: Cif;
     id?: number;
     cifId: string;
     userName: string;

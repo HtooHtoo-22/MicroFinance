@@ -76,47 +76,47 @@ export class UserService {
     return throwError(() => errorMessage);
   }
 
-// Update the getUsers() method to handle empty arrays properly
-getUsers(): Observable<UserResponseDTO[]> {
-  return this.http.get<ApiResponse<UserResponseDTO[]>>(`${this.apiUrl}/users`)
-    .pipe(
-      map(response => {
-        if (!response.data) {
-          return []; // Return empty array instead of throwing error
-        }
-        return response.data;
-      }),
-      catchError(this.handleError)
-    );
-}
+  getUser(id: number): Observable<UserResponseDTO> {
+    return this.http.get<ApiResponse<UserResponseDTO>>(`${this.apiUrl}/users/${id}`)
+      .pipe(
+        map(response => {
+          console.log('Raw API Response:', response); // Log the raw response
+          return response.data ?? response;  // Handle cases where "data" may not exist
+        }),
+        catchError(this.handleError)
+      );
+  }
+  
+  
 
-updateUser(id: number, user: UserDTO): Observable<ApiResponse<UserResponseDTO>> {
-  return this.http.put<ApiResponse<UserResponseDTO>>(`${this.apiUrl}/users/${id}`, user)
-    .pipe(
-      catchError(this.handleError)
-    );
-}
+  updateUser(id: number, user: UserDTO): Observable<ApiResponse<UserResponseDTO>> {
+    return this.http.put<ApiResponse<UserResponseDTO>>(`${this.apiUrl}/users/${id}`, user)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 
+  deleteUser(userId: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/users/${userId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  getUsers(): Observable<UserResponseDTO[]> {
+    return this.http.get<ApiResponse<UserResponseDTO[]>>(`${this.apiUrl}/users`)
+      .pipe(
+        map(response => {
+          if (!response.data) {
+            return []; // Return empty array instead of throwing error
+          }
+          return response.data;
+        }),
+        catchError(this.handleError)
+      );
+  }
 
-getUser(id: number): Observable<UserResponseDTO> {
-  return this.http.get<ApiResponse<UserResponseDTO>>(`${this.apiUrl}/users/${id}`)
-    .pipe(
-      map(response => {
-        if (!response.data) {
-          throw new Error('User not found');
-        }
-        return response.data;
-      }),
-      catchError(this.handleError)
-    );
-}
-
-
-deleteUser(userId: string): Observable<ApiResponse<void>> {
-  return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/users/${userId}`)
-    .pipe(
-      catchError(this.handleError)
-    );
-}
-
+  getActiveUserCount(branchId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/users/active/count/${branchId}`);
+  }
+  
 }

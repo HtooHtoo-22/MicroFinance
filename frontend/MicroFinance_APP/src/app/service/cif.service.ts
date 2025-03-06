@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Cif } from '../model/CIF';
+import { AuthService } from './auth.service';
+import { ApiResponse } from '../model/Apirespon';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,7 @@ import { Cif } from '../model/CIF';
 export class CifService {
   private apiUrl = 'http://localhost:8081/api/cif';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getCifById(id: number): Observable<Cif> {
     return this.http.get<{ data: Cif }>(`${this.apiUrl}/${id}`).pipe(
@@ -19,7 +21,6 @@ export class CifService {
       })
     );
   }
-  
 
   createCif(cifData: Cif, frontNRC: File, backNRC: File, userPhoto: File): Observable<any> {
     const formData = new FormData();
@@ -52,7 +53,22 @@ export class CifService {
     return this.http.patch(`${this.apiUrl}/${id}`, updatedData);
   }
   
-  listCif(): Observable<{ data: Cif[] }> {
-    return this.http.get<{ data: Cif[] }>(`${this.apiUrl}/list`);
+  listCif(): Observable<ApiResponse<Cif[]>> {
+    const branchId = this.authService.getCurrentUserBranchId();
+    const isAdmin = this.authService.getCurrentUserRole() === 'ADMIN'; // Add a method to get the user's role
+
+    if (isAdmin) {
+      return this.http.get<ApiResponse<Cif[]>>(`${this.apiUrl}/list`);
+    } else {
+      return this.http.get<ApiResponse<Cif[]>>(`${this.apiUrl}/list?branchId=${branchId}`);
+    }
+  }
+
+  checkNRC(nrc: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-nrc?nrc=${nrc}`);
+  }
+
+  checkEmail(email: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-email?email=${email}`);
   }
 }

@@ -13,7 +13,8 @@
 
     <!-- Sidebar -->
     <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg">
-      <h4 class="text-[#00A1FF] text-1.5xl font-bold mb-8">Material-4</h4>
+      <img [src]="imagePath" class="w-34 h-16 object-contain  mb-6"> <!-- Enhanced logo styling -->
+      
       <ul class="space-y-4 text-gray-900 text-sm font-semibold">
         <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
           <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
@@ -41,7 +42,7 @@
             </li>
             <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
               <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5">
-              <a [routerLink]="['current-acc-list']" routerLinkActive="text-[#00A1FF]">Account List</a>
+              <a [routerLink]="['/dashboard/current-acc-list']" routerLinkActive="text-[#00A1FF]">Account List</a>
             </li>
             <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
               <img src="https://cdn0.iconfinder.com/data/icons/marketplace-3/32/Marketplace-20-512.png" class="w-5 h-5">
@@ -206,6 +207,30 @@
                     <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
                       <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
                       <a [routerLink]="['cif-list']" routerLinkActive="text-[#00A1FF]">Rate List</a>
+                    </li>
+                  </ul>
+                </li>
+
+
+                <li>
+                  <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer"
+                       (click)="toggleDealerDropdown()">
+                    <img src="https://cdn4.iconfinder.com/data/icons/top-search-6/128/_work-_working_computer_user_freelancer_internet_user_office_work_online_employee-1024.png" class="w-6 h-6">
+                    <span>Dealer Management</span>
+                    <img [class.rotate-180]="isDealerDropdownOpen" 
+                         src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" 
+                         class="w-4 h-4 ml-auto transition-transform duration-200">
+                  </div>
+                  
+                  <!-- Dropdown menu -->
+                  <ul *ngIf="isDealerDropdownOpen" class="ml-7 mt-2 space-y-2">
+                    <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+                      <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
+                      <a [routerLink]="['create-dealer']" routerLinkActive="text-[#00A1FF]">Create Dealer</a>
+                    </li>
+                    <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+                      <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
+                        <a [routerLink]="['dealer-list']" routerLinkActive="text-[#00A1FF]">Dealer List</a>
                     </li>
                   </ul>
                 </li>

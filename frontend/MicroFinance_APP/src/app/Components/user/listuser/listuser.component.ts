@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../service/user.service';
 import { UserResponseDTO } from '../../../model/user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listuser',
@@ -18,7 +19,7 @@ export class ListuserComponent implements OnInit {
   totalUsers: number = 0;
   totalPages: number = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -28,20 +29,19 @@ export class ListuserComponent implements OnInit {
     this.loading = true;
     this.errorMessage = null;
     
-    this.userService.getUsers()
-      .pipe(
-        finalize(() => this.loading = false)
-      )
-      .subscribe({
-        next: (users) => {
-          this.users = users;
-          this.totalUsers = users.length;
-          this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
-        },
-        error: (err) => {
-          this.errorMessage = err.message || 'Failed to load users. Please try again later.';
-        }
-      });
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.totalUsers = users.length;
+        this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Failed to load users. Please try again later.';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   deleteUser(userId: string): void {
@@ -64,6 +64,10 @@ export class ListuserComponent implements OnInit {
           }
         });
     }
+  }
+
+  editUser (id: number): void {
+    this.router.navigate([`/dashboard/edit-user/${id}`]); // Ensure this route matches your routing configuration
   }
 
 // Add these methods

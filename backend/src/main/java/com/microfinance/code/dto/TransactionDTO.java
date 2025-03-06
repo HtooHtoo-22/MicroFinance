@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TransactionDTO {
+    private Integer id;
     private transactionType type;
     private BigDecimal amount;
     private LocalDateTime date;

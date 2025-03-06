@@ -2,8 +2,6 @@ package com.microfinance.code.mapper;
 
 import com.microfinance.code.dto.DealerDTO;
 import com.microfinance.code.model.Dealer;
-import com.microfinance.code.model.CurrentAccount;
-import com.microfinance.code.status.DealerStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,11 +13,12 @@ public class DealerMapper {
         dealer.setAddress(dto.getAddress());
         dealer.setPhone(dto.getPhone());
         dealer.setEmail(dto.getEmail());
-        dealer.setPassword(dto.getPassword());
+        dealer.setCompanyValue(dto.getCompanyValue());
+//        dealer.setPassword(dto.getPassword());
 
-        CurrentAccount account = new CurrentAccount();
-        account.setId(dto.getCurrentAccountId());
-        dealer.setCurrentAccount(account);
+//        CurrentAccount account = new CurrentAccount();
+//        account.setId(Integer.valueOf(dto.getCurrentAccountId()));
+//        dealer.setCurrentAccount(account);
 
         return dealer;
     }
@@ -31,8 +30,10 @@ public class DealerMapper {
         dto.setAddress(dealer.getAddress());
         dto.setPhone(dealer.getPhone());
         dto.setEmail(dealer.getEmail());
-        dto.setStatus(dealer.getStatus().toString());
-        dto.setCurrentAccountId(dealer.getCurrentAccount().getId());
+        dto.setCurrentAccountId(dealer.getCurrentAccount().getAccountId()); // Use accountId string
+        dto.setCompanyValue(dealer.getCompanyValue());
+        dto.setRegisterDate(dealer.getRegisterDate());
+        dto.setStatus(dealer.getStatusforDelar().toString());
         return dto;
     }
 }

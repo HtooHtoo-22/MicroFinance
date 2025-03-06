@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(passwordEncoder.encode(generatedPassword));
         System.out.println("Encoded Password: " + user.getPassword());
+        user.setActive(true);
         User savedUser = userRepo.save(user);
         return userMapper.toResponseDTO(savedUser);
     }
@@ -129,4 +130,11 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepo.findAll();
         return users.stream().map(userMapper::toResponseDTO).collect(Collectors.toList());
     }
+
+    @Override
+    public Long getActiveUserCountByBranch(Integer branchId) {
+        return userRepo.countActiveUsersByBranch(branchId);
+    }
+
+
 }

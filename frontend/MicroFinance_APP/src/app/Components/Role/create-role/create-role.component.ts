@@ -12,7 +12,7 @@ import { Role } from '../../../model/Role';
 })
 export class CreateRoleComponent {
   roleForm: FormGroup;
-
+  showSuccessModal: boolean = false;
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
@@ -24,13 +24,16 @@ export class CreateRoleComponent {
     });
   }
 
+  
   createRole() {
     if (this.roleForm.valid) {
       const role: Role = this.roleForm.value;
       this.roleService.createRole(role).subscribe({
         next: () => {
-          alert('Role created successfully');
-          this.router.navigate(['/list-role']);
+          this.showSuccessModal = true;
+        
+          this.roleForm.reset();  // Reset the form fields
+          this.router.navigate(['/list-role']); // Navigate to the role list page
         },
         error: (error) => {
           console.error('Error creating role:', error);
@@ -38,5 +41,10 @@ export class CreateRoleComponent {
         }
       });
     }
+  }
+
+  closeModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/dashboard/collateral-type-list']);
   }
 }

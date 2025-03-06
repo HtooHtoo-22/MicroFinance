@@ -52,6 +52,7 @@ public class CIFMapper {
 
         return dto;
     }
+
     public CIF toEntity(CIFDTO dto) {
         if (dto == null) {
             return null;

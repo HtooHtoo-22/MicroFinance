@@ -1,7 +1,8 @@
+// src/app/model/Transaction.ts
 export enum TransactionType {
-    DR = 'Debit',
-    CR = 'Credit'
-  }
+  DR = 'DR', // Debit
+  CR = 'CR'  // Credit
+}
   
   export interface Transaction {
     id?: number;

@@ -28,6 +28,14 @@ import { CollateralTypeUpdateComponent } from './Components/collateral_Type/coll
 import { CreateCollateralComponent } from './Components/Collateral/create-collateral/create-collateral.component';
 import { CifListComponent } from './Components/CIF/cif-list/cif-list.component';
 import { CreateCifComponent } from './Components/CIF/create-cif/create-cif.component';
+import { CreateComponent,  } from './Components/CurrentACC/create/create.component';
+import { UpdateComponent } from './Components/CurrentACC/update/update.component';
+import { ListComponent } from './Components/CurrentACC/list/list.component';
+import { CustomerDetailComponent } from './Components/Account/customer-detail/customer-detail.component';
+import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
+import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
+import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
 
 
 const routes: Routes = [
@@ -36,9 +44,11 @@ const routes: Routes = [
     path: 'dashboard', 
     component: DashboardComponent, canActivate: [AuthGuard],
     children: [
+      { path: 'home', component: BranchAccountCountComponent },
       { path: 'cif-register', component: CifRegisterComponent },
       { path: 'current-account-register', component: CurrentAccountRegisterComponent },
-      { path: 'current-acc-list', component: CurrentAccListComponent },
+      { path: 'current-acc-list2', component: CurrentAccListComponent },
+      { path: 'transaction/create/:currentAccountId', component: TransactionComponent },
       { path: 'transaction', component: TransactionComponent },
       { path: 'transaction-history', component: TransactionHistoryComponent },
       { path: 'sme-loan-register', component: SmeLoanRegisterComponent },
@@ -62,7 +72,13 @@ const routes: Routes = [
       { path: 'create-collateral', component: CreateCollateralComponent },
       { path: 'cif-list', component: CifListComponent },
       { path: 'create-cif', component: CreateCifComponent },
-
+      { path: 'updated-cif/:id', component: CreateCifComponent },
+      { path: 'create-current-account/:cifId', component: CreateComponent },
+      { path: 'current-acc-list', component: ListComponent }, 
+      { path: 'update-current-account/:id', component: UpdateComponent }, 
+      { path: 'cif-details/:id', component: CustomerDetailComponent }, 
+      { path: 'create-dealer', component: CreateDealerComponent },
+      { path: 'dealer-list', component: DealerListComponent }
     ]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' }

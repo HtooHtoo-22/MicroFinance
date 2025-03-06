@@ -17,5 +17,5 @@ public interface CIFRepo extends JpaRepository<CIF ,Integer>{
     boolean existsByEmail(String email);
     boolean existsByNRCAndIdNot(String nrc, Integer id);
     boolean existsByEmailAndIdNot(String email, Integer id);
-
+    List<CIF> findByBranchId(Integer branchId);
 }

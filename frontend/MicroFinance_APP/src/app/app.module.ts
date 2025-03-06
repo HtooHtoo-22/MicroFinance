@@ -38,6 +38,20 @@ import { CifListComponent } from './Components/CIF/cif-list/cif-list.component';
 import { CreateComponent } from './Components/CurrentACC/create/create.component';
 import { ListComponent } from './Components/CurrentACC/list/list.component';
 import { UpdateComponent } from './Components/CurrentACC/update/update.component';
+import { CustomerDetailComponent } from './Components/Account/customer-detail/customer-detail.component';
+import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { ModelComponent } from './Components/model/model.component';
+import { ConfirmDialogComponent } from './Components/confirm-dialog/confirm-dialog.component';
+import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
+import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
+
 
 @NgModule({
   declarations: [
@@ -72,7 +86,14 @@ import { UpdateComponent } from './Components/CurrentACC/update/update.component
     CreateComponent,
     ListComponent,
     UpdateComponent,
-
+    CustomerDetailComponent,
+    CreateDealerComponent,
+    DealerListComponent,
+    ModelComponent,
+    ConfirmDialogComponent,
+    BranchAccountCountComponent,
+    BranchUserCountComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -84,7 +105,13 @@ import { UpdateComponent } from './Components/CurrentACC/update/update.component
     NgClass,
     NgFor,
     HttpClientModule,
-],
+    MatSnackBarModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatFormFieldModule
+  ],
   providers: [
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),

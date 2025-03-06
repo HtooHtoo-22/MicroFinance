@@ -8,9 +8,10 @@ import java.util.Map;
 public interface DealerService {
     DealerDTO createDealer(DealerDTO dealerDTO);
     List<DealerDTO> getAllDealers();
-    DealerDTO updateDealer(Integer id, Map<String, Object> updates);
-    DealerDTO updateDealerStatus(Integer id, String status);
-    List<DealerDTO> getActiveDealers();
-    List<DealerDTO> getDeleteDealers();
-
+//    DealerDTO updateDealer(Integer id, Map<String, Object> updates);
+//    DealerDTO updateDealerStatus(Integer id, String status);
+//    List<DealerDTO> getActiveDealers();
+//    List<DealerDTO> getDeleteDealers();
+    DealerDTO approveDealer(Integer dealerId);
+    DealerDTO rejectDealer(Integer dealerId);
 }
