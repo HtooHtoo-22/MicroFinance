@@ -40,7 +40,7 @@ public class User implements UserDetails{
     @Column(name = "create_date", nullable = false)
     private LocalDateTime CreateDate;
     @Column(name = "status")
-    private boolean active;
+    private Boolean active;
     @PrePersist
     protected void onCreate() {
         if (CreateDate == null) {
@@ -49,6 +49,7 @@ public class User implements UserDetails{
         }
 
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getRoleName()));

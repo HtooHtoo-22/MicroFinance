@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, Integer> {
     Optional<CurrentAccount> findByAccountId(String accountId);
-
+    @Query("SELECT COUNT(ca) FROM CurrentAccount ca WHERE ca.cif.branch.id = :branchId")
+    long countByBranchId(@Param("branchId") Integer branchId);
 
 }

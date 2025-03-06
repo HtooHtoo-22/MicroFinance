@@ -12,4 +12,5 @@ public interface UserService {
     ApiResponse<String> deleteUser(Integer id);
     UserResponseDTO getUserById(Integer id);
     List<UserResponseDTO> getAllUsers();
+    Long getActiveUserCountByBranch(Integer branchId);
 }

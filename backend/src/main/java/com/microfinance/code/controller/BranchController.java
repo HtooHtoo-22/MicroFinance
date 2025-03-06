@@ -32,7 +32,7 @@ public class BranchController {
         return ApiResponse.success(HttpStatus.CREATED, 0101,"Branch created successfully", createdBranchDTO);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ApiResponse<List<BranchDTO>> getAllBranches() {
         List<BranchDTO> branchList = branchService.getAllBranches();
         return ApiResponse.success(HttpStatus.OK, 200, "Branch Types retrieved successfully", branchList);

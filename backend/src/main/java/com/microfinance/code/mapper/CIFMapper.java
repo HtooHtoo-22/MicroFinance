@@ -39,8 +39,16 @@ public class CIFMapper {
         dto.setTownship(cif.getTownship());
         dto.setAddress(cif.getAddress());
         dto.setStatus(cif.getStatus().getDisplayName());
-        dto.setBranchId(cif.getBranch().getId());
-        dto.setUserId(cif.getUser().getId());
+
+        if (cif.getBranch() != null) {
+            dto.setBranchName(cif.getBranch().getName());
+        }
+
+        // Add User Full Name
+        if (cif.getUser() != null) {
+            dto.setUserFullName(cif.getUser().getName());
+        }
+
 
         return dto;
     }
@@ -64,10 +72,6 @@ public class CIFMapper {
         cif.setState(dto.getState());
         cif.setTownship(dto.getTownship());
         cif.setAddress(dto.getAddress());
-        cif.setBranch(branchRepo.findById(dto.getBranchId())
-                .orElseThrow(() -> new NotFoundException("Branch not found")));
-        cif.setUser(userRepo.findById(dto.getUserId())
-                .orElseThrow(()->new NotFoundException("User Not Found")));
         return cif;
     }
 }

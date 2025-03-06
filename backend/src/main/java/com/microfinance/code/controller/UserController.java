@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -46,6 +47,11 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/active/count/{branchId}")
+    public Long getActiveUserCountByBranch(@PathVariable Integer branchId) {
+        return userService.getActiveUserCountByBranch(branchId);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUsers();
@@ -57,4 +63,6 @@ public class UserController {
         ApiResponse<String> response = userService.deleteUser(id);
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
+
+
 }

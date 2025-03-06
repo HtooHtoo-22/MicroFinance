@@ -40,56 +40,82 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserDTO dto) {
-        if (userRepo.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
 
-        Branch branch = branchRepo.findById(dto.getBrandId())
+        System.out.println("Searching for branch with ID: " + dto.getBranchId());
+
+        Branch branch = branchRepo.findById(dto.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch Not Found"));
-        Role role = roleRepo.findById(dto.getRoleID())
+        System.out.println("branch" + branch.getName());
+
+        System.out.println("Searching for role with ID: " + dto.getRoleId());
+        Role role = roleRepo.findById(dto.getRoleId())
                 .orElseThrow(() -> new NotFoundException("Role Not Found"));
 
-        String newUserId = generateNextUserId();
-        User user = userMapper.toEntity(dto, branch, role, newUserId);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        String generatedEmail = generateEmail(dto.getName());
+        String generatedPassword = generatePassword(role.getRoleName());
+        String UserId = generateUserId(branch.getCode());
+        User user = userMapper.toEntity(dto, branch, role, UserId);
 
+        user.setEmail(generatedEmail);
+
+        if (generatedPassword == null || generatedPassword.isEmpty()) {
+            throw new RuntimeException("Generated password is invalid");
+        }
+        user.setPassword(passwordEncoder.encode(generatedPassword));
+        System.out.println("Encoded Password: " + user.getPassword());
         User savedUser = userRepo.save(user);
         return userMapper.toResponseDTO(savedUser);
     }
 
-    private String generateNextUserId() {
-        String lastUserId = userRepo.findLastUserId();
-        if (lastUserId == null) {
-            return "001";
-        }
-        int lastIdNumber = Integer.parseInt(lastUserId);
-        int nextIdNumber = lastIdNumber + 1;
-        return String.format("%03d", nextIdNumber);
+    private String generateUserId(String branchcode) {
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
+        return "UC-" + branchcode + "-"  + timestamp;
     }
+
+    private String generateEmail(String name) {
+        return name.toLowerCase().replace(" ", "") + "@richcoin.com";
+    }
+
+    private String generatePassword(String roleName) {
+        switch (roleName.toUpperCase()) {
+            case "ADMIN":
+                return "admin@richcoin"; // Password for ADMIN role
+            case "MANAGER":
+                return "manager@richcoin"; // Password for MANAGER role
+            case "OPERATION":
+                return "operation@richcoin"; // Password for OPERATION role
+            case "ENTRY":
+                return "entry@richcoin"; // Password for ENTRY role
+            default:
+                return "default@richcoin"; // Password for unknown or unhandled roles
+        }
+    }
+
 
     @Override
     public UserResponseDTO updateUser(Integer id, UserDTO dto) {
-        User user = userRepo.findById(id)
+        User existingUser = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
+        // Update fields
+        existingUser.setName(dto.getName());
+        existingUser.setBranch(branchRepo.findById(dto.getBranchId())
+                .orElseThrow(() -> new RuntimeException("Branch not found")));
+        existingUser.setRole(roleRepo.findById(dto.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found")));
 
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
-
-        User updatedUser = userRepo.save(user);
+        User updatedUser = userRepo.save(existingUser);
         return userMapper.toResponseDTO(updatedUser);
     }
 
     @Override
     public ApiResponse<String> deleteUser(Integer id) {
-        if (!userRepo.existsById(id)) {
-            return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "User not found");
+        try {
+            userRepo.deleteById(id);
+            return ApiResponse.success(HttpStatus.OK, 200, "User deleted successfully", null);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete user");
         }
-        userRepo.deleteById(id);
-        return ApiResponse.success(HttpStatus.OK, 200, "User deleted successfully", "Deleted");
     }
 
     @Override
@@ -103,5 +129,10 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepo.findAll();
         return users.stream().map(userMapper::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getActiveUserCountByBranch(Integer branchId) {
+        return userRepo.countActiveUsersByBranch(branchId);
     }
 }
