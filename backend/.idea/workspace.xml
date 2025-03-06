@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5de57c2c-94d5-4080-a6cf-bef559d5e9b5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/HPLateFeeCalculationRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/HPLateFeeCalculationRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPLateFeeRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPLateFeeRepayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService2.java" afterDir="false" />
-    </list>
+    <list default="true" id="5de57c2c-94d5-4080-a6cf-bef559d5e9b5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -175,7 +169,7 @@
       <workItem from="1741089688770" duration="8183000" />
       <workItem from="1741143679137" duration="9193000" />
       <workItem from="1741156433724" duration="6614000" />
-      <workItem from="1741181188674" duration="10458000" />
+      <workItem from="1741181188674" duration="10868000" />
     </task>
     <servers />
   </component>
