@@ -37,7 +37,7 @@ public class CurrentAccountController {
         return ApiResponse.success(HttpStatus.OK, 200, "Account updated successfully", updatedAccount);
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public ApiResponse<List<CurrentAccountDTO>> getAllCurrentACC() {
         List<CurrentAccountDTO> currentAccountDTOS = currentAccountService.getAllCurrentACC();
         return ApiResponse.success(HttpStatus.OK, 200, "Current Accounts retrieved successfully", currentAccountDTOS);

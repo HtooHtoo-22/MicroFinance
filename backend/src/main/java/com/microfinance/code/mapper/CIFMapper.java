@@ -49,7 +49,7 @@ public class CIFMapper {
             dto.setUserFullName(cif.getUser().getName());
         }
 
-
+        dto.setHasCurrentAccount(cif.getCurrentAccount() != null);
         return dto;
     }
 

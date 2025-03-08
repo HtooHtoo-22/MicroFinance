@@ -27,5 +27,7 @@ public class CIFDTO {
     private String status;
     private String branchName;
     private String userFullName;
+    private boolean hasCurrentAccount; // Add this field
+
 
 }

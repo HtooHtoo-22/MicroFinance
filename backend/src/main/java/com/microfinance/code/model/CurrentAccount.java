@@ -36,6 +36,6 @@ public class CurrentAccount {
     private boolean freezeStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cif_id", nullable = false)
+    @JoinColumn(name = "cif_id", nullable = false, unique = true)
     private CIF cif;
 }

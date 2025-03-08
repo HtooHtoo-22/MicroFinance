@@ -18,7 +18,7 @@ public class DealerController {
     @Autowired
     private DealerService dealerService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ApiResponse<DealerDTO> createDealer(@RequestBody DealerDTO dealerDTO) {
         DealerDTO savedDealer = dealerService.createDealer(dealerDTO);
         return ApiResponse.success(HttpStatus.CREATED, 201, "Dealer created successfully", savedDealer);

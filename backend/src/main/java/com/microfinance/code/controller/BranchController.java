@@ -25,7 +25,7 @@ public class BranchController {
         this.branchMapper = branchMapper;
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ApiResponse<BranchDTO> createBranch(@RequestBody BranchDTO dto) {
         Branch branch = branchMapper.toEntity(dto);
         Branch createdBranch = branchService.createBranch(dto);

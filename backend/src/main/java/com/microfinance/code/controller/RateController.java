@@ -34,7 +34,7 @@ public class RateController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<RateDTO>> createRate(@RequestBody RateDTO rateDTO) {
         RateDTO createdRate = rateService.createRate(rateDTO);
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -3,11 +3,13 @@ package com.microfinance.code.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +22,14 @@ public class CloudinaryService {
     private static final Logger logger = Logger.getLogger(CloudinaryService.class.getName());
 
     /**
-     * Uploads a file to Cloudinary and returns the secure URL.
+     * Uploads a file to Cloudinary asynchronously and returns the secure URL.
      *
      * @param file the file to be uploaded
-     * @return the secure URL of the uploaded file
+     * @return a CompletableFuture containing the secure URL of the uploaded file
      * @throws IOException if the file could not be uploaded
      */
-    public String uploadFile(MultipartFile file) throws IOException {
+    @Async
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file) throws IOException {
         if (file.getSize() > 100 * 1024 * 1024) {
             throw new IOException("File size exceeds the allowed limit of 100MB");
         }
@@ -37,7 +40,7 @@ public class CloudinaryService {
             String uploadedUrl = uploadResult.get("secure_url").toString();
             logger.log(Level.INFO, "File uploaded successfully: " + uploadedUrl);
 
-            return uploadedUrl;
+            return CompletableFuture.completedFuture(uploadedUrl);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error uploading file to Cloudinary", e);
             throw new IOException("Error uploading file to Cloudinary", e);

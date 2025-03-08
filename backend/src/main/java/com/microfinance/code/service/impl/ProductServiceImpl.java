@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -46,18 +47,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductDTO dto, MultipartFile userPhoto) throws IOException {
-        // Upload image to Cloudinary
-        String photoUrl = cloudinaryService.uploadFile(userPhoto);
+        try {
+            // Upload image asynchronously
+            CompletableFuture<String> photoUrlFuture = cloudinaryService.uploadFileAsync(userPhoto);
 
-        // Convert DTO to Entity
-        Product product = productMapper.toEntity(dto);
-        product.setPhoto(photoUrl); // Set Cloudinary URL
+            // Wait for the upload to complete and get the URL
+            String photoUrl = photoUrlFuture.get(); // Blocking call to wait for the result
 
-        // Save to DB
-        product = productRepo.save(product);
+            // Convert DTO to Entity
+            Product product = productMapper.toEntity(dto);
+            product.setPhoto(photoUrl); // Set Cloudinary URL
 
-        // Convert back to DTO
-        return productMapper.toDTO(product);
+            // Save to DB
+            product = productRepo.save(product);
+
+            // Convert back to DTO
+            return productMapper.toDTO(product);
+        } catch (Exception e) {
+            throw new IOException("Error uploading image to Cloudinary", e);
+        }
     }
     @Override
     public List<ProductDTO> getProductsByDealerId(Integer dealerId) {
@@ -66,7 +74,6 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDTO) // Convert to DTOs
                 .collect(Collectors.toList());
     }
-
     @Override
     public ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo) {
         Optional<Product> optionalProduct = productRepo.findById(id);
@@ -86,8 +93,8 @@ public class ProductServiceImpl implements ProductService {
                     product.setValue(new BigDecimal(value.toString()));
                     break;
                 case "dealerRegisterId":
-                    Dealer dealer = new Dealer();
-                    dealer.setId((Integer) value);
+                    Dealer dealer = dealerRepo.findById((Integer) value)
+                            .orElseThrow(() -> new RuntimeException("Dealer not found with ID: " + value));
                     product.setDealer(dealer);
                     break;
                 case "status":
@@ -98,12 +105,16 @@ public class ProductServiceImpl implements ProductService {
             }
         });
 
-        // Handle image upload if a new file is provided
+        // Handle image upload asynchronously if a new file is provided
         if (photo != null && !photo.isEmpty()) {
             try {
-                String photoUrl = cloudinaryService.uploadFile(photo);
+                // Upload image asynchronously
+                CompletableFuture<String> photoUrlFuture = cloudinaryService.uploadFileAsync(photo);
+
+                // Wait for the upload to complete and get the URL
+                String photoUrl = photoUrlFuture.get(); // Blocking call to wait for the result
                 product.setPhoto(photoUrl);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Failed to upload image: " + e.getMessage());
             }
         }
@@ -112,7 +123,6 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productRepo.save(product);
         return productMapper.toDTO(updatedProduct);
     }
-
     @Override
     public ApiResponse<String> deleteProduct(Integer id) {
         Optional<Product> optionalProduct = productRepo.findById(id);

@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +60,7 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
             throw new AlreadyExistException("Email already exists: " + dto.getEmail());
         }
 
-        Branch branch = user.getBranch(); // Assuming User has a method getBranch()
+        Branch branch = user.getBranch();
         if (branch == null) {
             throw new NotFoundException("Branch not found for user: " + user.getId());
         }
@@ -71,17 +72,22 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
         cif.setCifId(cifId);
         cif.setBranch(branch);
         cif.setUser(user);
-        String frontNRCUrl = cloudinaryService.uploadFile(frontNRC);
-        System.out.println("Front NRC URL: " + frontNRCUrl);
-        cif.setFrontNRCUrl(frontNRCUrl);
 
-        String backNRCUrl = cloudinaryService.uploadFile(backNRC);
-        System.out.println("Back NRC URL: " + backNRCUrl);
-        cif.setBackNRCUrl(backNRCUrl);
+        // Upload files asynchronously
+        CompletableFuture<String> frontNRCUrlFuture = cloudinaryService.uploadFileAsync(frontNRC);
+        CompletableFuture<String> backNRCUrlFuture = cloudinaryService.uploadFileAsync(backNRC);
+        CompletableFuture<String> userPhotoURLFuture = cloudinaryService.uploadFileAsync(userPhoto);
 
-        String userPhotoURL = cloudinaryService.uploadFile(userPhoto);
-        System.out.println("User Photo URL: " + userPhotoURL);
-        cif.setUserPhotoURL(userPhotoURL);
+        // Wait for all uploads to complete
+        CompletableFuture.allOf(frontNRCUrlFuture, backNRCUrlFuture, userPhotoURLFuture).join();
+
+        try {
+            cif.setFrontNRCUrl(frontNRCUrlFuture.get());
+            cif.setBackNRCUrl(backNRCUrlFuture.get());
+            cif.setUserPhotoURL(userPhotoURLFuture.get());
+        } catch (Exception e) {
+            throw new IOException("Error uploading files to Cloudinary", e);
+        }
 
         CIF savedCif = cifRepo.save(cif);
         return cifMapper.toDTO(savedCif);
