@@ -23,17 +23,14 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/authenticate",
             "/api/v1/auth/refresh-token",
-            "/api/branches/**",
-            "/api/roles/**",
-            "/api/branches/list",
-            "/api/users",
             "/ws/**",
-            "/rates",
-            "/api/collateral-types/**",
-            "/accounts/currentAcc",
-            "/transactions/list",
-            "/api/dealers/**"
+            "/accounts/count/{branchId}",
+    };
 
+    private  static final String[] DEALER_LIST_URL = {
+            "/api/dealers/{dealerId}/approve",
+            "/api/dealers/{dealerId}/reject",
+            "/api/dealers/list"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -47,11 +44,23 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL).permitAll()
-                                .requestMatchers("/api/cif/**").hasAnyAuthority("ADMIN", "MANAGER") // ✅ Only Admin & Manager
-                                .requestMatchers("/api/users/**").hasAnyAuthority("MANAGER", "ADMIN")
-                                .requestMatchers("/accounts/**").hasAnyAuthority("MANAGER", "ADMIN")
-                                .requestMatchers("/transactions/**").hasAnyAuthority("MANAGER", "ADMIN")
-
+                                .requestMatchers("/api/cif/**").hasAnyAuthority( "ENTRY")
+                                .requestMatchers("/api/cif").hasAnyAuthority( "ENTRY")
+                                .requestMatchers("/api/users/**").hasAnyAuthority( "ADMIN", "ENTRY", "MANAGER", "OPERATION")
+                                .requestMatchers("/api/users").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/rates").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/api/branches/**").hasAnyAuthority( "ADMIN","MANAGER", "ENTRY", "OPERATION")
+                                .requestMatchers("/api/roles/**").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/api/roles").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/api/collateral-types").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/accounts/**").hasAnyAuthority("ENTRY")
+                                .requestMatchers("/accounts").hasAnyAuthority("ENTRY", "ADMIN")
+                                .requestMatchers("/api/dealers/create").hasAnyAuthority("ENTRY")
+                                .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("MANAGER")
+                                .requestMatchers("/transactions/**").hasAnyAuthority("ENTRY")
 
                                 .anyRequest().authenticated()
                 )

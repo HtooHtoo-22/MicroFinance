@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +34,23 @@ public class CollateralServiceImpl implements CollateralService {
     @Autowired
     private CollateralTypeRepo collateralTypeRepo;
 
+    @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Override
     public CollateralDTO createCollateral(CollateralDTO dto) {
         try {
-            dto.setImage(cloudinaryService.uploadFile(dto.getImageFile()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            // Upload image asynchronously
+            CompletableFuture<String> imageUrlFuture = cloudinaryService.uploadFileAsync(dto.getImageFile());
+
+            // Wait for the upload to complete and get the URL
+            String imageUrl = imageUrlFuture.get(); // Blocking call to wait for the result
+            dto.setImage(imageUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("Error uploading image to Cloudinary", e);
         }
+
+        // Convert DTO to Entity
         Collateral collateral = collateralMapper.toEntity(dto);
 
         // Validate Collateral Type
@@ -47,6 +58,7 @@ public class CollateralServiceImpl implements CollateralService {
                 .orElseThrow(() -> new NotFoundException("Collateral Type not found with ID: " + dto.getCollateralTypeId()));
         collateral.setCollateralType(collateralType);
 
+        // Save to DB
         Collateral savedCollateral = collateralRepo.save(collateral);
         return collateralMapper.toDTO(savedCollateral);
     }
