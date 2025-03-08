@@ -33,7 +33,7 @@ public class RoleController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ApiResponse<RoleDTO> createRole(@RequestBody RoleDTO roleDTO) {
         RoleDTO createdRole = roleService.createRole(roleDTO);
         return ApiResponse.success(HttpStatus.CREATED, 201, "Role created successfully", createdRole);

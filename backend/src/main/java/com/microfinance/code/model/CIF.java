@@ -80,6 +80,8 @@ public class CIF {
     @JoinColumn(name ="user_id", nullable = false)
     private User user;
 
+    @OneToOne(mappedBy = "cif", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CurrentAccount currentAccount;
 
     @PrePersist
     protected void onCreate(){

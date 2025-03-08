@@ -36,7 +36,6 @@ public class CollateralServiceImpl implements CollateralService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
-
     @Override
     public CollateralDTO createCollateral(CollateralDTO dto) {
         try {
@@ -62,6 +61,7 @@ public class CollateralServiceImpl implements CollateralService {
         Collateral savedCollateral = collateralRepo.save(collateral);
         return collateralMapper.toDTO(savedCollateral);
     }
+
     public List<CollateralDTO> getAllCollaterals() {
         List<Collateral> collaterals = collateralRepo.findAll();
         return collaterals.stream()

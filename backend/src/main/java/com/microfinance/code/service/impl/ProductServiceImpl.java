@@ -74,7 +74,6 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDTO) // Convert to DTOs
                 .collect(Collectors.toList());
     }
-
     @Override
     public ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo) {
         Optional<Product> optionalProduct = productRepo.findById(id);
@@ -124,7 +123,6 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productRepo.save(product);
         return productMapper.toDTO(updatedProduct);
     }
-
     @Override
     public ApiResponse<String> deleteProduct(Integer id) {
         Optional<Product> optionalProduct = productRepo.findById(id);
