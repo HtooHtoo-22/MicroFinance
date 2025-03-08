@@ -57,10 +57,17 @@ public class CollateralServiceImpl implements CollateralService {
         return collateralMapper.toDTO(savedCollateral);
     }
     public List<CollateralDTO> getAllCollaterals() {
-        List<Collateral> collaterals = collateralRepo.findAll();
-        return collaterals.stream()
-                .map(collateralMapper::toDTO)
-                .collect(Collectors.toList());
+        System.out.println("Service");
+        try {
+            List<Collateral> collaterals = collateralRepo.findAll();
+            return collaterals.stream()
+                    .map(collateralMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());;  // Print the exception to debug
+            return null;
+        }
+
     }
     public CollateralDTO getCollateralById(Integer id) {
         Collateral collateral = collateralRepo.findById(id)

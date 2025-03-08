@@ -41,7 +41,7 @@ public class CollateralController {
         return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public ApiResponse<List<CollateralDTO>> getAllCollaterals() {
         List<CollateralDTO> collaterals = collateralService.getAllCollaterals();
         return ApiResponse.success(HttpStatus.OK, 200, "Collaterals retrieved successfully", collaterals);
