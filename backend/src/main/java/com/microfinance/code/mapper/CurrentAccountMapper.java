@@ -24,6 +24,7 @@ public class CurrentAccountMapper {
 
     public static CurrentAccountDTO toDTO(CurrentAccount account) {
         CurrentAccountDTO dto = new CurrentAccountDTO();
+        dto.setId(account.getId());
         dto.setAccountId(account.getAccountId());
         dto.setMaxAmount(account.getMaxAmount());
         dto.setMinAmount(account.getMinAmount());

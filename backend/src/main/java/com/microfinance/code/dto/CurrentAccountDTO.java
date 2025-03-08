@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CurrentAccountDTO {
+    private Integer id;
     private String accountId;
     private Double maxAmount;
     private Double minAmount;

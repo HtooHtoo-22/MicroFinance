@@ -15,7 +15,7 @@ public class CollateralDTO {
     private String address;
     private String image;
     private MultipartFile imageFile;
-    private Integer smeLoanId; // Using Integer instead of object reference
     private Integer collateralTypeId; // Using Integer instead of object reference
+    private Integer currentAccountId;
     private String collateralTypeName;
 }

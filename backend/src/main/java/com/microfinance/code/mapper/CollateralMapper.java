@@ -4,7 +4,9 @@ import com.microfinance.code.dto.CollateralDTO;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.Collateral;
 import com.microfinance.code.model.CollateralType;
+import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.SMELoan;
+import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.SMELoanRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CollateralMapper {
     @Autowired
-    private SMELoanRepo smeLoanRepo;
+    private CurrentAccountRepository accRepo;
     public Collateral toEntity(CollateralDTO dto) {
         if (dto == null) {
             return null;
@@ -26,16 +28,17 @@ public class CollateralMapper {
         collateral.setImage(dto.getImage());
 
         // Setting related entities using IDs
-        if (dto.getSmeLoanId() != null) {
-            SMELoan smeLoan = smeLoanRepo.findById(dto.getSmeLoanId())
-                    .orElseThrow(()->new NotFoundException("Cannot Find SME Loan With this id "+dto.getSmeLoanId()));
 
-        }
 
         if (dto.getCollateralTypeId() != null) {
             CollateralType collateralType = new CollateralType();
             collateralType.setId(dto.getCollateralTypeId());
             collateral.setCollateralType(collateralType);
+        }
+        if(dto.getCurrentAccountId()!=null){
+            CurrentAccount account = accRepo.findById(dto.getCurrentAccountId())
+                    .orElseThrow(() -> new NotFoundException("Account Id not found with this: " + dto.getCurrentAccountId()));
+            collateral.setCurrentAccount(account);
         }
 
         return collateral;

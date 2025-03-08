@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -17,16 +18,29 @@ public class CollateralController {
 
     @Autowired
     private CollateralService collateralService;
+    @PostMapping("/create")
+    public ApiResponse<CollateralDTO> createCollateral(
+            @RequestParam("value") BigDecimal value,
+            @RequestParam("description") String description,
+            @RequestParam("address") String address,
+            @RequestParam("collateralTypeId") Integer collateralTypeId,
+            @RequestParam("currentAccountId") Integer currentAccountId,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
+    )
+    {
+        CollateralDTO collateralDTO = new CollateralDTO();
+        collateralDTO.setValue(value);
+        collateralDTO.setDescription(description);
+        collateralDTO.setAddress(address);
+        collateralDTO.setCollateralTypeId(collateralTypeId);
+        collateralDTO.setCurrentAccountId(currentAccountId);
+        collateralDTO.setImageFile(imageFile);
 
-//    @PostMapping("/")
-//    public ApiResponse<CollateralDTO> createCollateral(@RequestPart("collateral") CollateralDTO dto,
-//                                                       @RequestParam("image")MultipartFile image
-//                                                      )
-//    {
-//        dto.setImageFile(image);
-//        CollateralDTO createdCollateral = collateralService.createCollateral(dto);
-//        return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
-//    }
+        System.out.println("Collateral DTO : "+collateralDTO);
+        CollateralDTO createdCollateral = collateralService.createCollateral(collateralDTO);
+        return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
+    }
+
     @GetMapping("/")
     public ApiResponse<List<CollateralDTO>> getAllCollaterals() {
         List<CollateralDTO> collaterals = collateralService.getAllCollaterals();

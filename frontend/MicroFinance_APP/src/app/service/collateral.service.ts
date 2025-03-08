@@ -2,13 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CollateralTypeDTO } from '../model/Collateral';
 import { map, Observable } from 'rxjs';
+import { CollateralDTO } from '../model/CollateralDTO';
+import { ApiResponse } from '../model/Apirespon';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CollateralService {
   private apiUrl = 'http://localhost:8081/api/collateral-types';
-
+  private apiUrl2 = 'http://localhost:8081/api/collaterals';
   constructor(private http: HttpClient) { }
 
   getAllCollateralTypes(): Observable<CollateralTypeDTO[]> {
@@ -26,6 +28,21 @@ export class CollateralService {
   createCollateralType(collateralType: CollateralTypeDTO): Observable<CollateralTypeDTO> {
     return this.http.post<CollateralTypeDTO>(`${this.apiUrl}/`, collateralType);
   }
+  createCollateral(collateral: CollateralDTO): Observable<ApiResponse<any>> {
+    const formData = new FormData();
+    formData.append("value", collateral.value?.toString() || '');
+    formData.append("description", collateral.description || '');
+    formData.append("address", collateral.address || '');
+    formData.append("collateralTypeId", collateral.collateralTypeId?.toString() || '');
+    formData.append("currentAccountId", collateral.currentAccountId?.toString() || '');
+  
+    if (collateral.imageFile) {
+      formData.append("imageFile", collateral.imageFile);
+    }
+  
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl2}/create`, formData);
+  }
+  
 
   updateCollateralType(id: number, collateralType: CollateralTypeDTO): Observable<CollateralTypeDTO> {
     return this.http.put<CollateralTypeDTO>(`${this.apiUrl}/${id}`, collateralType);

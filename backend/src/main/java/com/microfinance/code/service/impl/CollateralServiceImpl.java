@@ -5,9 +5,11 @@ import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.CollateralMapper;
 import com.microfinance.code.model.Collateral;
 import com.microfinance.code.model.CollateralType;
+import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.SMELoan;
 import com.microfinance.code.repository.CollateralRepo;
 import com.microfinance.code.repository.CollateralTypeRepo;
+import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.SMELoanRepo;
 import com.microfinance.code.service.CloudinaryService;
 import com.microfinance.code.service.interFace.CollateralService;
@@ -33,6 +35,9 @@ public class CollateralServiceImpl implements CollateralService {
     @Autowired
     private CollateralTypeRepo collateralTypeRepo;
 
+    @Autowired
+    private CurrentAccountRepository accountRepo;
+    @Autowired
     private CloudinaryService cloudinaryService;
     public CollateralDTO createCollateral(CollateralDTO dto) {
         try {
@@ -46,7 +51,8 @@ public class CollateralServiceImpl implements CollateralService {
         CollateralType collateralType = collateralTypeRepo.findById(dto.getCollateralTypeId())
                 .orElseThrow(() -> new NotFoundException("Collateral Type not found with ID: " + dto.getCollateralTypeId()));
         collateral.setCollateralType(collateralType);
-
+        CurrentAccount currentAccount = accountRepo.findById(dto.getCurrentAccountId())
+                .orElseThrow(()->new NotFoundException("Current Account not found with ID : "+dto.getCurrentAccountId()));
         Collateral savedCollateral = collateralRepo.save(collateral);
         return collateralMapper.toDTO(savedCollateral);
     }
