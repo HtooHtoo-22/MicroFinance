@@ -36,6 +36,8 @@ import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
 import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
+import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
+import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
 
 
 const routes: Routes = [
@@ -49,6 +51,7 @@ const routes: Routes = [
       { path: 'current-account-register', component: CurrentAccountRegisterComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction/create/:currentAccountId', component: TransactionComponent },
+      { path: 'collateralDetail/:id',component:CollateralDetailComponent},
       { path: 'transaction', component: TransactionComponent },
       { path: 'transaction-history', component: TransactionHistoryComponent },
       { path: 'sme-loan-register', component: SmeLoanRegisterComponent },
@@ -70,6 +73,7 @@ const routes: Routes = [
       { path: 'collateral-type-list', component: CollateralTypeListComponent },
       { path: 'edit-collateral-type/:id', component: CollateralTypeUpdateComponent },
       { path: 'create-collateral', component: CreateCollateralComponent },
+      { path: 'list-collateral', component: ListCollateralComponent },
       { path: 'cif-list', component: CifListComponent },
       { path: 'create-cif', component: CreateCifComponent },
       { path: 'updated-cif/:id', component: CreateCifComponent },

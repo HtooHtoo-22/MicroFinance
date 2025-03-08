@@ -51,4 +51,10 @@ export class CollateralService {
   deleteCollateralType(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+  getAllCollaterals(): Observable<ApiResponse<CollateralDTO[]>> {
+    return this.http.get<ApiResponse<CollateralDTO[]>>(`${this.apiUrl2}/list`);
+  }
+  getCollateralById(id: number): Observable<ApiResponse<CollateralDTO>> {
+    return this.http.get<ApiResponse<CollateralDTO>>(`${this.apiUrl2}/${id}`);
+  }
 }

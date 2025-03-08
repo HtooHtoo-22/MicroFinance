@@ -51,6 +51,8 @@ import { ModelComponent } from './Components/model/model.component';
 import { ConfirmDialogComponent } from './Components/confirm-dialog/confirm-dialog.component';
 import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
+import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
+import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
 
 
 @NgModule({
@@ -93,6 +95,8 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
     ConfirmDialogComponent,
     BranchAccountCountComponent,
     BranchUserCountComponent,
+    ListCollateralComponent,
+    CollateralDetailComponent,
 
   ],
   imports: [

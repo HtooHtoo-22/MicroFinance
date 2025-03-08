@@ -1,0 +1,120 @@
+<div class="max-w-6xl mx-auto p-6" *ngIf="selectedCollateral">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <nav class="mb-8 flex items-center justify-between border-b pb-4">
+            <button 
+              (click)="router.navigate(['/dashboard/list-collateral'])"
+              class="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              Back to Collateral List
+            </button>
+        
+          </nav>
+      
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-800">
+          {{ selectedCollateral.collateralTypeName }}
+          <span class="text-lg text-gray-500 ml-2">#{{ selectedCollateral.id }}</span>
+        </h1>
+        <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+          {{ selectedCollateral.remainingValue > 0 ? 'Active' : 'Released' }}
+        </span>
+      </div>
+    </div>
+  
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column - Image & Basic Info -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100">
+          <img 
+            [src]="selectedCollateral.image || 'assets/default-collateral.jpg'"
+            class="w-full h-64 object-cover rounded-lg mb-4"
+            alt="Collateral Image"
+          >
+          
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-medium text-gray-500">Owner</label>
+              <p class="font-medium text-gray-800">{{ selectedCollateral.ownerName }}</p>
+            </div>
+            
+            <div>
+              <label class="text-xs font-medium text-gray-500">CIF ID</label>
+              <p class="font-medium text-gray-800">{{ selectedCollateral.cifId }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Right Column - Details -->
+      <div class="lg:col-span-2">
+        <div class="grid gap-6">
+          <!-- Financial Card -->
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Financial Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm text-gray-500">Original Value</label>
+                <p class="text-xl font-semibold text-blue-600">
+                  {{ selectedCollateral.value | currency }}
+                </p>
+              </div>
+              <div>
+                <label class="text-sm text-gray-500">Remaining Value</label>
+                <p 
+                  class="text-xl font-semibold"
+                  [ngClass]="{
+                    'text-green-600': selectedCollateral.remainingValue > 0,
+                    'text-red-600': selectedCollateral.remainingValue <= 0
+                  }"
+                >
+                  {{ selectedCollateral.remainingValue | currency }}
+                </p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Location Card -->
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Location Details</h3>
+            <div class="space-y-2">
+              <div>
+                <label class="text-sm text-gray-500">Address</label>
+                <p class="font-medium text-gray-800">{{ selectedCollateral.address }}</p>
+              </div>
+              <div class="mt-4">
+                <label class="text-sm text-gray-500">Description</label>
+                <p class="text-gray-700 leading-relaxed">{{ selectedCollateral.description }}</p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Associated Loans Card -->
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Associated Loans</h3>
+            <div *ngIf="selectedCollateral.smeLoanIds.length > 0; else noLoans" 
+                 class="flex flex-wrap gap-2">
+              <a 
+                *ngFor="let loanId of selectedCollateral.smeLoanIds"
+                [routerLink]="['/loans', loanId]"
+                class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium transition-colors cursor-pointer"
+              >
+                #{{ loanId }}
+              </a>
+            </div>
+            <ng-template #noLoans>
+              <p class="text-gray-400 italic">No associated loans found</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="!selectedCollateral" class="text-center py-12">
+    <p class="text-gray-500">Select a collateral to view details</p>
+  </div>
