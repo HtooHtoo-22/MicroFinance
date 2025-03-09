@@ -44,41 +44,56 @@ public class SMELoanServiceImpl implements SMELoanService {
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
-        User entryUser = userRepository.findById(dto.getEntryUserId())
+        User entryUser = userRepository.findByUserId(dto.getEntryUserGenerateId())
                 .orElseThrow(() -> new NotFoundException("Entry user not found"));
 
         // Fetch approved user
-        User approvedUser = userRepository.findById(dto.getApprovedUserId())
-                .orElseThrow(() -> new NotFoundException("Approved user not found"));
+//        User approvedUser = userRepository.findById(dto.getApprovedUserId())
+//                .orElseThrow(() -> new NotFoundException("Approved user not found"));
 
-        // Fetch current account
-        CurrentAccount currentAcc = currentAccountRepository.findById(dto.getCurrentAccountId())
-                .orElseThrow(() -> new NotFoundException("Current account not found"));
+
+
+// Fetch current account
+        CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountaccId()).
+                orElseThrow(() -> new NotFoundException("Current account not found"));
 
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);
         smeLoan.setLoanId(SMELoanIDGenerator.generateLoanId());
         smeLoan.setEntryUser(entryUser);
-        smeLoan.setApprovedUser(approvedUser);
         smeLoan.setCurrentAccount(currentAcc);
+
+        // Calculate service charges
         BigDecimal serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate").divide(BigDecimal.valueOf(100));
-        //BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
         BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRate);
         smeLoan.setServiceCharge(serviceCharges);
-        BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
-        smeLoan.setInterestRate(interestRate);
-        BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
 
-        // Validate if the collateral is enough for the loan amount
+        // Set interest rate
+        BigDecimal interestRate = rateRepo.findValueByRateType("SME Loan Interest Rate");
+        smeLoan.setInterestRate(interestRate);
+
+        // Validate collateral
+        BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
         if (totalRemainingCollateralValue.compareTo(smeLoan.getLoanAmount()) < 0) {
             throw new ValidationException("Your total collateral amount is not enough for your loan amount");
         }
+
+        // Save SME Loan
         smeLoan = smeLoanRepository.save(smeLoan);
+
         // Save SME Loan Has Collateral records
         saveSMELoanHasCollateral(dto.getCollateralIds(), smeLoan);
-        return SMELoanMapper.toDTO(smeLoan);
 
+        // Set the current account ID in DTO
+        if (smeLoan.getCurrentAccount() != null) {
+            dto.setCurrentAccountId(smeLoan.getCurrentAccount().getId());
+        } else {
+            throw new NotFoundException("Current account is missing in SME Loan");
+        }
+
+        return SMELoanMapper.toDTO(smeLoan);
     }
+
 
     @Transactional
     @Override

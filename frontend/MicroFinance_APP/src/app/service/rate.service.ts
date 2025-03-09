@@ -28,7 +28,6 @@ export class RateService {
       })
     );
   }
-
   createRate(rate: Rate): Observable<Rate> {
     return this.http.post<any>(this.apiUrl, rate).pipe(
       map(response => response.data)
