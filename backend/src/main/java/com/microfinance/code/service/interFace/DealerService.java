@@ -14,4 +14,6 @@ public interface DealerService {
 //    List<DealerDTO> getDeleteDealers();
     DealerDTO approveDealer(Integer dealerId);
     DealerDTO rejectDealer(Integer dealerId);
+    List<DealerDTO> getApprovedDealers(); // Add this method
+
 }

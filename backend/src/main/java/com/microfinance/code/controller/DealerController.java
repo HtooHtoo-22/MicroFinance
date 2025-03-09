@@ -41,4 +41,10 @@ public class DealerController {
         List<DealerDTO> dealers = dealerService.getAllDealers();
         return ApiResponse.success(HttpStatus.OK, 200, "Dealers retrieved successfully", dealers);
     }
+
+    @GetMapping("/approved")
+    public ApiResponse<List<DealerDTO>> getApprovedDealers() {
+        List<DealerDTO> approvedDealers = dealerService.getApprovedDealers();
+        return ApiResponse.success(HttpStatus.OK, 200, "Approved dealers retrieved successfully", approvedDealers);
+    }
 }

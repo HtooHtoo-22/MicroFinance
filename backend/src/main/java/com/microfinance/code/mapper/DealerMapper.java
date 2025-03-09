@@ -1,6 +1,7 @@
 package com.microfinance.code.mapper;
 
 import com.microfinance.code.dto.DealerDTO;
+import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.Dealer;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,16 @@ public class DealerMapper {
         dealer.setPhone(dto.getPhone());
         dealer.setEmail(dto.getEmail());
         dealer.setCompanyValue(dto.getCompanyValue());
-//        dealer.setPassword(dto.getPassword());
+        dealer.setRegisterDate(dto.getRegisterDate());
 
 //        CurrentAccount account = new CurrentAccount();
 //        account.setId(Integer.valueOf(dto.getCurrentAccountId()));
 //        dealer.setCurrentAccount(account);
-
+        if (dto.getCurrentAccountId() != null) {
+            CurrentAccount account = new CurrentAccount();
+            account.setAccountId(dto.getCurrentAccountId()); // Use accountId string
+            dealer.setCurrentAccount(account);
+        }
         return dealer;
     }
 
@@ -30,10 +35,16 @@ public class DealerMapper {
         dto.setAddress(dealer.getAddress());
         dto.setPhone(dealer.getPhone());
         dto.setEmail(dealer.getEmail());
-        dto.setCurrentAccountId(dealer.getCurrentAccount().getAccountId()); // Use accountId string
         dto.setCompanyValue(dealer.getCompanyValue());
         dto.setRegisterDate(dealer.getRegisterDate());
-        dto.setStatus(dealer.getStatusforDelar().toString());
+
+        if (dealer.getStatusforDelar() != null) {
+            dto.setStatus(dealer.getStatusforDelar().toString()); // Map enum to string
+        }
+
+        if (dealer.getCurrentAccount() != null) {
+            dto.setCurrentAccountId(dealer.getCurrentAccount().getAccountId()); // Use accountId string
+        }
         return dto;
     }
 }

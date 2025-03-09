@@ -94,10 +94,15 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
     }
 
 
+    @Override
     public List<CIFDTO> getAllCIFs() {
         return cifRepo.findAll()
                 .stream()
-                .map(cifMapper::toDTO)  // Convert entity to DTO
+                .map(cif -> {
+                    CIFDTO dto = cifMapper.toDTO(cif);
+                    dto.setHasCurrentAccount(cif.getCurrentAccount() != null);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -105,7 +110,11 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
     public List<CIFDTO> getCIFsByBranchId(Integer branchId) {
         return cifRepo.findByBranchId(branchId)
                 .stream()
-                .map(cifMapper::toDTO)
+                .map(cif -> {
+                    CIFDTO dto = cifMapper.toDTO(cif);
+                    dto.setHasCurrentAccount(cif.getCurrentAccount() != null);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

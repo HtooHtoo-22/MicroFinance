@@ -160,5 +160,11 @@ public class DealerServiceImpl implements DealerService {
                 .collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<DealerDTO> getApprovedDealers() {
+        List<Dealer> approvedDealers = dealerRepo.findByStatusforDelar(DEALER.ACTIVE); // Fetch only ACTIVE dealers
+        return approvedDealers.stream()
+                .map(dealerMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }
