@@ -30,9 +30,6 @@ export class SmeLoanRegisterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log("ENTRY USER ID " +this.authService.getCurrentUserId());
-    
-    
     this.smeLoanForm = this.fb.group({
       loanAmount: ['', [Validators.required, Validators.min(1)]],
       interestRate: ['', ],
@@ -48,6 +45,8 @@ export class SmeLoanRegisterComponent implements OnInit {
     this.loadSMERate('SME Loan Interest Rate');
     this.loadServiceChargeRate("Service Charges Rate");
     this.onChanges();
+    
+
   }
 
   onSubmit(): void {
@@ -82,6 +81,7 @@ export class SmeLoanRegisterComponent implements OnInit {
       next: (rate: Rate) => {
         this.rateValue = rate.value; // Assuming the rate object has a 'value' property
         console.log('Rate Value:', this.rateValue); // Log the rate value for debugging
+        this.smeLoanForm.patchValue({ interestRate: this.rateValue });
       },
       error: (err) => {
         console.error('Error fetching rate:', err);

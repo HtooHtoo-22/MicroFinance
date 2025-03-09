@@ -67,10 +67,7 @@ public class SMELoanServiceImpl implements SMELoanService {
         BigDecimal serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate").divide(BigDecimal.valueOf(100));
         BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRate);
         smeLoan.setServiceCharge(serviceCharges);
-
-        // Set interest rate
-        BigDecimal interestRate = rateRepo.findValueByRateType("SME Loan Interest Rate");
-        smeLoan.setInterestRate(interestRate);
+        smeLoan.setInterestRate(dto.getInterestRate());
 
         // Validate collateral
         BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
@@ -169,8 +166,8 @@ public class SMELoanServiceImpl implements SMELoanService {
                     .orElseThrow(() -> new NotFoundException("Collateral Id not found " + collateralId));
 
             // Check if the collateral is already used
-            SMELoanHasCollateral existingLoanCollateral = smeLoanHasCollateralRepo.findByCollateral(collateral);
-            if (existingLoanCollateral != null) {
+            List<SMELoanHasCollateral> existingLoanCollaterals = smeLoanHasCollateralRepo.findByCollateral(collateral);
+            if (existingLoanCollaterals != null) {
                 BigDecimal totalUsedValue = smeLoanHasCollateralRepo.findTotalUsedValueByCollateralId(collateralId);
                 totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue().subtract(totalUsedValue));
             } else {

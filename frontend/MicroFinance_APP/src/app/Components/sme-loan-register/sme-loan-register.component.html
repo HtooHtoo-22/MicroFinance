@@ -32,9 +32,10 @@
         <div class="space-y-2">
           <label for="rateValue" class="block text-sm font-semibold text-gray-700">SME Loan Annual Interest Rate</label>
           <div class="relative">
-            <input id="rateValue" type="number" [value]="rateValue" readonly
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200 pr-10">
-            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">%</span> <!-- Percentage sign -->
+            <input id="rateValue" type="number" formControlName="interestRate" readonly
+       class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200 pr-10">
+<span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
+
           </div>
         </div>
       </div>

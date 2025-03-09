@@ -56,7 +56,7 @@ public class SMELoan {
     @Column(name = "duration", nullable = false) // Added nullable
     private int duration;
 
-    @Column(name = "principal", nullable = false) // Added nullable
+    @Column(name = "principal") // Added nullable
     private BigDecimal principal;
 
     @ManyToOne
@@ -64,7 +64,7 @@ public class SMELoan {
     private User entryUser;
 
     @ManyToOne
-    @JoinColumn(name = "approvedUser_id", nullable = false)
+    @JoinColumn(name = "approvedUser_id")
     private User approvedUser;
 
     @ManyToOne

@@ -32,8 +32,11 @@ public class SMELoanMapper {
         dto.setEntryUserId(smeLoan.getEntryUser().getId());
         dto.setEntryUserName(smeLoan.getEntryUser().getName()); // Assuming User has a name field
 
-        dto.setApprovedUserId(smeLoan.getApprovedUser().getId());
-        dto.setApprovedUserName(smeLoan.getApprovedUser().getName());
+        if(smeLoan.getApprovedUser()!=null){
+            dto.setApprovedUserId(smeLoan.getApprovedUser().getId());
+            dto.setApprovedUserName(smeLoan.getApprovedUser().getName());
+        }
+
 
         dto.setCurrentAccountId(smeLoan.getCurrentAccount().getId());
         dto.setCurrentAccountaccId(smeLoan.getCurrentAccount().getAccountId()); // Assuming CurrentAccount has accountNumber
