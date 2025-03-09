@@ -8,17 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CollateralController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CollateralController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CurrentAccountDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CurrentAccountDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CollateralMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CollateralMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CurrentAccountMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CurrentAccountMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanHasCollateralRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanHasCollateralRepo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CollateralServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CollateralServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/collateral.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/collateral.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,6 +110,9 @@
       <workItem from="1741316236958" duration="4547000" />
       <workItem from="1741323045596" duration="2066000" />
       <workItem from="1741328410854" duration="4936000" />
+      <workItem from="1741404761942" duration="4409000" />
+      <workItem from="1741410369690" duration="657000" />
+      <workItem from="1741438424398" duration="5557000" />
     </task>
     <servers />
   </component>
