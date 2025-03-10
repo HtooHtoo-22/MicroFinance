@@ -69,7 +69,6 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
         CIF cif = cifMapper.toEntity(dto);
 
         cif.setCifId(cifId);
-
         cif.setBranch(branch);
         cif.setUser(user);
         String frontNRCUrl = cloudinaryService.uploadFile(frontNRC);
@@ -89,11 +88,18 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
     }
 
 
-
     public List<CIFDTO> getAllCIFs() {
         return cifRepo.findAll()
                 .stream()
                 .map(cifMapper::toDTO)  // Convert entity to DTO
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CIFDTO> getCIFsByBranchId(Integer branchId) {
+        return cifRepo.findByBranchId(branchId)
+                .stream()
+                .map(cifMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -155,7 +161,6 @@ public class CIFServiceImpl implements CIFService {  // Removed abstract
 
         return value; // Otherwise, return as is
     }
-
 
 
     private Field getField(Class<?> clazz, String fieldName) {

@@ -28,10 +28,25 @@ public class CurrentAccountController {
         return ApiResponse.success(HttpStatus.OK, 200, "Current Account received successfully", getACCDTO);
     }
 
+    @PutMapping("/{accountId}")
+    public ApiResponse<CurrentAccountDTO> updateAccount(
+            @PathVariable String accountId,
+            @RequestBody CurrentAccountDTO dto
+    ) {
+        CurrentAccountDTO updatedAccount = currentAccountService.updateCurrentAccount(accountId, dto);
+        return ApiResponse.success(HttpStatus.OK, 200, "Account updated successfully", updatedAccount);
+    }
+
     @GetMapping("/list")
     public ApiResponse<List<CurrentAccountDTO>> getAllCurrentACC() {
         List<CurrentAccountDTO> currentAccountDTOS = currentAccountService.getAllCurrentACC();
         return ApiResponse.success(HttpStatus.OK, 200, "Current Accounts retrieved successfully", currentAccountDTOS);
+    }
+
+    @GetMapping("/by-cif/{cifId}") // Ensure this matches the endpoint you're calling
+    public ApiResponse<List<CurrentAccountDTO>> getAccountsByCifId(@PathVariable Integer cifId) {
+        List<CurrentAccountDTO> accounts = currentAccountService.getAccountsByCifId(cifId);
+        return ApiResponse.success(HttpStatus.OK, 200, "Accounts retrieved successfully", accounts);
     }
 
     @GetMapping("/count/{branchId}")
@@ -45,13 +60,11 @@ public class CurrentAccountController {
         return ApiResponse.success(HttpStatus.OK, 200, "Current Account updated successfully", updatedAccount);
     }
 
-
     @PatchMapping("/{accountId}/freeze")
     public ApiResponse<CurrentAccountDTO> freezeAccount(@PathVariable String accountId, @RequestParam boolean freeze) {
         CurrentAccountDTO updatedAccount = currentAccountService.updateFreezeStatus(accountId, freeze);
         String message = freeze ? "Account frozen successfully" : "Account unfrozen successfully";
         return ApiResponse.success(HttpStatus.OK, 200, message, updatedAccount);
     }
-
 
 }

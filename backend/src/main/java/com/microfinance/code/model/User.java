@@ -40,7 +40,7 @@ public class User implements UserDetails{
     @Column(name = "create_date", nullable = false)
     private LocalDateTime CreateDate;
     @Column(name = "status")
-    private Boolean active;
+    private boolean active;
     @PrePersist
     protected void onCreate() {
         if (CreateDate == null) {
@@ -77,7 +77,7 @@ public class User implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 
 }

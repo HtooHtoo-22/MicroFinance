@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
         String generatedPassword = generatePassword(role.getRoleName());
         String UserId = generateUserId(branch.getCode());
         User user = userMapper.toEntity(dto, branch, role, UserId);
-
         user.setEmail(generatedEmail);
 
         if (generatedPassword == null || generatedPassword.isEmpty()) {
@@ -63,6 +62,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(passwordEncoder.encode(generatedPassword));
         System.out.println("Encoded Password: " + user.getPassword());
+        user.setActive(true);
         User savedUser = userRepo.save(user);
         return userMapper.toResponseDTO(savedUser);
     }
@@ -135,4 +135,6 @@ public class UserServiceImpl implements UserService {
     public Long getActiveUserCountByBranch(Integer branchId) {
         return userRepo.countActiveUsersByBranch(branchId);
     }
+
+
 }

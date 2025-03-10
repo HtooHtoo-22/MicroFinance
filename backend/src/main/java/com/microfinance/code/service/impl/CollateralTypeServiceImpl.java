@@ -36,6 +36,7 @@ public class CollateralTypeServiceImpl implements CollateralTypeService {
         List<CollateralType> collateralTypeList = collateralTypeRepo.findByStatus(false);
         return collateralTypeMapper.toDTOList(collateralTypeList);
     }
+
     public CollateralTypeDTO getCollateralTypeById(Integer id) {
         return collateralTypeRepo.findById(id)
                 .map(collateralTypeMapper::toDTO)

@@ -42,10 +42,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
-    @Override
-    public void hello() {
-        System.out.println("Hello");
-    }
+
+
     @Override
     public ProductDTO createProduct(ProductDTO dto, MultipartFile userPhoto) throws IOException {
         // Upload image to Cloudinary
@@ -70,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO updateProduct(Integer id, Map<String, Object> updates) {
+    public ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo) {
         Optional<Product> optionalProduct = productRepo.findById(id);
         if (!optionalProduct.isPresent()) {
             throw new RuntimeException("Product not found with ID: " + id);
@@ -78,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = optionalProduct.get();
 
+        // Update fields dynamically
         updates.forEach((key, value) -> {
             switch (key) {
                 case "productName":
@@ -85,9 +84,6 @@ public class ProductServiceImpl implements ProductService {
                     break;
                 case "value":
                     product.setValue(new BigDecimal(value.toString()));
-                    break;
-                case "photo":
-                    product.setPhoto((String) value);
                     break;
                 case "dealerRegisterId":
                     Dealer dealer = new Dealer();
@@ -102,6 +98,17 @@ public class ProductServiceImpl implements ProductService {
             }
         });
 
+        // Handle image upload if a new file is provided
+        if (photo != null && !photo.isEmpty()) {
+            try {
+                String photoUrl = cloudinaryService.uploadFile(photo);
+                product.setPhoto(photoUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image: " + e.getMessage());
+            }
+        }
+
+        // Save updated product
         Product updatedProduct = productRepo.save(product);
         return productMapper.toDTO(updatedProduct);
     }

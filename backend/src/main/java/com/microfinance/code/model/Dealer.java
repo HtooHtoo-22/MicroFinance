@@ -1,6 +1,6 @@
 package com.microfinance.code.model;
 
-import com.microfinance.code.status.DealerStatus;
+import com.microfinance.code.status.DEALER;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,14 +31,24 @@ public class Dealer {
     @Column(name = "register_date", nullable = false)
     private LocalDate registerDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 10)
-    private DealerStatus status;
-
-    @Column(name = "password", nullable = false, length = 255)
-    private String password; // Store hashed password
-
     @ManyToOne
     @JoinColumn(name = "current_account_id", nullable = false)
     private CurrentAccount currentAccount;
+
+    @Column(name = "company_value", nullable = false)
+    private Double companyValue;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statusfordelar", nullable = false, length = 10)
+    private DEALER statusforDelar;
+
+    @PrePersist
+    protected void onCreate() {
+        if (statusforDelar == null) {
+            statusforDelar = DEALER.PENDING;
+        }
+        if (registerDate == null) {
+            registerDate = LocalDate.now();
+        }
+    }
 }

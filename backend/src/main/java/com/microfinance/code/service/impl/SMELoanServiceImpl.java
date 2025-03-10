@@ -39,6 +39,8 @@ public class SMELoanServiceImpl implements SMELoanService {
     private TransactionService transactionService;
     @Autowired
     private SMERepaymentScheduleService scheduleService;
+    @Autowired
+    private TransactionRepository transactionRepository;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -59,11 +61,12 @@ public class SMELoanServiceImpl implements SMELoanService {
         smeLoan.setEntryUser(entryUser);
         smeLoan.setApprovedUser(approvedUser);
         smeLoan.setCurrentAccount(currentAcc);
-        Double serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate") / 100;
-        BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
-        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRateBD);
+        BigDecimal serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate").divide(BigDecimal.valueOf(100));
+        //BigDecimal serviceChargeRateBD = BigDecimal.valueOf(serviceChargeRate); // Convert Double to BigDecimal
+        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRate);
         smeLoan.setServiceCharge(serviceCharges);
-
+        BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
+        smeLoan.setInterestRate(interestRate);
         BigDecimal totalRemainingCollateralValue = calculateTotalRemainingCollateralValue(dto.getCollateralIds());
 
         // Validate if the collateral is enough for the loan amount
@@ -112,7 +115,37 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Save the SME Loan status update
         smeLoanRepository.save(smeLoan);
     }
+    @Override
+    public void repayPrincipal(Integer smeLoanId, BigDecimal repaidPrincipal) {
+        // Retrieve the SME loan by its ID
+        SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
+                .orElseThrow(() -> new RuntimeException("SME Loan not found"));
 
+
+        // Subtract the repaid principal from the current principal
+        BigDecimal currentPrincipal = smeLoan.getPrincipal();
+        BigDecimal newPrincipal = currentPrincipal.subtract(repaidPrincipal);
+        smeLoan.setPrincipal(newPrincipal);
+
+        // Update the principal in the SME loan (uncomment if needed)
+        // smeLoan.setPrincipal(newPrincipal);
+
+        // Adjust the schedules
+        scheduleService.editSchedule(smeLoan, newPrincipal);
+
+        // Retrieve the current account associated with the SME loan
+        CurrentAccount currentAccount = smeLoan.getCurrentAccount();
+
+        // Create and save the transaction
+        Transaction transaction = new Transaction();
+        transaction.setType(transactionType.CR); // Ensure enum matches your transactionType
+        transaction.setAmount(repaidPrincipal);
+        transaction.setCurrentAccountId(currentAccount); // Links to the CurrentAccount
+        transactionRepository.save(transaction);
+
+        // Save the updated SME loan
+        smeLoanRepository.save(smeLoan);
+    }
     private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
         BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
 

@@ -31,9 +31,9 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
         String accountId = generateAccountId(dto.getCifId());
         dto.setAccountId(accountId);
-        dto.setFreezeStatus(true);
         CurrentAccount account = CurrentAccountMapper.toEntity(dto);
         account.setCif(cif); // Set the CIF entity
+
         CurrentAccount savedAccount = currentAccountRepository.save(account);
         return CurrentAccountMapper.toDTO(savedAccount);
     }
@@ -45,24 +45,10 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         return CurrentAccountMapper.toDTO(account);
     }
 
-    @Override
-    public List<CurrentAccountDTO> getAllCurrentACC() {
-        return currentAccountRepository.findAll()
-                .stream()
-                .map(CurrentAccountMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
     private String generateAccountId(Integer cifId) {
         String timestamp = String.valueOf(System.currentTimeMillis()).substring(8); // Last 5 digits of timestamp
         return "ACC-" + cifId + "-" + timestamp;
     }
-
-    @Override
-    public long getCurrentAccountCountByBranch(Integer branchId) {
-        return currentAccountRepository.countByBranchId(branchId);
-    }
-
 
     @Override
     public CurrentAccountDTO updateCurrentAccount(String accountId, CurrentAccountDTO dto) {
@@ -88,6 +74,32 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     }
 
     @Override
+    public List<CurrentAccountDTO> getAllCurrentACC() {
+        return currentAccountRepository.findAll()
+                .stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // CurrentAccountServiceImpl.java
+    @Override
+    public List<CurrentAccountDTO> getAccountsByCifId(Integer cifId) {
+        System.out.println("Fetching accounts for CIF ID: " + cifId); // Log the CIF ID
+        List<CurrentAccount> accounts = currentAccountRepository.findByCif_Id(cifId);
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found for CIF ID: " + cifId); // Log if no accounts are found
+        }
+        return accounts.stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long getCurrentAccountCountByBranch(Integer branchId) {
+        return currentAccountRepository.countByBranchId(branchId);
+    }
+
+    @Override
     public CurrentAccountDTO updateFreezeStatus(String accountId, boolean freeze) {
         CurrentAccount account = currentAccountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new NotFoundException("Account not found with accountId: " + accountId));
@@ -97,6 +109,5 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
         return CurrentAccountMapper.toDTO(updatedAccount);
     }
-
 
 }

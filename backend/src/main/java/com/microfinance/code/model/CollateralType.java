@@ -20,5 +20,4 @@ public class CollateralType {
     @Column(name = "status",nullable = false)
     private boolean status;
 
-
 }

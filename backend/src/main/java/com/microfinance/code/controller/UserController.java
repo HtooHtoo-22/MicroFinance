@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -33,10 +32,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO dto) {
+        System.out.println("Updating user with ID: " + id);
+        System.out.println("UserDTO: " + dto.toString());
         try {
             UserResponseDTO updatedUser = userService.updateUser(id, dto);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
+            e.printStackTrace(); // Log the exception
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -47,22 +49,26 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/active/count/{branchId}")
-    public Long getActiveUserCountByBranch(@PathVariable Integer branchId) {
-        return userService.getActiveUserCountByBranch(branchId);
-    }
-
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(HttpStatus.OK, 200, "Users retrieved successfully", users));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Integer id) {
-        ApiResponse<String> response = userService.deleteUser(id);
-        return ResponseEntity.status(response.getHttpStatus()).body(response);
+        try {
+            ApiResponse<String> response = userService.deleteUser(id);
+            return ResponseEntity.status(response.getHttpStatus()).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete user"));
+        }
     }
 
-
+    @GetMapping("/active/count/{branchId}")
+    public Long getActiveUserCountByBranch(@PathVariable Integer branchId) {
+        return userService.getActiveUserCountByBranch(branchId);
+    }
 }

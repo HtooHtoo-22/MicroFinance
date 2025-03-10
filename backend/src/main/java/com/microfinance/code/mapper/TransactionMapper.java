@@ -16,6 +16,7 @@ public class TransactionMapper {
 
     public Transaction toEntity(TransactionDTO dto) {
         Transaction transaction = new Transaction();
+        transaction.setId(dto.getId());
         transaction.setType(dto.getType());
         transaction.setAmount(dto.getAmount());
         transaction.setDate(dto.getDate());
@@ -29,6 +30,7 @@ public class TransactionMapper {
 
     public TransactionDTO toDTO(Transaction transaction) {
         TransactionDTO dto = new TransactionDTO();
+        dto.setId(transaction.getId());
         dto.setType(transaction.getType());
         dto.setAmount(transaction.getAmount());
         dto.setDate(transaction.getDate());

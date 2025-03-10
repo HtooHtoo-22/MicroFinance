@@ -14,8 +14,6 @@ public class UserMapper {
         return User.builder()
                 .userId(userId)
                 .name(dto.getName())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
                 .branch(branch)
                 .role(role)
                 .active(dto.isActive())
@@ -28,9 +26,11 @@ public class UserMapper {
                 .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .password(user.getPassword())
                 .branchName(user.getBranch().getName())
                 .roleName(user.getRole().getRoleName())
                 .createDate(user.getCreateDate().toString())
+
                 .build();
     }
 }

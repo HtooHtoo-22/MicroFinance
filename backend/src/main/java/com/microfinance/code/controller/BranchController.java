@@ -6,12 +6,13 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.mapper.BranchMapper;
 import com.microfinance.code.model.Branch;
 import com.microfinance.code.service.interFace.BranchService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/branches")
 public class BranchController {
@@ -50,24 +51,33 @@ public class BranchController {
             @PathVariable Integer id,
             @RequestBody BranchDTO dto
     ) {
-        Branch updatedBranch = branchService.updateBranch(id, dto);
-
-        if (updatedBranch == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error(HttpStatus.NOT_FOUND, 404, "Branch not found"));
+        try {
+            Branch updatedBranch = branchService.updateBranch(id, dto);
+            if (updatedBranch == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error(HttpStatus.NOT_FOUND, 404, "Branch not found"));
+            }
+            return ResponseEntity.ok(
+                    ApiResponse.success(HttpStatus.OK, 200, "Branch updated successfully", branchMapper.toDTO(updatedBranch))
+            );
+        } catch (Exception e) {
+            log.error("Error updating branch: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to update branch"));
         }
-
-        return ResponseEntity.ok(
-                ApiResponse.success(HttpStatus.OK, 200, "Branch updated successfully", branchMapper.toDTO(updatedBranch))
-        );
-
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteBranch(@PathVariable Integer id) {
-        ApiResponse<String> response = branchService.deleteBranch(id);
-        return ResponseEntity.status(response.getHttpStatus()).body(response);
+        try {
+            ApiResponse<String> response = branchService.deleteBranch(id);
+            return ResponseEntity.status(response.getHttpStatus()).body(response);
+        } catch (Exception e) {
+            log.error("Error deleting branch: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Failed to delete branch"));
+        }
     }
 
 }

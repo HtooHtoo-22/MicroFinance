@@ -12,6 +12,7 @@ public class UserResponseDTO {
     private String userId;
     private String name;
     private String email;
+    private String password;
     private String branchName;
     private String roleName;
     private String createDate;

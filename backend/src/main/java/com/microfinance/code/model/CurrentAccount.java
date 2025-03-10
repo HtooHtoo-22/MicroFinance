@@ -3,6 +3,7 @@ package com.microfinance.code.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -25,15 +26,16 @@ public class CurrentAccount {
     private Double minAmount;
 
     @Column(name = "created_date", nullable = false)
+    @CreationTimestamp // Automatically sets the current timestamp
     private LocalDateTime createdDate;
 
-    @Column(name = "total_balence", nullable = false)
+    @Column(name = "total_balence")
     private Double totalBalence;
 
     @Column(name = "freeze_status", nullable = false)
-    private boolean freezeStatus;
+    private boolean freezeStatus= true;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cif_id", nullable = false)
     private CIF cif;
 }

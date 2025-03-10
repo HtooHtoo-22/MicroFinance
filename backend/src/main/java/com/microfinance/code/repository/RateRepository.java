@@ -6,12 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 @Repository
 public interface RateRepository extends JpaRepository<Rate, Integer> {
     Rate findByRateType(String rateType);
 
     @Query("SELECT r.value FROM Rate r WHERE r.rateType = :rateType")
-    Double findValueByRateType(@Param("rateType") String rateType);
+    BigDecimal findValueByRateType(@Param("rateType") String rateType);
 
 
 }

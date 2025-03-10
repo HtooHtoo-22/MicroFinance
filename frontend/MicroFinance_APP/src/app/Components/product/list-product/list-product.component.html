@@ -1,0 +1,40 @@
+<div class="container">
+    <h2>Product List</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product Name</th>
+          <th>Value</th>
+          <th>Photo</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.id }}</td>
+          <td>{{ product.productName }}</td>
+          <td>{{ product.value | currency }}</td>
+          <td>
+            <img [src]="product.photo" alt="Product Image" width="50" height="50" />
+          </td>
+          <td>
+            <span [ngClass]="{'text-success': product.status, 'text-danger': !product.status}">
+              {{ product.status ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <a [routerLink]="['/edit-product', product.id]" class="btn btn-primary">Edit</a>
+
+            <button (click)="selectProduct(product)" 
+          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+          Select
+        </button>
+
+            
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

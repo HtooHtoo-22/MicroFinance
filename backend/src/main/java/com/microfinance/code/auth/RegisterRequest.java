@@ -1,10 +1,12 @@
 package com.microfinance.code.auth;
 
 import com.microfinance.code.model.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +14,5 @@ public class RegisterRequest {
     private String name;
     private String email;
     private String password;
-    private Role role;  // Ensure Role is defined correctly
+    private Role role;
 }

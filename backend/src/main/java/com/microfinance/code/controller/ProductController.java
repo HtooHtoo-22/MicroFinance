@@ -1,5 +1,6 @@
 package com.microfinance.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.dto.ProductDTO;
@@ -45,13 +46,31 @@ public class ProductController {
         List<ProductDTO> products = productService.getProductsByDealerId(dealerId);
         return ApiResponse.success(HttpStatus.OK, 200, "Products fetched successfully", products);
     }
-    @PatchMapping("/{id}")
+
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Integer id,
-            @RequestBody Map<String, Object> updates) {
+            @RequestParam("product") String productJson,
+            @RequestPart(value = "photo", required = false) MultipartFile photo) {
 
-        ProductDTO updatedProduct = productService.updateProduct(id, updates);
-        return ResponseEntity.ok(updatedProduct);
+        try {
+            System.out.println("Received ID: " + id);
+            System.out.println("Received productJson: " + productJson);
+            if (photo != null) {
+                System.out.println("Received file: " + photo.getOriginalFilename());
+            } else {
+                System.out.println("No file received");
+            }
+
+            // Convert JSON string to a Map
+            Map<String, Object> updates = objectMapper.readValue(productJson, new TypeReference<Map<String, Object>>() {});
+
+            ProductDTO updatedProduct = productService.updateProduct(id, updates, photo);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
 

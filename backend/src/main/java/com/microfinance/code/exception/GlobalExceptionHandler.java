@@ -30,13 +30,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)  // 500 Internal Server Error
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "An unexpected error occurred: " + ex.getMessage()));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "" + ex.getMessage()));
     }
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ApiResponse<String>> handleValidationException(ValidationException ex) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)  // 500 Internal Server Error
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500,  ex.getMessage()));
     }
 }
