@@ -35,7 +35,7 @@ public class CollateralMapper {
         collateral.setDescription(dto.getDescription());
         collateral.setAddress(dto.getAddress());
         collateral.setImage(dto.getImage());
-
+        collateral.setName(dto.getName());
         // Setting related entities using IDs
 
 
@@ -63,7 +63,7 @@ public class CollateralMapper {
         dto.setDescription(collateral.getDescription());
         dto.setAddress(collateral.getAddress());
         dto.setImage(collateral.getImage());
-
+        dto.setName(collateral.getName());
         // Check collateral type
         if (collateral.getCollateralType() != null) {
 

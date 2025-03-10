@@ -76,7 +76,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .userId(user.getUserId()) // Add userId
+                .userId(user.getId()) // Add userId
                 .branchId(user.getBranch().getId().toString())
                 .role(user.getRole().getId().toString())
                 .build();

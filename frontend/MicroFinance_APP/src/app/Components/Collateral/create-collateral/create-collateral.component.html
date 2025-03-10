@@ -16,6 +16,15 @@
       </div>
       
        <div class="mb-4">
+
+        <div>
+          <label class="block text-sm/6 font-medium text-gray-900">Name</label>
+          <input type="text" formControlName="name" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          <div *ngIf="collateralForm.get('name')?.invalid && collateralForm.get('name')?.touched" class="text-red-500 text-xs">
+            Name is required.
+          </div>
+        </div>
+
         <label class="block text-sm font-medium text-gray-900">Current Account</label>
         <select formControlName="currentAccountId"
                 class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md 

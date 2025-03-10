@@ -39,6 +39,7 @@ export class CollateralService {
     if (collateral.imageFile) {
       formData.append("imageFile", collateral.imageFile);
     }
+    formData.append("name", collateral.name || '');
   
     return this.http.post<ApiResponse<any>>(`${this.apiUrl2}/create`, formData);
   }
@@ -56,5 +57,8 @@ export class CollateralService {
   }
   getCollateralById(id: number): Observable<ApiResponse<CollateralDTO>> {
     return this.http.get<ApiResponse<CollateralDTO>>(`${this.apiUrl2}/${id}`);
+  }
+  getCollateralByCurrentAccountId(id: string): Observable<ApiResponse<CollateralDTO>> {
+    return this.http.get<ApiResponse<CollateralDTO>>(`${this.apiUrl2}/getByAcc/${id}`);
   }
 }

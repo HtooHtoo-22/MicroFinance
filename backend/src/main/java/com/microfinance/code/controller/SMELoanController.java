@@ -20,14 +20,8 @@ public class SMELoanController {
     @PostMapping("/register")
     public ApiResponse<SMELoanDTO> createLoan(@RequestBody SMELoanDTO dto) {
         System.out.println("SME DTO : "+dto);
-        try {
-            SMELoanDTO createdLoan = smeLoanService.createSMELoan(dto);
-            return ApiResponse.success(HttpStatus.CREATED, 201, "SME Loan Register Successfully", createdLoan);
-        } catch (Exception ex) {
-            System.out.println("Error creating loan: " + ex.getMessage());
-            ex.printStackTrace();
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "An unexpected error occurred: " + ex.getMessage());
-        }
+        SMELoanDTO createdLoan = smeLoanService.createSMELoan(dto);
+        return ApiResponse.success(HttpStatus.CREATED, 201, "SME Loan Register Successfully", createdLoan);
     }
     @PostMapping("/approve/{id}")
     public ApiResponse approveLoan(@PathVariable("id")Integer loanId){

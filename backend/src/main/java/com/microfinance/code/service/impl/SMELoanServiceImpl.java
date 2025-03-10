@@ -44,12 +44,12 @@ public class SMELoanServiceImpl implements SMELoanService {
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
-        User entryUser = userRepository.findByUserId(dto.getEntryUserGenerateId())
-                .orElseThrow(() -> new NotFoundException("Entry user not found"));
+//        User entryUser = userRepository.findByUserId(dto.getEntryUserGenerateId())
+//                .orElseThrow(() -> new NotFoundException("Entry user not found"));
 
         // Fetch approved user
-//        User approvedUser = userRepository.findById(dto.getApprovedUserId())
-//                .orElseThrow(() -> new NotFoundException("Approved user not found"));
+        User entryUser = userRepository.findById(dto.getEntryUserId())
+                .orElseThrow(() -> new NotFoundException("Entry user not found"));
 
 
 
@@ -64,9 +64,7 @@ public class SMELoanServiceImpl implements SMELoanService {
         smeLoan.setCurrentAccount(currentAcc);
 
         // Calculate service charges
-        BigDecimal serviceChargeRate = rateRepo.findValueByRateType("Service Charges Rate").divide(BigDecimal.valueOf(100));
-        BigDecimal serviceCharges = smeLoan.getLoanAmount().multiply(serviceChargeRate);
-        smeLoan.setServiceCharge(serviceCharges);
+        smeLoan.setServiceCharge(dto.getServiceCharge());
         smeLoan.setInterestRate(dto.getInterestRate());
 
         // Validate collateral
@@ -169,7 +167,10 @@ public class SMELoanServiceImpl implements SMELoanService {
             List<SMELoanHasCollateral> existingLoanCollaterals = smeLoanHasCollateralRepo.findByCollateral(collateral);
             if (existingLoanCollaterals != null) {
                 BigDecimal totalUsedValue = smeLoanHasCollateralRepo.findTotalUsedValueByCollateralId(collateralId);
-                totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue().subtract(totalUsedValue));
+                totalRemainingCollateralValue = totalRemainingCollateralValue.add(
+                        collateral.getValue().subtract(totalUsedValue != null ? totalUsedValue : BigDecimal.ZERO)
+                );
+
             } else {
                 totalRemainingCollateralValue = totalRemainingCollateralValue.add(collateral.getValue());
             }

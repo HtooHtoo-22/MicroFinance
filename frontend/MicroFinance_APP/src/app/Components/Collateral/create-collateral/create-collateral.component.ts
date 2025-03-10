@@ -42,6 +42,8 @@ export class CreateCollateralComponent implements OnInit {
       address: ['', [Validators.required, Validators.maxLength(200)]],
       //image: ['', [Validators.required, Validators.maxLength(255)]],
       collateralTypeId: [null, Validators.required],
+      name: ['', [Validators.required, Validators.maxLength(30)]]
+
     });
   }
 

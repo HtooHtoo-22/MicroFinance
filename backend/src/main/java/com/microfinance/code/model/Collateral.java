@@ -16,6 +16,11 @@ public class Collateral {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "name", nullable = false, length = 30) // Added nullable and length
+    private String name;
+
+
+
     @Column(name = "value", nullable = false) // Added nullable
     private BigDecimal value;
 

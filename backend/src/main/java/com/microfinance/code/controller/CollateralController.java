@@ -25,7 +25,8 @@ public class CollateralController {
             @RequestParam("address") String address,
             @RequestParam("collateralTypeId") Integer collateralTypeId,
             @RequestParam("currentAccountId") Integer currentAccountId,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam("name") String name
     )
     {
         CollateralDTO collateralDTO = new CollateralDTO();
@@ -35,7 +36,7 @@ public class CollateralController {
         collateralDTO.setCollateralTypeId(collateralTypeId);
         collateralDTO.setCurrentAccountId(currentAccountId);
         collateralDTO.setImageFile(imageFile);
-
+        collateralDTO.setName(name);
         System.out.println("Collateral DTO : "+collateralDTO);
         CollateralDTO createdCollateral = collateralService.createCollateral(collateralDTO);
         return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral created successfully", createdCollateral);
@@ -55,5 +56,10 @@ public class CollateralController {
     public ApiResponse<String> deleteCollateral(@PathVariable Integer id) {
         collateralService.deleteCollateral(id);
         return ApiResponse.success(HttpStatus.OK, 200, "Collateral deleted successfully");
+    }
+    @GetMapping("/getByAcc/{id}")
+    public ApiResponse<List<CollateralDTO>> getCollateralByAcc(@PathVariable String id) {
+        List<CollateralDTO> collaterals = collateralService.getCollateralByAccId(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "Collateral retrieved successfully", collaterals);
     }
 }

@@ -79,4 +79,12 @@ public class CollateralServiceImpl implements CollateralService {
                 .orElseThrow(() -> new NotFoundException("Collateral not found with ID: " + id));
         collateralRepo.delete(collateral);
     }
+    public List<CollateralDTO> getCollateralByAccId(String id){
+        CurrentAccount acc = accountRepo.findByAccountId(id)
+                .orElseThrow(()->new NotFoundException("Current Account Not Found With This ID : "+id));
+        List<Collateral> collaterals = collateralRepo.findByCurrentAccount(acc);
+        return collaterals.stream()
+                .map(collateralMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }
