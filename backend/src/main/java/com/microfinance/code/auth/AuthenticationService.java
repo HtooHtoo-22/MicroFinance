@@ -1,8 +1,11 @@
 package com.microfinance.code.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microfinance.code.exception.NotFoundException;
+import com.microfinance.code.model.Dealer;
 import com.microfinance.code.model.Token;
 import com.microfinance.code.model.User;
+import com.microfinance.code.repository.DealerRepo;
 import com.microfinance.code.repository.TokenRepo;
 import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.JWTService;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,7 @@ public class AuthenticationService {
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserRepo userRepo;
+    private final DealerRepo dealerRepository;
 
     public AuthenticationResponse register(RegisterRequest request) throws BadRequestException {
         if (userRepo.existsByEmail(request.getEmail())) {
@@ -62,9 +67,11 @@ public class AuthenticationService {
 
         // Get the authenticated user from the principal
         User user = (User) authentication.getPrincipal();
+        String currentAccountId = null;
 
         System.out.println("User authenticated: " + user.getEmail());
         System.out.println("Roles: " + user.getAuthorities());
+
         // Generate tokens
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -76,7 +83,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .userId(user.getUserId()) // Add userId
+                .Id(user.getId())
                 .branchId(user.getBranch().getId().toString())
                 .role(user.getRole().getRoleName())
                 .build();

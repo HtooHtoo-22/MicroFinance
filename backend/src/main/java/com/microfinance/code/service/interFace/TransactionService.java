@@ -11,4 +11,4 @@ public interface TransactionService {
     List<TransactionDTO> getAllTransactionHistory();
 
     List<TransactionDTO> getTransactionsByCifId(Integer cifId);
-}
+    List<TransactionDTO> getTransactionsByCurrentAccountId(String currentAccountId);}

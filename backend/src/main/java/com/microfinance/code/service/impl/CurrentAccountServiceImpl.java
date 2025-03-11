@@ -1,12 +1,15 @@
 package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.CurrentAccountDTO;
+import com.microfinance.code.dto.TransactionDTO;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.CurrentAccountMapper;
+import com.microfinance.code.mapper.TransactionMapper;
 import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.CIF;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.CIFRepo;
+import com.microfinance.code.repository.TransactionRepository;
 import com.microfinance.code.service.interFace.CurrentAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,12 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
     @Autowired
     private CIFRepo cifRepo;
+
+    @Autowired
+    private TransactionRepository transactionRepo;
+
+    @Autowired
+    private TransactionMapper transactionMapper;
 
     @Override
     public CurrentAccountDTO createCurrentAccount(CurrentAccountDTO dto) {
@@ -110,4 +119,15 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         return CurrentAccountMapper.toDTO(updatedAccount);
     }
 
+//    @Override
+//    // TransactionService.java
+//    public List<TransactionDTO> getTransactionsByCurrentAccountId(String currentAccountId) {
+//        CurrentAccount currentAccount = currentAccountRepository.findByAccountId(currentAccountId)
+//                .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + currentAccountId));
+//        return transactionRepo
+//                .findByCurrentAccount(currentAccount)
+//                .stream()
+//                .map(transactionMapper::toDTO)
+//                .collect(Collectors.toList());
+//    }
 }

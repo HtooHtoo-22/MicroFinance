@@ -1,5 +1,6 @@
 package com.microfinance.code.mapper;
 
+import com.microfinance.code.dto.CurrentAccountDTO;
 import com.microfinance.code.dto.DealerDTO;
 import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.Dealer;
@@ -43,7 +44,9 @@ public class DealerMapper {
         }
 
         if (dealer.getCurrentAccount() != null) {
-            dto.setCurrentAccountId(dealer.getCurrentAccount().getAccountId()); // Use accountId string
+            CurrentAccountDTO accountDTO = new CurrentAccountDTO();
+            accountDTO.setAccountId(dealer.getCurrentAccount().getAccountId());
+            dto.setCurrentAccountId(accountDTO.getAccountId());
         }
         return dto;
     }

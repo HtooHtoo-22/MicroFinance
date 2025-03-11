@@ -51,4 +51,10 @@ public class TransactionController {
         List<TransactionDTO> transactions = transactionService.getTransactionsByCifId(cifId);
         return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved", transactions);
     }
+
+    @GetMapping("/transactions/{currentAccountId}")
+    public ApiResponse<List<TransactionDTO>> getTransactionsByCurrentAccountId(@PathVariable String currentAccountId) {
+        List<TransactionDTO> transactions = transactionService.getTransactionsByCurrentAccountId(currentAccountId);
+        return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved successfully", transactions);
+    }
 }

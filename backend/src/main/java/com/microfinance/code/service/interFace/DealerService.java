@@ -2,6 +2,8 @@ package com.microfinance.code.service.interFace;
 
 import com.microfinance.code.dto.CIFDTO;
 import com.microfinance.code.dto.DealerDTO;
+import com.microfinance.code.model.Dealer;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,4 +18,5 @@ public interface DealerService {
     DealerDTO rejectDealer(Integer dealerId);
     List<DealerDTO> getApprovedDealers(); // Add this method
 
+    Dealer findByEmail(String email);
 }

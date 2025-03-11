@@ -78,7 +78,7 @@ public class DealerServiceImpl implements DealerService {
         User user = new User();
         user.setUserId(generateUserId(currentAccount.getAccountId()));
         user.setName(dealer.getBusinessName());
-        user.setEmail(cleanBusinessName + "@richcoin.com");
+        user.setEmail(dealer.getEmail());
         if (userRepo.findByEmail(user.getEmail()).isPresent()) {
             throw new AlreadyExistException(" email already exists");
         }
@@ -109,8 +109,8 @@ public class DealerServiceImpl implements DealerService {
         dealer.setStatusforDelar(DEALER.ACTIVE);
         Dealer updatedDealer = dealerRepo.save(dealer);
 
-        // Generate user email from business name (same as during creation)
-        String userEmail = generateUserEmail(dealer.getBusinessName());
+        // Use the dealer's email directly
+        String userEmail = dealer.getEmail();
 
         // Activate user using the correct email
         userRepo.findByEmail(userEmail)
@@ -131,8 +131,8 @@ public class DealerServiceImpl implements DealerService {
         dealer.setStatusforDelar(DEALER.REJECTED);
         Dealer updatedDealer = dealerRepo.save(dealer);
 
-        // Generate user email from business name (same as during creation)
-        String userEmail = generateUserEmail(dealer.getBusinessName());
+        // Use the dealer's email directly
+        String userEmail = dealer.getEmail();
 
         // Deactivate user using the correct email
         userRepo.findByEmail(userEmail)
@@ -154,8 +154,9 @@ public class DealerServiceImpl implements DealerService {
 
     @Override
     public List<DealerDTO> getAllDealers() {
-        List<Dealer> dealers = dealerRepo.findAll();
-        return dealers.stream()
+        // Fetch only PENDING dealers
+        List<Dealer> pendingDealers = dealerRepo.findByStatusforDelar(DEALER.PENDING);
+        return pendingDealers.stream()
                 .map(dealerMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -166,5 +167,10 @@ public class DealerServiceImpl implements DealerService {
         return approvedDealers.stream()
                 .map(dealerMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Dealer findByEmail(String email) {
+        return dealerRepo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Dealer not found with email: " + email));
     }
 }
