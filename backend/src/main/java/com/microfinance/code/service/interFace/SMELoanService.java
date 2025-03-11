@@ -3,10 +3,13 @@ package com.microfinance.code.service.interFace;
 import com.microfinance.code.dto.SMELoanDTO;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface SMELoanService {
     public SMELoanDTO createSMELoan(SMELoanDTO dto);
     public void approveSMELoan(Integer smeLoanId);
     public void rejectSMELoan(Integer smeLoanId);
     public void repayPrincipal(Integer smeLoanId , BigDecimal repaidPrincipal);
+
+    public List<SMELoanDTO> getAllLoansByBranchId(Integer branchId);
 }

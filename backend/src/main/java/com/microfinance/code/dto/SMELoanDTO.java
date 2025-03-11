@@ -31,5 +31,5 @@ public class SMELoanDTO {
     private String approvedUserName;
     private Integer currentAccountId;
     private String currentAccountaccId;
-
+    private String borrowerName;
 }

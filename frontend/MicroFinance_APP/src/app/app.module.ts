@@ -53,6 +53,7 @@ import { BranchAccountCountComponent } from './Components/counting/branch-accoun
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
 import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
 import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
+import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
 
 
 @NgModule({
@@ -97,6 +98,7 @@ import { CollateralDetailComponent } from './Components/Collateral/collateral-de
     BranchUserCountComponent,
     ListCollateralComponent,
     CollateralDetailComponent,
+    SmeLoanDetailComponent,
 
   ],
   imports: [

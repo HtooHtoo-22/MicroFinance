@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SMELoanServiceImpl implements SMELoanService {
@@ -156,6 +157,16 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Save the updated SME loan
         smeLoanRepository.save(smeLoan);
     }
+
+    @Override
+    public List<SMELoanDTO> getAllLoansByBranchId(Integer branchId) {
+        List<SMELoan> loans = smeLoanRepository.findByEntryUser_Branch_Id(branchId);
+        return loans.stream()
+                .map(SMELoanMapper::toDTO)
+                .collect(Collectors.toList());
+
+    }
+
     private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
         BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
 

@@ -38,6 +38,7 @@ import { BranchAccountCountComponent } from './Components/counting/branch-accoun
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
 import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
 import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
+import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
 
 
 const routes: Routes = [
@@ -82,7 +83,8 @@ const routes: Routes = [
       { path: 'update-current-account/:id', component: UpdateComponent },
       { path: 'cif-details/:id', component: CustomerDetailComponent },
       { path: 'create-dealer', component: CreateDealerComponent },
-      { path: 'dealer-list', component: DealerListComponent }
+      { path: 'dealer-list', component: DealerListComponent },
+      { path: 'sme-loan-detail/:id',component:SmeLoanDetailComponent},
     ]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' }

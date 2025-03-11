@@ -6,26 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/auth/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CollateralController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CollateralController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CollateralMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CollateralMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/Collateral.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/Collateral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/CollateralRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/CollateralRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CollateralServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CollateralServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanRepo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/CollateralService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/CollateralService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CollateralDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/CollateralRepo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/CollateralRepo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/service/interFace/CollateralService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-register/sme-loan-register.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-register/sme-loan-register.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-register/sme-loan-register.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-register/sme-loan-register.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CollateralDTO.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CollateralDTO.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/collateral.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/collateral.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/SmeLoan.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/SmeLoan.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-loan.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-loan.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,6 +121,9 @@
       <workItem from="1741528957173" duration="4758000" />
       <workItem from="1741561448205" duration="5542000" />
       <workItem from="1741574971315" duration="8492000" />
+      <workItem from="1741664486814" duration="3771000" />
+      <workItem from="1741675138476" duration="489000" />
+      <workItem from="1741677908615" duration="2401000" />
     </task>
     <servers />
   </component>

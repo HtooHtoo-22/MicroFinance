@@ -6,9 +6,11 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.service.interFace.SMELoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sme-loans")
@@ -37,5 +39,15 @@ public class SMELoanController {
         public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
         smeLoanService.repayPrincipal(loanId,repaidPrincipal);
         return null;
+    }
+    @GetMapping("/loans/{branchId}")
+    public ResponseEntity<ApiResponse<List<SMELoanDTO>>> getAllLoans(@PathVariable("branchId")Integer branchId) {
+        try {
+            List<SMELoanDTO> smeLoanDTOList = smeLoanService.getAllLoansByBranchId(branchId);
+            return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "Loan Types retrieved successfully", smeLoanDTOList));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                     .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "An error occurred while retrieving loans"));
+        }
     }
 }

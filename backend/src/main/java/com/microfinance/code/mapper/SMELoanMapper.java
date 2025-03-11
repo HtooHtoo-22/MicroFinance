@@ -40,7 +40,7 @@ public class SMELoanMapper {
 
         dto.setCurrentAccountId(smeLoan.getCurrentAccount().getId());
         dto.setCurrentAccountaccId(smeLoan.getCurrentAccount().getAccountId()); // Assuming CurrentAccount has accountNumber
-
+        dto.setBorrowerName(smeLoan.getCurrentAccount().getCif().getUserName());
         return dto;
     }
 
