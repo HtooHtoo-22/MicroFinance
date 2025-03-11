@@ -24,4 +24,6 @@ public class CollateralDTO {
     private BigDecimal remainingValue;
     private List<String> smeLoanIds;
     private String name;
+    private BigDecimal usedValue;
+    private List<Integer> smeLoanPrimaryIds;
 }

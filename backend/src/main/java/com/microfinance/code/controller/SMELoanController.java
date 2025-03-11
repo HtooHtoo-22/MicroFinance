@@ -1,5 +1,6 @@
 package com.microfinance.code.controller;
 
+import com.microfinance.code.dto.CollateralDTO;
 import com.microfinance.code.dto.CollateralTypeDTO;
 import com.microfinance.code.dto.SMELoanDTO;
 import com.microfinance.code.etc.ApiResponse;
@@ -36,18 +37,18 @@ public class SMELoanController {
         return ApiResponse.success(HttpStatus.OK,HttpStatus.OK.value(), "Successfully Reject!");
     }
     @PostMapping("/repayPrincipal/{smeLoanId}")
-        public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
+    public ApiResponse repayPrincipal(@PathVariable("smeLoanId")Integer loanId, @RequestParam("repaidPrincipalAmount")BigDecimal repaidPrincipal){
         smeLoanService.repayPrincipal(loanId,repaidPrincipal);
         return null;
     }
     @GetMapping("/loans/{branchId}")
     public ResponseEntity<ApiResponse<List<SMELoanDTO>>> getAllLoans(@PathVariable("branchId")Integer branchId) {
-        try {
-            List<SMELoanDTO> smeLoanDTOList = smeLoanService.getAllLoansByBranchId(branchId);
-            return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "Loan Types retrieved successfully", smeLoanDTOList));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                     .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, 500, "An error occurred while retrieving loans"));
-        }
+        List<SMELoanDTO> smeLoanDTOList = smeLoanService.getAllLoansByBranchId(branchId);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "Loan Types retrieved successfully", smeLoanDTOList));
+    }
+    @GetMapping("/{id}")
+    public ApiResponse<SMELoanDTO> getLoanById(@PathVariable Integer id) {
+        SMELoanDTO loan = smeLoanService.getLoanById(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "SME Loan retrieved successfully", loan);
     }
 }

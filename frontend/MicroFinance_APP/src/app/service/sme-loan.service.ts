@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Smeloan } from '../model/SmeLoan';
 import { map } from 'rxjs';
+import { ApiResponse } from '../model/Apirespon';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +29,7 @@ export class SmeLoanService {
       })
     );
   }
-  
+  getLoanById(id: number): Observable<ApiResponse<Smeloan>> {
+      return this.http.get<ApiResponse<Smeloan>>(`${this.apiUrl}/${id}`);
+    }
 }

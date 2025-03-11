@@ -96,19 +96,22 @@
           <!-- Associated Loans Card -->
           <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Associated Loans</h3>
-            <div *ngIf="selectedCollateral.smeLoanIds.length > 0; else noLoans" 
-                 class="flex flex-wrap gap-2">
-              <a 
-                *ngFor="let loanId of selectedCollateral.smeLoanIds"
-                [routerLink]="['/loans', loanId]"
-                class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium transition-colors cursor-pointer"
-              >
-                #{{ loanId }}
-              </a>
+            <div class="flex flex-wrap gap-2">
+              <ng-container *ngIf="loanRelations.length > 0; else noLoans">
+                <a 
+                  *ngFor="let loan of loanRelations"
+                  (click)="viewLoanDetail(loan.primaryId); $event.preventDefault()"
+                  class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium transition-colors cursor-pointer"
+                  [title]="'View loan details: ' + loan.primaryId"
+                >
+                  #{{ loan.displayId }}
+                </a>
+              </ng-container>
+            
+              <ng-template #noLoans>
+                <span class="text-gray-500 text-sm">No associated loans</span>
+              </ng-template>
             </div>
-            <ng-template #noLoans>
-              <p class="text-gray-400 italic">No associated loans found</p>
-            </ng-template>
           </div>
         </div>
       </div>

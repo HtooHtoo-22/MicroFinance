@@ -22,8 +22,12 @@ public class CollateralMapper {
     @Autowired
     private CurrentAccountRepository accRepo;
 
-    @Autowired
-    private SMELoanHasCollateralRepo loanHasCollateralRepo;
+    private final SMELoanHasCollateralRepo loanHasCollateralRepo;
+
+    public CollateralMapper(SMELoanHasCollateralRepo loanHasCollateralRepo) {
+        this.loanHasCollateralRepo = loanHasCollateralRepo;
+    }
+
     public Collateral toEntity(CollateralDTO dto) {
         if (dto == null) {
             return null;
@@ -64,36 +68,38 @@ public class CollateralMapper {
         dto.setAddress(collateral.getAddress());
         dto.setImage(collateral.getImage());
         dto.setName(collateral.getName());
-        // Check collateral type
-        if (collateral.getCollateralType() != null) {
 
+        // Collateral type
+        if (collateral.getCollateralType() != null) {
             dto.setCollateralTypeId(collateral.getCollateralType().getId());
             dto.setCollateralTypeName(collateral.getCollateralType().getName());
         }
 
-        // Check current account and CIF details
+        // Current account and CIF
         if (collateral.getCurrentAccount() != null && collateral.getCurrentAccount().getCif() != null) {
             dto.setCifId(collateral.getCurrentAccount().getCif().getCifId());
             dto.setOwnerName(collateral.getCurrentAccount().getCif().getUserName());
         } else {
-            System.out.println("CurrentAccount or CIF is null");
+            System.out.println("CurrentAccount or CIF is null for Collateral ID: {} "+collateral.getId());
         }
 
-        // Check remaining value calculation
-        BigDecimal usedValue = loanHasCollateralRepo.findTotalUsedValueByCollateralId(collateral.getId());
-        if (usedValue == null) {
-            usedValue = BigDecimal.ZERO;
-        }
-        BigDecimal remainingValue = collateral.getValue().subtract(usedValue);
-        dto.setRemainingValue(remainingValue);
-
-
-        // Check loan IDs
-        List<String> smeLoanIds = Optional.ofNullable(loanHasCollateralRepo.getSMELoanIdListUsedByThisCollateral(collateral.getId()))
-                .orElse(Collections.emptyList());
+        // Remaining value
+        BigDecimal usedValue = Optional.ofNullable(loanHasCollateralRepo.findTotalUsedValueByCollateralId(collateral.getId()))
+                .orElse(BigDecimal.ZERO);
+        BigDecimal collateralValue = Optional.ofNullable(collateral.getValue()).orElse(BigDecimal.ZERO);
+        dto.setRemainingValue(collateralValue.subtract(usedValue));
+        dto.setUsedValue(usedValue);
+        // SME loan IDs
+        List<String> smeLoanIds = Optional.ofNullable(
+                loanHasCollateralRepo.getSMELoanIdListUsedByThisCollateral(collateral.getId())
+        ).orElse(Collections.emptyList());
         dto.setSmeLoanIds(smeLoanIds);
-
+        List<Integer> smeLoanPriIds = Optional.ofNullable(
+                loanHasCollateralRepo.getSMELoanPrimaryIdListUsedByThisCollateral(collateral.getId())
+        ).orElse(Collections.emptyList());
+        dto.setSmeLoanPrimaryIds(smeLoanPriIds);
         return dto;
     }
+
 
 }

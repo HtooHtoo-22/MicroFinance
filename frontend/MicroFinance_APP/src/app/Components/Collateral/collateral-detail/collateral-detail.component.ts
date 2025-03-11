@@ -14,6 +14,7 @@ import { CollateralDTO } from '../../../model/CollateralDTO';
 export class CollateralDetailComponent {
   selectedCollateral: CollateralDTO | undefined;
   errorMessage: string | undefined;
+  
 
   constructor(private route: ActivatedRoute, 
               public router: Router,
@@ -29,11 +30,6 @@ export class CollateralDetailComponent {
           if (response.data) {
             this.selectedCollateral = response.data;
             console.log(this.selectedCollateral);
-            
-            // Additional handling:
-            // - Update UI
-            // - Navigate to detail view
-            // - Show modal with details
           } else {
             this.errorMessage = 'Collateral not found';
           }
@@ -53,5 +49,8 @@ export class CollateralDetailComponent {
       this.router.navigate(['/error']);
     }
   }
-  
+  viewLoanDetail(loanId:number){
+      console.log(loanId);
+      
+  }
 }

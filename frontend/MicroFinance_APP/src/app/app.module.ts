@@ -54,8 +54,9 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
 import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
 import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
 import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
-
-
+// import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 @NgModule({
   declarations: [
     AppComponent,
@@ -116,7 +117,10 @@ import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-de
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    CommonModule,
+    MatCardModule,
+    MatExpansionModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),

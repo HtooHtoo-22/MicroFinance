@@ -32,4 +32,7 @@ public class SMELoanDTO {
     private Integer currentAccountId;
     private String currentAccountaccId;
     private String borrowerName;
+    private Integer cifId;
+    private String cifIdNumber;
+    private List<CollateralDTO> usedCollaterals;
 }

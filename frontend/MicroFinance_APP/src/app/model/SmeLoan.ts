@@ -1,3 +1,5 @@
+import { CollateralDTO } from "./CollateralDTO";
+
 export interface Smeloan {
   id?: number;
   loanId?: string;              // Corresponds to loanId in Java DTO
@@ -22,4 +24,7 @@ export interface Smeloan {
   currentAccountId?: number;    // Corresponds to currentAccountId in Java DTO
   currentAccountaccId?: string; // Corresponds to currentAccountaccId in Java DTO
   borrowerName?: string;        // Corresponds to borrowerName in Java DTO
+  cifId: number;
+  cifIdNumber: string;
+  usedCollaterals: CollateralDTO[];
 }

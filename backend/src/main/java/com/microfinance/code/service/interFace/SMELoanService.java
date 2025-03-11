@@ -12,4 +12,6 @@ public interface SMELoanService {
     public void repayPrincipal(Integer smeLoanId , BigDecimal repaidPrincipal);
 
     public List<SMELoanDTO> getAllLoansByBranchId(Integer branchId);
+
+    public SMELoanDTO getLoanById(Integer id);
 }

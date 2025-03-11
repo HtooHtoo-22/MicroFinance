@@ -42,6 +42,8 @@ public class SMELoanServiceImpl implements SMELoanService {
     private SMERepaymentScheduleService scheduleService;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private SMELoanMapper loanMapper;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -87,7 +89,7 @@ public class SMELoanServiceImpl implements SMELoanService {
             throw new NotFoundException("Current account is missing in SME Loan");
         }
 
-        return SMELoanMapper.toDTO(smeLoan);
+        return loanMapper.toDTO(smeLoan);
     }
 
 
@@ -162,7 +164,7 @@ public class SMELoanServiceImpl implements SMELoanService {
     public List<SMELoanDTO> getAllLoansByBranchId(Integer branchId) {
         List<SMELoan> loans = smeLoanRepository.findByEntryUser_Branch_Id(branchId);
         return loans.stream()
-                .map(SMELoanMapper::toDTO)
+                .map(loanMapper::toDTO)
                 .collect(Collectors.toList());
 
     }
@@ -212,6 +214,11 @@ public class SMELoanServiceImpl implements SMELoanService {
             smeLoanHasCollateralRepo.save(loanHasCollateral);
         }
     }
-
+    @Override
+    public SMELoanDTO getLoanById(Integer id){
+        SMELoan loan = smeLoanRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("SME Loan  not found with ID: " + id));
+        return loanMapper.toDTO(loan);
+    }
 
 }

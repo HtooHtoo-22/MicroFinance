@@ -7,6 +7,7 @@ export interface CollateralDTO {
     value?: number;
     remainingValue: number; // BigDecimal will be handled as number in TypeScript
     smeLoanIds: string[];  // List of loan IDs as strings
+    smeLoanPrimaryIds:number[];
     cifId:string;
     ownerName: string;
 
@@ -16,6 +17,7 @@ export interface CollateralDTO {
     collateralTypeId?: number;
     currentAccountId?: number;
     name:string;
+    usedValue: number ;
 
   }
   
