@@ -220,5 +220,11 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .orElseThrow(() -> new NotFoundException("SME Loan  not found with ID: " + id));
         return loanMapper.toDTO(loan);
     }
+    @Override
+    public SMELoanDTO getLoanByLoanId(String id){
+        SMELoan loan = smeLoanRepository.findByLoanId(id)
+                .orElseThrow(() -> new NotFoundException("SME Loan  not found with Loan ID: " + id));
+        return loanMapper.toDTO(loan);
+    }
 
 }

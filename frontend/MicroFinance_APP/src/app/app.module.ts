@@ -57,6 +57,7 @@ import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-de
 // import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loan-schedule.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -100,6 +101,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     ListCollateralComponent,
     CollateralDetailComponent,
     SmeLoanDetailComponent,
+    SmeLoanScheduleComponent,
 
   ],
   imports: [

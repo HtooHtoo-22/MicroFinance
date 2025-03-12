@@ -51,4 +51,9 @@ public class SMELoanController {
         SMELoanDTO loan = smeLoanService.getLoanById(id);
         return ApiResponse.success(HttpStatus.OK, 200, "SME Loan retrieved successfully", loan);
     }
+    @GetMapping("/getByLoanID/{id}")
+    public ApiResponse<SMELoanDTO> getLoanByLoanId(@PathVariable String id) {
+        SMELoanDTO loan = smeLoanService.getLoanByLoanId(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "SME Loan retrieved successfully", loan);
+    }
 }

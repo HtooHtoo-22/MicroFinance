@@ -5,4 +5,7 @@
 .text-amber-800 { color: #8B4513; }
 .text-green-800 { color: #006400; }
 .text-red-800 { color: #8B0000; }
-  
+  /* Prevent scrollbar-induced layout shift */
+html {
+    overflow-y: scroll;
+  }

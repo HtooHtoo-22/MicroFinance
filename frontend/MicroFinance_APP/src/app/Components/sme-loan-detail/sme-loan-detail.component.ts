@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { Smeloan } from '../../model/SmeLoan';
+import { ApiResponse } from '../../model/Apirespon';
 
 @Component({
   selector: 'app-sme-loan-detail',
@@ -15,34 +16,66 @@ export class SmeLoanDetailComponent {
     'Pending': 'bg-yellow-100 text-yellow-800',
     'Reject': 'bg-red-100 text-red-800'
   };
+
   loan : Smeloan | undefined;
+  activeTab: 'details' | 'schedule' = 'details';
   constructor(private route: ActivatedRoute, 
                 public router: Router,
                 private smeloanService : SmeLoanService
                ) {}
-  ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      const loanId = Number(idParam);
-      console.log("SME Loan  Detail id : "+idParam);
-      this.smeloanService.getLoanById(loanId).subscribe({
-        next: (response) => {
-          if (response.data) {
-            this.loan = response.data;
-            console.log(this.loan);
-          } else {
-            console.error('Loan not found');
-          }
-        },
-        error: (err) => {
-          console.error('API Error:', err);
-        },
-        complete: () => {
-          // Optional cleanup/loading state removal
-        }
-      });
+  // Component Code
+ngOnInit() {
+  const idParam = this.route.snapshot.paramMap.get('id');
+  
+  if (idParam) {
+    console.log("SME Loan Detail id:", idParam);
+    
+    // Determine ID type and call appropriate service
+    if (this.isValidNumber(idParam)) {
+      // Handle numeric ID
+      const numericId = Number(idParam);
+      this.handleNumericId(numericId);
+    } else {
+      // Handle string ID
+      this.handleStringId(idParam);
     }
+  } else {
+    console.error('No loan ID provided');
   }
+}
+
+private isValidNumber(id: string): boolean {
+  return !isNaN(Number(id)) && isFinite(Number(id));
+}
+
+private handleNumericId(id: number): void {
+  this.smeloanService.getLoanById(id).subscribe({
+    next: (response) => this.handleResponse(response),
+    error: (err) => this.handleError(err)
+  });
+}
+
+private handleStringId(id: string): void {
+  this.smeloanService.getLoanByLoanId(id).subscribe({
+    next: (response) => this.handleResponse(response),
+    error: (err) => this.handleError(err)
+  });
+}
+
+private handleResponse(response: ApiResponse<Smeloan>): void {
+  if (response.data) {
+    this.loan = response.data;
+    console.log('Loan data:', this.loan);
+  } else {
+    console.error('Loan not found');
+    // Optional: Navigate to error page or show message
+  }
+}
+
+private handleError(err: any): void {
+  console.error('API Error:', err);
+  // Optional: Show error message to user
+}
   viewCifDetail(){
 
   }
@@ -57,5 +90,8 @@ export class SmeLoanDetailComponent {
     } else {
       console.warn('Collateral ID is missing');
     }
+  }
+  switchTab(tab: 'details' | 'schedule') {
+    this.activeTab = tab;
   }
 }

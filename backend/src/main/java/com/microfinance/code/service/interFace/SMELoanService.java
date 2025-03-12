@@ -14,4 +14,6 @@ public interface SMELoanService {
     public List<SMELoanDTO> getAllLoansByBranchId(Integer branchId);
 
     public SMELoanDTO getLoanById(Integer id);
+
+    public SMELoanDTO getLoanByLoanId(String id);
 }

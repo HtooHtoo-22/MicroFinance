@@ -69,15 +69,94 @@
                         <div class="flex items-center gap-2">
                             <!-- Pending State Actions -->
                             <ng-container *ngIf="loan.status === 'Pending'">
-                                <button 
-                                    (click)="approveLoan(loan.id!)"
-                                    class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors text-sm min-w-[100px] justify-center"
-                                >
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    Approve
-                                </button>
+                                <!-- Button in List -->
+<button 
+(click)="openApprovalModal(loan.id!)"
+class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors text-sm min-w-[100px] justify-center">
+<svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+</svg>
+Approve
+</button>
+
+<!-- Approval Modal -->
+<div *ngIf="showApprovalModal" class="fixed inset-0 bg-white-/70 backdrop-blur-[1.5px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white  rounded-xl shadow-xl p-6 max-w-lg w-full mx-4">
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">Confirm Loan Approval</h3>
+          <p class="text-xs text-gray-500 mt-1">ID: {{ selectedLoan?.loanId }}</p>
+        </div>
+        <button 
+          (click)="showApprovalModal = false"
+          class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Compact Details -->
+      <div class="space-y-4 text-sm">
+        <!-- Borrower Row -->
+        <div class="flex justify-between items-center py-2 border-b">
+          <span class="text-gray-500">Borrower:</span>
+          <span class="font-medium">{{ selectedLoan?.borrowerName }}</span>
+        </div>
+  
+        <!-- Key Numbers -->
+        <div class="grid grid-cols-3 gap-4 py-2">
+          <div class="text-center">
+            <div class="text-gray-500">Amount</div>
+            <div class="font-semibold text-blue-600">{{ selectedLoan?.loanAmount | currency }}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-gray-500">Rate</div>
+            <div class="font-semibold">{{ selectedLoan?.interestRate }}%</div>
+          </div>
+          <div class="text-center">
+            <div class="text-gray-500">Term</div>
+            <div class="font-semibold">{{ selectedLoan?.duration }} months</div>
+          </div>
+        </div>
+  
+        <!-- Collateral Summary -->
+        <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+          <span class="text-gray-600">Total Collateral:</span>
+          <span class="font-medium">
+            {{ getTotalCollateral() | currency }}
+          </span>
+        </div>
+  
+        <!-- Dates -->
+        <div class="flex justify-between items-center text-sm">
+          <div class="text-gray-600">
+            <div>Start Date</div>
+            <div class="font-medium">{{ currentDate | date:'dd MMM yyyy' }}</div>
+          </div>
+          <div class="text-gray-600 text-right">
+            <div>Maturity Date</div>
+            <div class="font-medium">{{ estimatedEndDate | date:'dd MMM yyyy' }}</div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Compact Actions -->
+      <div class="mt-6 flex justify-end gap-2">
+        <button 
+          (click)="showApprovalModal = false"
+          class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+          Cancel
+        </button>
+        <button 
+          (click)="approveLoan(selectedLoan?.id!)"
+          class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+          Confirm Approval
+        </button>
+      </div>
+    </div>
+  </div>
                                 <button 
                                     (click)="rejectLoan(loan.id!)"
                                     class="inline-flex items-center px-3 py-1.5 bg-rose-50 text-rose-700 rounded-md hover:bg-rose-100 transition-colors text-sm min-w-[100px] justify-center"

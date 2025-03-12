@@ -32,4 +32,14 @@ export class SmeLoanService {
   getLoanById(id: number): Observable<ApiResponse<Smeloan>> {
       return this.http.get<ApiResponse<Smeloan>>(`${this.apiUrl}/${id}`);
     }
+  getLoanByLoanId(id: string): Observable<ApiResponse<Smeloan>> {
+      return this.http.get<ApiResponse<Smeloan>>(`${this.apiUrl}/getByLoanID/${id}`);
+  }
+  rejectLoan(loanId: number): Observable<ApiResponse<Smeloan>> {
+    return this.http.post<ApiResponse<Smeloan>>(`${this.apiUrl}/reject/${loanId}`, {});
+  }
+  approveLoan(loanId: number): Observable<ApiResponse<Smeloan>> {
+    return this.http.post<ApiResponse<Smeloan>>(`${this.apiUrl}/approve/${loanId}`, {});
+  }
+  
 }

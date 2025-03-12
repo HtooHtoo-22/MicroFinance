@@ -1,5 +1,7 @@
 package com.microfinance.code.service.impl;
 
+import com.microfinance.code.dto.SMEScheduleDTO;
+import com.microfinance.code.mapper.SMEScheduleMapper;
 import com.microfinance.code.model.SMELoan;
 import com.microfinance.code.model.SMERepaymentSchedule;
 import com.microfinance.code.repository.HolidayRepository;
@@ -16,6 +18,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleService {
@@ -27,6 +30,8 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
     private SMELoanRepo smeLoanRepo;
     @Autowired
     private RateRepository rateRepo;
+    @Autowired
+    private SMEScheduleMapper scheduleMapper;
     @Override
     public void createSchedule(SMELoan smeLoan) {
         // 1. Validate the input
@@ -100,6 +105,15 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             smeRepaymentScheduleRepo.save(schedule);
         }
     }
+
+    @Override
+    public List<SMEScheduleDTO> getSchedulesByLoanId(Integer loanId) {
+        List<SMERepaymentSchedule> schedules = smeRepaymentScheduleRepo.findBySmeLoanId(loanId);
+        return schedules.stream()
+                .map(scheduleMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate,int duration) {
         // Get number of days in the month
         int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());

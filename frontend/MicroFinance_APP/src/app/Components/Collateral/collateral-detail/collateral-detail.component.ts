@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CollateralService } from '../../../service/collateral.service';
 import { ApiResponse } from '../../../model/Apirespon';
 import { CollateralDTO } from '../../../model/CollateralDTO';
+import { SmeLoanService } from '../../../service/sme-loan.service';
 
 @Component({
   selector: 'app-collateral-detail',
@@ -18,7 +19,8 @@ export class CollateralDetailComponent {
 
   constructor(private route: ActivatedRoute, 
               public router: Router,
-              private collateralService : CollateralService) {}
+              private collateralService : CollateralService,
+              private smeLoanService: SmeLoanService) {}
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -49,8 +51,14 @@ export class CollateralDetailComponent {
       this.router.navigate(['/error']);
     }
   }
-  viewLoanDetail(loanId:number){
+  viewLoanDetail(loanId:string){
       console.log(loanId);
-      
+      if (loanId) {
+        this.router.navigate(['/dashboard/sme-loan-detail', loanId]);
+        console.log(loanId);
+        
+      } else {
+        console.warn('Loan ID is missing');
+      }
   }
 }
