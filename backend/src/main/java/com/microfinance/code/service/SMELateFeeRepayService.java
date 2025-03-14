@@ -47,7 +47,7 @@ public class SMELateFeeRepayService {
     @Autowired
     private RateRepository rateRepo;
     @Transactional
-   // @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
     public void processLateFees() {
         logProcessStart();
 

@@ -1,13 +1,7 @@
 package com.microfinance.code.service;
 
-import com.microfinance.code.model.CurrentAccount;
-import com.microfinance.code.model.Holiday;
-import com.microfinance.code.model.SMELateFeeCalculation;
-import com.microfinance.code.model.SMERepaymentSchedule;
-import com.microfinance.code.repository.CurrentAccountRepository;
-import com.microfinance.code.repository.HolidayRepository;
-import com.microfinance.code.repository.SMELateFeeCalculationRepo;
-import com.microfinance.code.repository.SMERepaymentScheduleRepo;
+import com.microfinance.code.model.*;
+import com.microfinance.code.repository.*;
 import com.microfinance.code.status.RepaymentStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,18 +26,19 @@ public class SMERepaymentService {
     private  SMERepaymentScheduleRepo scheduleRepo;
     @Autowired
     private  SMELateFeeCalculationRepo lateFeeRepo;
-
+    @Autowired
+    private SMERepaymentTrackRepo repaymentTrackRepo;
     @Transactional
-  //  @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
 
         // Check if today is a holiday
         boolean isHoliday = isHoliday(today);
-        if (isHoliday) {
-            System.out.println("Today is a holiday. Skipping repayments.");
-            return;
-        }
+//        if (isHoliday) {
+//            System.out.println("Today is a holiday. Skipping repayments.");
+//            return;
+//        }
         System.out.println("___________________________Auto Pay__________________________________________");
         // Proceed if it's not a holiday
         processScheduledRepayments(today);
@@ -93,6 +88,11 @@ public class SMERepaymentService {
             schedule.setStatus(RepaymentStatus.PAID); // Mark as fully paid
             schedule.setFullyPaidDate(today);
             schedule.setInterestAmount(new BigDecimal(0.0));
+            SMERepaymentTrack repaymentTrack = new SMERepaymentTrack();
+            repaymentTrack.setSmeRepaymentSchedule(schedule);
+            repaymentTrack.setDate(today);
+            repaymentTrack.setPaidAmount(dueAmount);
+            repaymentTrackRepo.save(repaymentTrack);
         } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
             // Not enough balance, but partial payment can be made (without touching the minimum)
             currentAccount.setTotalBalence(currentAccount.getMinAmount()); // Keep the minimum balance intact
@@ -103,6 +103,12 @@ public class SMERepaymentService {
                 applyLateFee(schedule);
             }
             schedule.setInterestAmount(new BigDecimal(0.0));
+            SMERepaymentTrack repaymentTrack = new SMERepaymentTrack();
+            repaymentTrack.setSmeRepaymentSchedule(schedule);
+            repaymentTrack.setDate(today);
+            repaymentTrack.setPaidAmount(availableBalance);
+            repaymentTrack.setOdStatus(true);
+            repaymentTrackRepo.save(repaymentTrack);
         } else {
             // No available balance, full overdue
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount)); // All remaining amount is OD interest

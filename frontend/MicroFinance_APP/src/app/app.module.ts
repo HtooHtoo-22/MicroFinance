@@ -58,6 +58,7 @@ import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-de
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loan-schedule.component';
+import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -102,6 +103,7 @@ import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loa
     CollateralDetailComponent,
     SmeLoanDetailComponent,
     SmeLoanScheduleComponent,
+    SmeRepayTrackComponent,
 
   ],
   imports: [

@@ -8,11 +8,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SmeScheduleService {
-  private apiUrl = 'http://localhost:8081/api/sme-schedules"';
+  private apiUrl = 'http://localhost:8081/api/sme-schedules';
+
   constructor(private http: HttpClient) { }
+
   getSchedulesByLoanId(loanId: number): Observable<ApiResponse<SMESchedule[]>> {
     return this.http.get<ApiResponse<SMESchedule[]>>(
       `${this.apiUrl}/scheduleListByLoanId/${loanId}`
     );
   }
+  
 }

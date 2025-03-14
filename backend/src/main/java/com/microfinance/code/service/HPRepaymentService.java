@@ -36,7 +36,7 @@ public class HPRepaymentService {
 
 
     @Transactional
-    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+   // @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
         boolean isHoliday = isHoliday(today);

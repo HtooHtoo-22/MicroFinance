@@ -18,7 +18,7 @@ export class SmeLoanDetailComponent {
   };
 
   loan : Smeloan | undefined;
-  activeTab: 'details' | 'schedule' = 'details';
+  activeTab: 'details' | 'schedule' | 'track' = 'details';
   constructor(private route: ActivatedRoute, 
                 public router: Router,
                 private smeloanService : SmeLoanService

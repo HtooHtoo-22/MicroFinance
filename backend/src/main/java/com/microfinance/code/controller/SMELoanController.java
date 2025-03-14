@@ -3,8 +3,10 @@ package com.microfinance.code.controller;
 import com.microfinance.code.dto.CollateralDTO;
 import com.microfinance.code.dto.CollateralTypeDTO;
 import com.microfinance.code.dto.SMELoanDTO;
+import com.microfinance.code.dto.SMERepaymentTrackDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.service.interFace.SMELoanService;
+import com.microfinance.code.service.interFace.SMERepaymentTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ public class SMELoanController {
 
     @Autowired
     private SMELoanService smeLoanService;
+
+    @Autowired
+    private SMERepaymentTrackService repaymentTrackService;
 
     @PostMapping("/register")
     public ApiResponse<SMELoanDTO> createLoan(@RequestBody SMELoanDTO dto) {
@@ -55,5 +60,10 @@ public class SMELoanController {
     public ApiResponse<SMELoanDTO> getLoanByLoanId(@PathVariable String id) {
         SMELoanDTO loan = smeLoanService.getLoanByLoanId(id);
         return ApiResponse.success(HttpStatus.OK, 200, "SME Loan retrieved successfully", loan);
+    }
+    @GetMapping("getRepaymentTracks/{loanId}")
+    public ApiResponse<List<SMERepaymentTrackDTO>> getRepaymentTracksByLoanId(@PathVariable("loanId")Integer loanId){
+        List<SMERepaymentTrackDTO> repayTrackList = repaymentTrackService.getTrackListByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "SME Repay Tracks retrieved successfully", repayTrackList);
     }
 }

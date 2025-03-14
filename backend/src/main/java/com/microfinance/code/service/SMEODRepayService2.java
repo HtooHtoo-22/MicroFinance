@@ -37,7 +37,7 @@ public class SMEODRepayService2 {
     }
 
     @Transactional
-   // @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
     public void processODRepayment() {
         System.out.println("++++++++++++++++++++++++++Processing OD Repayment++++++++++++++++++++++++++++++");
         List<SMERepaymentSchedule> overdueSchedules = scheduleRepo.findByStatusInAndLateFeeStatus(
@@ -120,6 +120,9 @@ public class SMEODRepayService2 {
         track.setSmeRepaymentSchedule(schedule);
         track.setPaid_od_amount(amountToRepay);
         track.setDate(LocalDateTime.now());
+        if(schedule.getStatus()==RepaymentStatus.PAID){
+            track.setOdEndStatus(true);
+        }
         repaymentTrackRepo.save(track);
     }
 

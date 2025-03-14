@@ -4,6 +4,8 @@ import { Observable } from 'rxjs/internal/Observable';
 import { Smeloan } from '../model/SmeLoan';
 import { map } from 'rxjs';
 import { ApiResponse } from '../model/Apirespon';
+import { SMERepaymentTrack } from '../model/SMERepaymentTrack';
+
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +42,11 @@ export class SmeLoanService {
   }
   approveLoan(loanId: number): Observable<ApiResponse<Smeloan>> {
     return this.http.post<ApiResponse<Smeloan>>(`${this.apiUrl}/approve/${loanId}`, {});
+  }
+  getRepaymentTracksByLoanId(loanId: number): Observable<ApiResponse<SMERepaymentTrack[]>> {
+    return this.http.get<ApiResponse<SMERepaymentTrack[]>>(
+      `${this.apiUrl}/getRepaymentTracks/${loanId}`
+    );
   }
   
 }

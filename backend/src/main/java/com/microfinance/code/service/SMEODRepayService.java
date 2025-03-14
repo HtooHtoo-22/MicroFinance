@@ -133,6 +133,9 @@ public class SMEODRepayService {
         track.setSmeRepaymentSchedule(schedule);
         track.setPaid_od_amount(amountToRepay);
         track.setDate(LocalDateTime.now());
+        if(schedule.getInterestODAmount()==BigDecimal.ZERO){
+            track.setOdEndStatus(true);
+        }
         repaymentTrackRepo.save(track);
     }
 
