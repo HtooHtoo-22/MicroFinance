@@ -1,5 +1,6 @@
-<div class="container mx-auto p-6">
+<div class="container mx-auto p-6 pl-4"> <!-- Adjust left padding -->
     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Repayment Schedule</h2>
+    <div class="-ml-7"> <!-- Added left margin offset -->
     <div class="border border-gray-200 rounded-lg overflow-hidden shadow-lg">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -43,5 +44,29 @@
                 </tr>
             </tbody>
         </table>
+       
+    </div>
+    <div class="mt-6 pt-6 border-t border-gray-200">
+        <div class="flex flex-col md:flex-row md:justify-end md:items-center text-sm text-gray-600">
+            <div class="flex items-center gap-4">
+                <button 
+                    (click)="refreshData()"
+                    [disabled]="isRefreshing"
+                    class="text-blue-600 hover:text-blue-800 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <svg 
+                        [class.animate-spin]="isRefreshing"
+                        class="w-4 h-4 mr-1" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    {{ isRefreshing ? 'Refreshing...' : 'Refresh Data' }}
+                </button>
+            </div>
+        </div>
     </div>
 </div>

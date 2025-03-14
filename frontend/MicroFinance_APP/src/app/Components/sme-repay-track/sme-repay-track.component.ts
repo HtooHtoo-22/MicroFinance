@@ -14,6 +14,8 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   @Input() loanId?: number;
   repaymentTracks: SMERepaymentTrack[] = [];
   currentDate = new Date();
+  selectedFilter: 'all' | 'od' | 'lateFee' = 'all';
+  isRefreshing = false;
   constructor(private smeLoanService: SmeLoanService) {}
 
   ngOnInit(): void {
@@ -88,5 +90,35 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
       'late fee': '⏳'
     };
     return icons[purpose.toLowerCase()] || '📝';
+  }
+  get filteredRepaymentTracks(): SMERepaymentTrack[] {
+    if (!this.repaymentTracks) return [];
+    
+    switch (this.selectedFilter) {
+      case 'od':
+        return this.repaymentTracks.filter(t => 
+          t.paymentPurpose.toLowerCase() === 'od repayment'
+        );
+      case 'lateFee':
+        return this.repaymentTracks.filter(t => 
+          t.paymentPurpose.toLowerCase() === 'late fee repayment'
+        );
+      default:
+        return this.repaymentTracks;
+    }
+  }
+  refreshData(): void {
+    this.isRefreshing = true;
+    this.smeLoanService.getRepaymentTracksByLoanId(this.loanId!).subscribe({
+      next: (response) => {
+        this.repaymentTracks = response.data;
+        this.currentDate = new Date();
+        this.isRefreshing = false;
+      },
+      error: (err) => {
+        console.error('Refresh failed:', err);
+        this.isRefreshing = false;
+      }
+    });
   }
 }

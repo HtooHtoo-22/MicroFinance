@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { Smeloan } from '../../model/SmeLoan';
-import { SmeLoanService } from '../../service/sme-loan.service';
 import { SmeScheduleService } from '../../service/sme-schedule.service';
 import { SMESchedule } from '../../model/SMESchedule';
 
@@ -15,6 +14,7 @@ export class SmeLoanScheduleComponent {
   @Input() loanData?: Smeloan;
   schedules: SMESchedule[] = [];
   hasGracePeriod: boolean = false;
+  isRefreshing = false;
   constructor(private scheduleService: SmeScheduleService) {}
   ngOnInit(): void {
     console.log('Component initialized with Loan ID:', this.loanId);
@@ -65,5 +65,19 @@ export class SmeLoanScheduleComponent {
             return 'bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium';
     }
 }
-
+refreshData(): void {
+  this.isRefreshing = true;
+  this.scheduleService.getSchedulesByLoanId(this.loanId!).subscribe({
+    next: (response) => {
+      this.schedules = response.data;
+      this.isRefreshing = false;
+    },
+    error: (err) => {
+      console.error('Refresh failed:', err);
+      this.isRefreshing = false;
+    }
+  });
 }
+}
+
+
