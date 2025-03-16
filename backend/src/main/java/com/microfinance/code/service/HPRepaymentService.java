@@ -2,6 +2,8 @@ package com.microfinance.code.service;
 
 
 
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.model.HPLateFeeCalculation;
 import com.microfinance.code.model.HPLoan;
 import com.microfinance.code.model.HPSchedule;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -82,6 +85,25 @@ public class HPRepaymentService {
         if (schedule.getGracePeriodEndDate() != null && today.isBefore(schedule.getGracePeriodEndDate())) {
             schedule.setStatus(RepaymentStatus.IN_GRACE_PERIOD); // Mark as within grace period
             hpScheduleRepository.save(schedule);
+            // Get the remaining grace period in days
+            long daysLeft = ChronoUnit.DAYS.between(today, schedule.getGracePeriodEndDate());
+
+            // Send SMS notification to the borrower
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " is currently in grace period. " +
+                    "Your grace period will end on " + schedule.getGracePeriodEndDate() + ". " +
+                    "You have " + daysLeft + " days left to repay.";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            // Send Email notification to the borrower
+            String emailSubject = "HP Loan Grace Period Notification";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "Your HP loan Term: " + schedule.getTermNumber() + " is currently in grace period. " +
+                    "Your grace period will end on " + schedule.getGracePeriodEndDate() + ". " +
+                    "You have " + daysLeft + " days remaining to make your payment.\n\n" +
+                    "Please ensure that your payment is made before the grace period ends to avoid penalties.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             return;
         }
         // Get HP Loan and current account data
@@ -103,15 +125,59 @@ public class HPRepaymentService {
             totalRepaidAmount = totalRepaidAmount.add(dueInterest);
             schedule.setInterestODAmount(BigDecimal.ZERO);
             schedule.setStatus(RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD);
+
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " - Interest of MMK " +
+                    dueInterest + " has been paid. However, your principal remains overdue. Please make the payment for the principal.";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            String emailSubject = "HP Loan - Interest Paid, Principal Overdue";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We would like to inform you that interest payment of MMK " + dueInterest + " has been successfully processed for your HP loan Term: " +
+                    schedule.getTermNumber() + ". However, the principal remains overdue.\n\n" +
+                    "Please ensure that you make the payment for the overdue principal to avoid further penalties.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
             totalRepaidAmount = totalRepaidAmount.add(availableBalance);
             schedule.setInterestODAmount(dueInterest.subtract(availableBalance));
             availableBalance = BigDecimal.ZERO;
             schedule.setStatus(RepaymentStatus.INTEREST_OD_PRINCIPAL_OD);
+
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " - Partial interest payment of MMK " +
+                    availableBalance + " has been made. Your principal remains overdue, and the remaining interest balance is MMK " +
+                    schedule.getInterestODAmount() + ". Please repay the remaining amount to avoid further penalties.";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            String emailSubject = "HP Loan - Partial Interest Payment, Principal Overdue";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We would like to inform you that a partial interest payment of MMK " + availableBalance + " has been made for your HP loan Term: " +
+                    schedule.getTermNumber() + ". Your principal remains overdue, and the remaining interest balance is MMK " +
+                    schedule.getInterestODAmount() + ".\n\n" +
+                    "Please ensure that you repay the remaining amount to avoid further penalties.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         } else {
             schedule.setInterestODAmount(dueInterest);
             schedule.setPrincipalODAmount(duePrincipal);
             schedule.setStatus(RepaymentStatus.INTEREST_OD_PRINCIPAL_OD);
+
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " is now fully overdue. " +
+                    "The full interest of MMK " + dueInterest + " and principal of MMK " + duePrincipal + " remain unpaid. " +
+                    "Please make the payment as soon as possible to avoid further penalties.";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            // Send email notification to the borrower regarding the overdue status
+            String emailSubject = "HP Loan - Full Overdue Status";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We would like to inform you that your HP loan Term: " + schedule.getTermNumber() + " is now fully overdue. " +
+                    "The full interest of MMK " + dueInterest + " and principal of MMK " + duePrincipal + " remain unpaid.\n\n" +
+                    "Please make the payment as soon as possible to avoid further penalties. If you need assistance, please contact us.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
         }
 
 // Deduct principal if balance allows
@@ -121,6 +187,18 @@ public class HPRepaymentService {
             schedule.setPrincipalODAmount(BigDecimal.ZERO);
             schedule.setStatus(RepaymentStatus.ALL_PAID);
             schedule.setFullyPaidDate(today);
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
+                    "The full principal amount of MMK " + duePrincipal + " has been cleared. " +
+                    "Thank you for your timely payment!";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+// Full Repayment Email
+            String emailSubject = "HP Loan Term: " + schedule.getTermNumber() + " - Full Repayment Confirmation";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We are pleased to inform you that your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
+                    "The full principal amount of MMK " + duePrincipal + " has been cleared. Thank you for your timely payment.\n\n" +
+                    "Best regards,\nRichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
             totalRepaidAmount = totalRepaidAmount.add(availableBalance);
             schedule.setPrincipalODAmount(duePrincipal.subtract(availableBalance));

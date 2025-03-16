@@ -2,6 +2,8 @@ package com.microfinance.code.service.impl;
 
 import com.microfinance.code.dto.SMELoanDTO;
 import com.microfinance.code.dto.TransactionDTO;
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.exception.ValidationException;
@@ -112,7 +114,17 @@ public class SMELoanServiceImpl implements SMELoanService {
         transactionDTO.setCurrentAccountId(smeLoan.getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
         scheduleService.createSchedule(smeLoan);
+        SmsSender.sendSms(smeLoan.getCurrentAccount().getCif().getPhone(),
+                "RichCoin: Your SME loan of MMK "+smeLoan.getLoanAmount() +" has been approved. " +
+                        "Please visit the "+smeLoan.getEntryUser().getBranch().getName()+" branch to proceed.");
+        String email = smeLoan.getCurrentAccount().getCif().getEmail();  // Assuming email is stored in CIF
+        String emailSubject = "Loan Approved - RichCoin";
+        String emailBody = "Dear customer,\n\nYour SME loan of MMK " + smeLoan.getLoanAmount() +
+                " has been approved. Please visit the " + smeLoan.getEntryUser().getBranch().getName() +
+                " branch to proceed with the next steps.\n\nBest regards,\nRichCoin Team";
 
+        // Call the sendEmail method
+        boolean emailSent = EmailSender.sendEmail(email, emailSubject, emailBody);
     }
     @Override
     public void rejectSMELoan(Integer smeLoanId){

@@ -3,6 +3,8 @@ package com.microfinance.code.service.impl;
 import com.microfinance.code.dto.HPLoanDTO;
 import com.microfinance.code.dto.SMELoanDTO;
 import com.microfinance.code.dto.TransactionDTO;
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.etc.generator.HPLoanIDGenerator;
 import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
@@ -133,6 +135,43 @@ public class HpLoanServiceImpl implements HPLoanService {
         transactionDTO.setCurrentAccountId(hpLoan.getProduct().getDealer().getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
         hpScheduleService.createSchedule(hpLoan);
-       // scheduleService.createSchedule(smeLoan);
+
+
+        String smsMessage = "RichCoin: Your HP loan of MMK " + hpLoan.getLoanAmount() + " for " + hpLoan.getProduct().getProductName() +
+                " has been approved. Please visit the " + hpLoan.getEntryUser().getBranch().getName() +
+                " branch to complete the process.";
+        SmsSender.sendSms(hpLoan.getCurrentAccount().getCif().getPhone(), smsMessage);
+        //For borrower
+        String emailSubject = "HP Loan Approved for " + hpLoan.getProduct().getProductName() + " - Action Required";
+        String emailBody = "Dear " + hpLoan.getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                "We are pleased to inform you that your Hire Purchase (HP) loan of MMK " + hpLoan.getLoanAmount() +
+                " for " + hpLoan.getProduct().getProductName() + " has been approved.\n\n" +
+                "To proceed with the loan process, please visit the " + hpLoan.getEntryUser().getBranch().getName() +
+                " branch at your earliest convenience. Our team will assist you with the next steps.\n\n" +
+                "If you have any questions, feel free to contact us at [ContactDetails].\n\n" +
+                "Best regards,\nRichCoin Team";
+        boolean emailSent = EmailSender.sendEmail(hpLoan.getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+        //For Dealer
+        String dealerPhoneNumber = hpLoan.getProduct().getDealer().getCurrentAccount().getCif().getPhone();
+        String borrowerName = hpLoan.getCurrentAccount().getCif().getUserName();
+        String dealerSmsMessage = "RichCoin: The HP loan for " + hpLoan.getProduct().getProductName() +
+                " has been approved for your customer, " + borrowerName +
+                ". The amount of MMK " + hpLoan.getLoanAmount() +
+                " has been credited to your account. Please contact " + borrowerName +
+                " to proceed.";
+        SmsSender.sendSms(dealerPhoneNumber, dealerSmsMessage);
+
+        String dealerEmail = hpLoan.getProduct().getDealer().getCurrentAccount().getCif().getEmail();
+        String dealerEmailSubject = "HP Loan Approved - Funds Received for " + hpLoan.getProduct().getProductName();
+        String dealerEmailBody = "Dear " + hpLoan.getProduct().getDealer().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                "We are pleased to inform you that the Hire Purchase (HP) loan for your customer, " + borrowerName +
+                ", has been approved. The amount of MMK " + hpLoan.getLoanAmount() +
+                " has been credited to your current account.\n\n" +
+                "Please contact " + borrowerName + " to complete the next steps of the loan process.\n\n" +
+                "If you have any questions, please feel free to reach out.\n\n" +
+                "Best regards,\nRichCoin Team";
+        boolean dealerEmailSent = EmailSender.sendEmail(dealerEmail, dealerEmailSubject, dealerEmailBody);
+
+
     }
 }

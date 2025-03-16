@@ -6,8 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPRepaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPRepaymentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMELateFeeRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMELateFeeRepayService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMERepaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMERepaymentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/HpLoanServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/HpLoanServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +86,33 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.EmailSender">
+    <configuration name="EmailSender" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.microfinance.code.etc.EmailSender" />
+      <module name="MicroFinance" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microfinance.code.etc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SmsSender" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.microfinance.code.etc.SmsSender" />
+      <module name="MicroFinance" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.microfinance.code.etc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MicroFinanceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="MicroFinance" />
@@ -90,6 +121,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.EmailSender" />
+        <item itemvalue="Application.SmsSender" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -119,7 +156,9 @@
       <workItem from="1741698423207" duration="8303000" />
       <workItem from="1741746687564" duration="10165000" />
       <workItem from="1741867472186" duration="13024000" />
-      <workItem from="1741921507703" duration="4620000" />
+      <workItem from="1741921507703" duration="7409000" />
+      <workItem from="1742041345734" duration="2898000" />
+      <workItem from="1742096094632" duration="6426000" />
     </task>
     <servers />
   </component>
@@ -159,6 +198,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMERepaymentTrackServiceImpl.java</url>
           <line>85</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/microfinance/code/etc/SmsSender.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

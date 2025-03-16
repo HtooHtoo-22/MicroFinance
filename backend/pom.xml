@@ -118,7 +118,24 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio -->
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>10.7.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- ✅ Jakarta Mail (sometimes required explicitly for sending emails) -->
+        <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>2.0.2</version>
+        </dependency>
 
 
     </dependencies>
