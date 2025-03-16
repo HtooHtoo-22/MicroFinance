@@ -1,9 +1,6 @@
 package com.microfinance.code.controller;
 
-import com.microfinance.code.dto.CollateralDTO;
-import com.microfinance.code.dto.CollateralTypeDTO;
-import com.microfinance.code.dto.SMELoanDTO;
-import com.microfinance.code.dto.SMERepaymentTrackDTO;
+import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentTrackService;
@@ -65,5 +62,10 @@ public class SMELoanController {
     public ApiResponse<List<SMERepaymentTrackDTO>> getRepaymentTracksByLoanId(@PathVariable("loanId")Integer loanId){
         List<SMERepaymentTrackDTO> repayTrackList = repaymentTrackService.getTrackListByLoanId(loanId);
         return ApiResponse.success(HttpStatus.OK, 200, "SME Repay Tracks retrieved successfully", repayTrackList);
+    }
+    @GetMapping("/getLateFeeSummary/{loanId}")
+    public ApiResponse<SMELateFeeSummaryDTO> getLateFeeSummaryByLoanId(@PathVariable("loanId")Integer loanId){
+        SMELateFeeSummaryDTO lateFeeSummaryDTO = smeLoanService.getLateFeeAndODByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "SME OD and Late Fee Summary retrieved successfully", lateFeeSummaryDTO);
     }
 }

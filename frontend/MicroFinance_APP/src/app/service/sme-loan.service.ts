@@ -5,6 +5,7 @@ import { Smeloan } from '../model/SmeLoan';
 import { map } from 'rxjs';
 import { ApiResponse } from '../model/Apirespon';
 import { SMERepaymentTrack } from '../model/SMERepaymentTrack';
+import { SMELateFeeSummary } from '../model/SMELateFeeSummary';
 
 
 @Injectable({
@@ -48,5 +49,11 @@ export class SmeLoanService {
       `${this.apiUrl}/getRepaymentTracks/${loanId}`
     );
   }
+  getLateFeeSummaryByLoanId(loanId: number): Observable<ApiResponse<SMELateFeeSummary>> {
+    return this.http.get<ApiResponse<SMELateFeeSummary>>(
+      `${this.apiUrl}/getLateFeeSummary/${loanId}`
+    );
+  }
+  
   
 }

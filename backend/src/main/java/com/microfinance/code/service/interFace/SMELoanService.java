@@ -1,5 +1,6 @@
 package com.microfinance.code.service.interFace;
 
+import com.microfinance.code.dto.SMELateFeeSummaryDTO;
 import com.microfinance.code.dto.SMELoanDTO;
 
 import java.math.BigDecimal;
@@ -16,4 +17,6 @@ public interface SMELoanService {
     public SMELoanDTO getLoanById(Integer id);
 
     public SMELoanDTO getLoanByLoanId(String id);
+
+    public SMELateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId);
 }

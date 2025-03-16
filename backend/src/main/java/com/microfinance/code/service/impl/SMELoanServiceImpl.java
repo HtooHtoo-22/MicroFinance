@@ -1,6 +1,8 @@
 package com.microfinance.code.service.impl;
 
+import com.microfinance.code.dto.SMELateFeeSummaryDTO;
 import com.microfinance.code.dto.SMELoanDTO;
+import com.microfinance.code.dto.SMEScheduleDTO;
 import com.microfinance.code.dto.TransactionDTO;
 import com.microfinance.code.etc.EmailSender;
 import com.microfinance.code.etc.SmsSender;
@@ -8,20 +10,24 @@ import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.exception.ValidationException;
 import com.microfinance.code.mapper.SMELoanMapper;
+import com.microfinance.code.mapper.SMEScheduleMapper;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
 import com.microfinance.code.status.LoanStatus;
+import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +52,14 @@ public class SMELoanServiceImpl implements SMELoanService {
     private TransactionRepository transactionRepository;
     @Autowired
     private SMELoanMapper loanMapper;
+    @Autowired
+    private SMERepaymentScheduleRepo scheduleRepo;
+    @Autowired
+    private SMEScheduleMapper scheduleMapper;
+    @Autowired
+    private SMELateFeeCalculationRepo lateFeeRepo;
+    @Autowired
+    private SMELateFeeHoldingRepo lateFeeHoldingRepo;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -238,5 +252,131 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .orElseThrow(() -> new NotFoundException("SME Loan  not found with Loan ID: " + id));
         return loanMapper.toDTO(loan);
     }
+    @Override
+    public SMELateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId) {
+        SMELateFeeSummaryDTO lateFeeSummaryDTO = new SMELateFeeSummaryDTO();
 
+        // Fetch overdue repayment schedules
+        List<SMERepaymentSchedule> schedules = scheduleRepo.findBySmeLoanIdAndStatusIn(loanId, List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
+
+        // Check if no overdue schedules are found
+        if (schedules.isEmpty()) {
+            throw new NotFoundException("No overdue repayment schedules found for loan ID: " + loanId);
+        }
+
+        List<SMEScheduleDTO> odScheduleDTOs = schedules.stream()
+                .map(scheduleMapper::toDTO)
+                .collect(Collectors.toList());
+        System.out.println("OD Schedules : " + odScheduleDTOs);
+        lateFeeSummaryDTO.setOdSchedules(odScheduleDTOs);
+
+        // Fetch late fee calculations
+        List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(loanId);
+
+        // Check if no late fee calculations are found
+        if (calculations.isEmpty()) {
+            throw new NotFoundException("No late fee calculations found for loan ID: " + loanId);
+        }
+
+        // Find max late days
+        int maxLateDays = calculations.stream()
+                .mapToInt(SMELateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+        System.out.println("Late Days : " + maxLateDays);
+        lateFeeSummaryDTO.setLateDays(maxLateDays);
+
+        // Calculate total late fees
+        BigDecimal totalLateFees = calculateTotalLateFees(calculations);
+        System.out.println("Late Fees : " + totalLateFees);
+        lateFeeSummaryDTO.setLateFees(totalLateFees);
+
+        // Fetch late fee rate before 90 days
+        BigDecimal rateBf90 = rateRepo.findValueByRateType("SME Late Fee Before 90 Days");
+        if (rateBf90 == null) {
+            throw new NotFoundException("Late fee rate before 90 days not found for loan ID: " + loanId);
+        }
+        System.out.println("Before 90 Late Fee Rate : " + rateBf90);
+        lateFeeSummaryDTO.setLateFeeRateBf90(rateBf90);
+
+        // Fetch late fee rate after 90 days
+        BigDecimal rateAf90 = rateRepo.findValueByRateType("SME Late Fee After 90 Days");
+        if (rateAf90 == null) {
+            throw new NotFoundException("Late fee rate after 90 days not found for loan ID: " + loanId);
+        }
+        System.out.println("After 90 Late Fee Rate : " + rateAf90);
+        lateFeeSummaryDTO.setLateFeeRateAf90(rateAf90);
+
+        // Fetch late fee holding
+        SMELateFeeHolding lateFeeHolding = fetchLateFeeHolding(loanId);
+        if (lateFeeHolding == null) {
+            throw new NotFoundException("No late fee holding found for loan ID: " + loanId);
+        }
+        BigDecimal heldAmount = lateFeeHolding.getHoldAmount();
+        System.out.println("Hold Amount : " + heldAmount);
+        lateFeeSummaryDTO.setHoldAmount(heldAmount);
+
+        // Fetch loan information to calculate outstanding amount
+        Optional<SMELoan> optionalLoan = smeLoanRepository.findById(loanId);
+        if (!optionalLoan.isPresent()) {
+            throw new NotFoundException("Loan ID not found: " + loanId);
+        }
+        BigDecimal outstandingAmount = calculateOutstandingAmount(optionalLoan.get());
+        System.out.println("Outstanding Amount : " + outstandingAmount);
+        lateFeeSummaryDTO.setOutStandingAmount(outstandingAmount);
+
+        return lateFeeSummaryDTO;
+    }
+
+    private BigDecimal calculateTotalLateFees(List<SMELateFeeCalculation> lateFees) {
+        return lateFees.stream()
+                .map(SMELateFeeCalculation::getLateFees)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    private SMELateFeeHolding fetchLateFeeHolding(Integer smeLoanId) {
+        return lateFeeHoldingRepo.findBySmeLoan_Id(smeLoanId).orElse(null);
+    }
+    private BigDecimal calculateOutstandingAmount(SMELoan smeLoan) {
+        BigDecimal outstandingAmount = BigDecimal.ZERO;
+
+        // Fetch repayment schedules with required statuses
+        List<SMERepaymentSchedule> repaymentSchedules = scheduleRepo.findBySmeLoanIdAndStatusIn(
+                smeLoan.getId(), List.of(RepaymentStatus.NOT_DUE_YET, RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
+
+        if (repaymentSchedules.isEmpty()) {
+            throw new RuntimeException("No repayment schedules found for the loan");
+        }
+
+        // Find the minimum principal amount
+        BigDecimal minPrincipal = repaymentSchedules.stream()
+                .map(SMERepaymentSchedule::getPrincipal)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        outstandingAmount = outstandingAmount.add(minPrincipal);
+        BigDecimal totalOD = BigDecimal.ZERO;
+        BigDecimal totalInterest = BigDecimal.ZERO;
+
+        for (SMERepaymentSchedule schedule : repaymentSchedules) {
+            BigDecimal interestAmount = schedule.getInterestAmount() != null ? schedule.getInterestAmount() : BigDecimal.ZERO;
+            BigDecimal interestODAmount = schedule.getInterestODAmount() != null ? schedule.getInterestODAmount() : BigDecimal.ZERO;
+
+            if (schedule.getStatus() == RepaymentStatus.NOT_DUE_YET) {
+                outstandingAmount = outstandingAmount.add(interestAmount);
+                totalInterest = totalInterest.add(interestAmount);
+            }
+
+            if (schedule.getStatus() == RepaymentStatus.FULL_OVERDUE || schedule.getStatus() == RepaymentStatus.PARTIAL_OVERDUE) {
+                outstandingAmount = outstandingAmount.add(interestODAmount);
+                totalOD = totalOD.add(interestODAmount);
+                System.out.println("Schedule ID: " + schedule.getId() + " | OD Interest: " + interestODAmount);
+            }
+        }
+
+        System.out.println("Principal: " + minPrincipal);
+        System.out.println("Total OD Amount: " + totalOD);
+        System.out.println("Total Remaining Interest Amount: " + totalInterest);
+
+        return outstandingAmount;
+    }
 }

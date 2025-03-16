@@ -46,6 +46,16 @@
       (click)="activeTab = 'track'">
       Repayment Track
     </button>
+    <button 
+      *ngIf="loan?.status === 'Approve'"
+      [ngClass]="{
+        'text-blue-600 border-b-2 border-blue-600': activeTab === 'lateFee',
+        'text-gray-500 hover:text-gray-700': activeTab !== 'lateFee'
+      }"
+      class="pb-3 px-1"
+      (click)="activeTab = 'lateFee'">
+      Late Fees & Overdue
+    </button>
     </nav>
   </div>
 
@@ -210,6 +220,10 @@
       <h2 class="text-lg font-semibold mb-6 text-gray-800">Repayment Tracking</h2>
       <!-- Add your tracking content here -->
       <app-sme-repay-track [loanId]="loan?.id"></app-sme-repay-track>
+    </div>
+    <div *ngSwitchCase="'lateFee'" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold mb-6 text-gray-800">Late Fees & Overdue</h2>
+      <app-sme-od-latefee  [loanId]="loan?.id"></app-sme-od-latefee>
     </div>
   </div>
 </div>
