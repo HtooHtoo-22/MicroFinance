@@ -4,7 +4,7 @@ import { CifService } from '../../../service/cif.service';
 import { CurrentAccService } from '../../../service/current-acc.service';
 import { Cif } from '../../../model/CIF';
 import { CurrentAccount } from '../../../model/CurrentAcc';
-import { ApiResponse } from '../../../model/Apirespon';
+import { ApiResponse } from '../../../model/ApiResponse';
 import { Transaction } from '../../../model/Transaction';
 import { TransactionService } from '../../../service/transaction.service';
 

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Cif } from '../model/CIF';
 import { AuthService } from './auth.service';
-import { ApiResponse } from '../model/Apirespon';
+import { ApiResponse } from '../model/ApiResponse';
 
 @Injectable({
   providedIn: 'root'

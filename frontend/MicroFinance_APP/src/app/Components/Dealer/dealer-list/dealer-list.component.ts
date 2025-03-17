@@ -24,7 +24,7 @@ export class DealerListComponent implements OnInit {
 
   loadDealers() {
     this.dealerService.getAllDealers().subscribe({
-      next: (dealers) => this.dealers = dealers,
+      next: (dealers) => this.dealers = dealers, // Only PENDING dealers are returned
       error: () => this.snackBar.open('Error loading dealers', 'Close', { duration: 3000 })
     });
   }

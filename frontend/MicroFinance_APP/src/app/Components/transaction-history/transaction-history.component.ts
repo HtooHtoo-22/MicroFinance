@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TransactionService } from '../../service/transaction.service'; // Adjust the path as necessary
 import { Transaction } from '../../model/Transaction'; // Adjust the path as necessary
-import { ApiResponse } from '../../model/Apirespon'; // Adjust the path as necessary
+import { ApiResponse } from '../../model/ApiResponse'; // Adjust the path as necessary
 
 @Component({
   selector: 'app-transaction-history',

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Transaction } from '../model/Transaction';
-import { ApiResponse } from '../model/Apirespon';
+import { ApiResponse } from '../model/ApiResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -23,4 +23,9 @@ export class TransactionService {
   getTransactionsByCifId(cifId: number): Observable<ApiResponse<Transaction[]>> {
     return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-cif/${cifId}`);
   }
+
+  getTransactionsByAccountId(accountId: number): Observable<ApiResponse<Transaction[]>> {
+    return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-account/${accountId}`);
+  }
+
 }

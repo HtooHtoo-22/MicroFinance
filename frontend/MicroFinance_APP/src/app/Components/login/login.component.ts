@@ -37,7 +37,12 @@ export class LoginComponent {
       ).subscribe({
         next: (response) => {
           if (response.access_token) {
-            this.router.navigate(['/dashboard']);
+            const userRole = this.authService.getCurrentUserRole();
+            if (userRole === 'DEALER') {
+              this.router.navigate(['/dealer-dashboard']); // Navigate to dealer dashboard
+            } else {
+              this.router.navigate(['/dashboard']); // Navigate to default dashboard
+            }
           } else {
             this.errorMessage = 'Invalid login response';
           }

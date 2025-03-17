@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { StoreService } from './store.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
+  private emailSubject = new BehaviorSubject<string | null>(null);
   private apiUrl = 'http://localhost:8081/api/v1/auth';  // Base URL for auth endpoints
 
 
@@ -18,7 +19,14 @@ export class AuthService {
   ) {
     const token = this.getAccessToken();
     this.loggedIn.next(!!token);
+
+        // Initialize email from storage
+        const storedEmail = this.storageService.getItem('email');
+        if (storedEmail) {
+          this.emailSubject.next(storedEmail);
+        }
   }
+
   login(username: string, password: string) {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http.post<any>(
@@ -34,9 +42,21 @@ export class AuthService {
           this.storageService.setItem('userId', response.userId);
           this.storageService.setItem('branchId', response.branchId);
           this.storageService.setItem('role', response.role); // This should set the role
+          this.setCurrentUserEmail(username);
+
+          if (response.role === 'DEALER' && response.dealerId) {
+            console.log('Setting dealerId:', response.dealerId); // Debug log
+            this.storageService.setItem('dealerId', response.dealerId);
+          }
         }
       })
     );
+}
+
+getCurrentDealerId(): string | null {
+  const dealerId = this.storageService.getItem('dealerId');
+  console.log('Retrieved dealerId:', dealerId); // Debug log
+  return dealerId;
 }
 
   getCurrentUserId(): string | null {
@@ -50,6 +70,20 @@ export class AuthService {
   getCurrentUserRole(): string | null {
     return this.storageService.getItem('role'); // Ensure this matches the key used in setItem
 }
+
+  // Email handling
+  setCurrentUserEmail(email: string): void {
+    this.emailSubject.next(email);
+    this.storageService.setItem('email', email);
+  }
+
+  getCurrentUserEmail(): Observable<string | null> {
+    return this.emailSubject.asObservable();
+  }
+
+  getStoredEmail(): string | null {
+    return this.storageService.getItem('email');
+  }
 
   logout() {
     this.storageService.removeItem('access_token');
@@ -77,4 +111,25 @@ export class AuthService {
   getRefreshToken() {
     return this.storageService.getItem('refresh_token');
   }
+
+  isAdmin(): boolean {
+    return this.getCurrentUserRole() === 'ADMIN';
+  }
+
+  isManager(): boolean {
+    return this.getCurrentUserRole() === 'MANAGER';
+  }
+
+  isEntry(): boolean {
+    return this.getCurrentUserRole() === 'ENTRY';
+  }
+
+  isOperation(): boolean {
+    return this.getCurrentUserRole() === 'OPERATION';
+  }
+
+  isDealer(): boolean {
+    return this.getCurrentUserRole() === 'DEALER';
+  }
+
 }

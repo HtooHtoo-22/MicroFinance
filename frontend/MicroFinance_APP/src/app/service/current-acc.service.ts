@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { CurrentAccount } from '../model/CurrentAcc';
-import { ApiResponse } from '../model/Apirespon';
+import { ApiResponse } from '../model/ApiResponse';
 import { Branch } from '../model/user';
 
 @Injectable({
@@ -27,13 +27,13 @@ export class CurrentAccService {
 
   updateCurrentAccount(accountId: string, accountData: CurrentAccount): Observable<ApiResponse<CurrentAccount>> {
     return this.http.put<ApiResponse<CurrentAccount>>(
-      `${this.apiUrl}/${accountId}`, 
+      `${this.apiUrl}/currentAcc/${accountId}`, 
       accountData
     );
   }
 
   listCurrentAcc(): Observable<{ data: CurrentAccount[] }> {
-    return this.http.get<{ data: CurrentAccount[] }>(`${this.apiUrl}/list`);
+    return this.http.get<{ data: CurrentAccount[] }>(`${this.apiUrl}`);
   }
 
   getAccountsByCifId(cifId: number): Observable<ApiResponse<CurrentAccount[]>> {

@@ -22,5 +22,6 @@ export interface Cif {
     userId: number;
     branchName: string;
     userFullName: string;
+    hasCurrentAccount: boolean;
   }
 

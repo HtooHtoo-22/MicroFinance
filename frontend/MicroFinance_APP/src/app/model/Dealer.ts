@@ -11,4 +11,6 @@ export interface Dealer {
     accountId: string;
   };
   companyValue: number;
+  userPhotoURL?: string; // Add this line
+
 }

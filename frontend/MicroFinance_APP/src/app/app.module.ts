@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
-import { CifRegisterComponent } from './Components/cif-register/cif-register.component';
 import { TransactionComponent } from './Components/transaction/transaction.component';
 import { TransactionHistoryComponent } from './Components/transaction-history/transaction-history.component';
 import { CurrentAccListComponent } from './Components/current-acc-list/current-acc-list.component';
@@ -51,13 +50,24 @@ import { ModelComponent } from './Components/model/model.component';
 import { ConfirmDialogComponent } from './Components/confirm-dialog/confirm-dialog.component';
 import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
+import { CifDetailComponent } from './Components/CIF/cif-detail/cif-detail.component';
+import { DealerDetailComponent } from './Components/Account/dealer-detail/dealer-detail.component';
+import { DealerDashboardComponent } from './Components/dealer-dashboard/dealer-dashboard.component';
+import { DealerTransactionComponent } from './Components/Dealer/dealer-transaction/dealer-transaction.component';
+import { HpLoanListComponent } from './Components/hp-loan/hp-loan-list-approval/hp-loan-list.component';
+import { CreateEditProductComponent } from './Components/Product/create-edit-product/create-edit-product.component';
+import { HpLoanFormComponent } from './Components/hp-loan/hp-loan-form/hp-loan-form.component';
+import { AllproductListComponent } from './Components/Product/allproduct-list/allproduct-list.component';
+import { AuthService } from './service/auth.service';
+import { HpLoanDetailComponent } from './Components/hp-loan/hp-loan-detail/hp-loan-detail.component';
+import { HpLoanScheduleComponent } from './Components/hp-loan/hp-loan-schedule/hp-loan-schedule.component';
+import { HpLoanListFinishedComponent } from './Components/hp-loan/hp-loan-list-finished/hp-loan-list-finished.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    CifRegisterComponent,
     CurrentAccListComponent,
     TransactionComponent,
     TransactionHistoryComponent,
@@ -93,7 +103,17 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
     ConfirmDialogComponent,
     BranchAccountCountComponent,
     BranchUserCountComponent,
-
+    CifDetailComponent,
+    DealerDetailComponent,
+    DealerDashboardComponent,
+    DealerTransactionComponent,
+    HpLoanListComponent,
+    CreateEditProductComponent,
+    HpLoanFormComponent,
+    AllproductListComponent,
+    HpLoanDetailComponent,
+    HpLoanScheduleComponent,
+    HpLoanListFinishedComponent
   ],
   imports: [
     BrowserModule,
@@ -112,7 +132,7 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
     MatButtonModule,
     MatFormFieldModule
   ],
-  providers: [
+  providers: [ AuthService,
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

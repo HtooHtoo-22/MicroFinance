@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Dealer } from '../model/Dealer';
-import { ApiResponse } from '../model/Apirespon';
+import { ApiResponse } from '../model/ApiResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +14,17 @@ export class DealerService {
   constructor(private http: HttpClient) { }
 
   createDealer(dealer: Dealer): Observable<any> {
-    return this.http.post(this.apiUrl, dealer);
+    return this.http.post(`${this.apiUrl}/create`, dealer);
   }
 
   getAllDealers(): Observable<Dealer[]> {
     return this.http.get<ApiResponse<Dealer[]>>(`${this.apiUrl}/list`).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getDealerByEmail(email: string): Observable<Dealer> {
+    return this.http.get<ApiResponse<Dealer>>(`${this.apiUrl}/by-email/${email}`).pipe(
       map(response => response.data)
     );
   }
@@ -30,4 +36,12 @@ export class DealerService {
   rejectDealer(dealerId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/${dealerId}/reject`, {});
   }
+
+  // dealer.service.ts
+getApprovedDealers(): Observable<Dealer[]> {
+  return this.http.get<ApiResponse<Dealer[]>>(`${this.apiUrl}/approved`).pipe(
+    map(response => response.data)
+  );
+}
+
 }

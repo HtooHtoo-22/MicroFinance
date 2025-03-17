@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl">
+      <h2 class="text-3xl font-bold mb-8 text-center text-[#00A1FF]">Register HP Loan</h2>
+  
+      <form [formGroup]="loanForm" (ngSubmit)="submitLoan()" class="space-y-6">
+  
+        <!-- Product Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Product Name</label>
+            <input id="productName" formControlName="productName" type="text" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm" readonly>
+          </div>
+  
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">Product Value</label>
+            <input id="productValue" formControlName="productValue" type="number" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm" readonly>
+          </div>
+        </div>
+  
+        <!-- Select Product Button -->
+        <div class="text-right mt-4">
+          <button type="button"
+            (click)="goToProductList()"
+            class="py-2 px-6 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+            Select Product
+          </button>
+        </div>
+  
+        <!-- Interest Rate -->
+        <div class="space-y-2">
+          <label for="interestRate" class="block text-sm font-semibold text-gray-700">Interest Rate</label>
+          <input id="interestRate" formControlName="interestRate" type="number" readonly class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+        </div>
+  
+        <!-- Grace Period and Duration -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="gracePeriod" class="block text-sm font-semibold text-gray-700">Grace Period (Days)</label>
+            <input id="gracePeriod" formControlName="gracePeriod" type="number" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          </div>
+  
+          <div class="space-y-2">
+            <label for="tenor" class="block text-sm font-semibold text-gray-700">Duration (Years)</label>
+            <input id="tenor" formControlName="tenor" type="number" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          </div>
+        </div>
+  
+        <!-- Current Account -->
+        <div class="space-y-2">
+          <label for="currentAccount.id" class="block text-sm font-semibold text-gray-700">Current Account</label>
+          <select id="currentAccount.id" formControlName="currentAccountId" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option *ngFor="let currentAccount of currentAccounts" [value]="currentAccount.accountId">{{ currentAccount.accountId }}</option>
+          </select>
+        </div>
+  
+        <!-- Down Payment Rate and Dealer Commission Rate -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label for="downPaymentRate" class="block text-sm font-semibold text-gray-700">Down Payment Rate (%)</label>
+            <input id="downPaymentRate" formControlName="downPaymentRate" type="number" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          </div>
+  
+          <div class="space-y-2">
+            <label for="dealerCommissionRate" class="block text-sm font-semibold text-gray-700">Dealer Commission Rate (%)</label>
+            <input id="dealerCommissionRate" formControlName="dealerCommissionRate" type="number" class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          </div>
+        </div>
+  
+        <!-- Submit Button -->
+        <div class="text-center pt-6">
+          <button type="submit"
+            class="w-full py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+            Submit Loan
+          </button>
+        </div>
+  
+      </form>
+    </div>
+  </div>

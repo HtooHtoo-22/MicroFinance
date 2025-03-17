@@ -12,7 +12,7 @@ export class CollateralService {
   constructor(private http: HttpClient) { }
 
   getAllCollateralTypes(): Observable<CollateralTypeDTO[]> {
-    return this.http.get<{ data: CollateralTypeDTO[] }>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<{ data: CollateralTypeDTO[] }>(`${this.apiUrl}`).pipe(
       map((response: { data: CollateralTypeDTO[] }) => response.data)
     );
   }
@@ -24,7 +24,7 @@ export class CollateralService {
   }
 
   createCollateralType(collateralType: CollateralTypeDTO): Observable<CollateralTypeDTO> {
-    return this.http.post<CollateralTypeDTO>(`${this.apiUrl}/`, collateralType);
+    return this.http.post<CollateralTypeDTO>(`${this.apiUrl}/create`, collateralType);
   }
 
   updateCollateralType(id: number, collateralType: CollateralTypeDTO): Observable<CollateralTypeDTO> {

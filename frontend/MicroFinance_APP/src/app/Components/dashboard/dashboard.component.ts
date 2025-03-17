@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +16,10 @@ export class DashboardComponent {
   isRateDropdownOpen: boolean = false;
   isCifDropdownOpen: boolean = false;
   isDealerDropdownOpen: boolean = false;
+  isACCDropdownOpen: boolean = false;
   imagePath: string = "image/richcon-logo.png";
+
+  constructor(private authService: AuthService) {}
   // Add method to toggle dropdown
   toggleRoleDropdown(): void {
     this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
@@ -47,5 +51,25 @@ export class DashboardComponent {
 
   toggleDealerDropdown(): void{
     this.isDealerDropdownOpen = !this.isDealerDropdownOpen;
+  }
+
+  toggleACCDropdown(): void{
+    this.isACCDropdownOpen = !this.isACCDropdownOpen;
+  } 
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  isManager(): boolean {
+    return this.authService.isManager();
+  }
+
+  isEntry(): boolean {
+    return this.authService.isEntry();
+  }
+
+  isOperation(): boolean {
+    return this.authService.isOperation();
   }
 }

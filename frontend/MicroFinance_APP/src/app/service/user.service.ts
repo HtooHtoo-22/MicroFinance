@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { Branch, Role, UserDTO, UserResponseDTO } from '../model/user';
-import { ApiResponse } from '../model/Apirespon';
+import { ApiResponse } from '../model/ApiResponse';
 
 @Injectable({
   providedIn: 'root'

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CifRegisterComponent } from './cif-register.component';
+import { CifDetailComponent } from './cif-detail.component';
 
-describe('CifRegisterComponent', () => {
-  let component: CifRegisterComponent;
-  let fixture: ComponentFixture<CifRegisterComponent>;
+describe('CifDetailComponent', () => {
+  let component: CifDetailComponent;
+  let fixture: ComponentFixture<CifDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CifRegisterComponent]
+      declarations: [CifDetailComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CifRegisterComponent);
+    fixture = TestBed.createComponent(CifDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

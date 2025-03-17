@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModelComponent } from '../../model/model.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import { Cif } from '../../../model/CIF';
+import { CifService } from '../../../service/cif.service';
 
 @Component({
   selector: 'app-list',
@@ -14,12 +16,35 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 })
 export class ListComponent implements OnInit {
   currentAccounts: CurrentAccount[] = [];
+  cifs: Cif[] = [];
   accountId!: string;
 
-  constructor(private CurrentAccService: CurrentAccService,  private dialog:MatDialog,private cdr: ChangeDetectorRef,private router:Router) {}
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 7;
+  totalAccounts: number = 0;
+  totalPages: number = 0;
+
+  constructor(private CurrentAccService: CurrentAccService,  private dialog:MatDialog,private cdr: ChangeDetectorRef,private router:Router, private cifService: CifService) {}
 
   ngOnInit(): void {
     this.getCurrentAccs();
+    this.getCifs();
+  }
+
+  getCifs() {
+    this.cifService.listCif().subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.cifs = response.data;
+        } else {
+          this.cifs = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching CIFs:', error);
+      }
+    });
   }
 
   freezeAccount(account: CurrentAccount): void {
@@ -63,12 +88,13 @@ export class ListComponent implements OnInit {
     });
   }
 
-
   getCurrentAccs() {
     this.CurrentAccService.listCurrentAcc().subscribe({
       next: (response) => {
         if (response && response.data) {
           this.currentAccounts = response.data; // Assign the data to the component property
+          this.totalAccounts = this.currentAccounts.length;
+          this.totalPages = Math.ceil(this.totalAccounts / this.itemsPerPage);
         } else {
           this.currentAccounts = []; // Handle empty response
         }
@@ -92,5 +118,35 @@ export class ListComponent implements OnInit {
         this.router.navigate(['/dashboard/update-current-account', account.accountId]);
       }
     });
+  }
+
+  // Pagination methods
+  get paginatedAccounts(): CurrentAccount[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.currentAccounts.slice(start, start + this.itemsPerPage);
+  }
+
+  get startIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalAccounts);
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 }

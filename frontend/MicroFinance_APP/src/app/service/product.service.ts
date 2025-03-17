@@ -1,56 +1,96 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { Product } from '../model/Product';
+import { ApiResponse } from '../model/ApiResponse';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
+  private apiUrl = 'http://localhost:8081/api/products';
 
-  private apiUrl = 'http://localhost:8081/api/products'; 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  createProduct(product: Product,photo: File ): Observable<any>{
-    const formData = new FormData();
-    formData.append('product', JSON.stringify(product));
-    formData.append('userPhoto',photo);
+  private selectedProduct: Product | null = null;
 
-    return this.http.post<any>(`${this.apiUrl}`,formData);
-   
-  }
 
-  getProductById(id: number): Observable<Product> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-      map(response => response.data) // Extract `data`
+  createProduct(formData: FormData): Observable<Product> {
+    return this.http.post<Product>(this.apiUrl, formData).pipe(
+      catchError(this.handleError)
     );
   }
-  
-  
-  updateProduct(id: number, productData: any, photo: File | null): Observable<any> {
-    const formData = new FormData();
 
-    // Remove 'id' from productData before sending
-    const { id: _, ...productWithoutId } = productData; 
-    
-    formData.append('product', JSON.stringify(productWithoutId)); // Send product data without id
+  getProductById(productId: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/${productId}`).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-    if (photo) {
-      formData.append('photo', photo); // Append file only if it exists
+  getProductsByDealerId(dealerId: string): Observable<Product[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/dealer/${dealerId}`, { headers })
+      .pipe(
+        map(response => {
+          console.log('Raw API Response:', response);
+          console.log('Extracted data:', response.data);
+          return response.data as Product[];
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  getAllProducts(): Observable<Product[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/list`, { headers })
+      .pipe(
+        map(response => {
+          console.log('Raw API Response:', response);
+          console.log('Extracted data:', response.data);
+          return response.data as Product[];
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  updateProduct(id: number, formData: FormData): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/${id}`, formData).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('Error in ProductService:', error);
+    let errorMessage = 'An error occurred while fetching products';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Client-side error: ${error.error.message}`;
+    } else {
+      errorMessage = `Server-side error: ${error.status} - ${error.error.message || error.statusText}`;
     }
+    return throwError(() => new Error(errorMessage));
+  }
 
-    console.log("Sending update request:", formData.get('product')); // Log product data
-    console.log("Sending file:", formData.get('photo')); // Corrected log key
+  setSelectedProduct(product: Product) {
+    this.selectedProduct = product; // Set selected product
+  }
 
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+  getSelectedProduct(): Product | null {
+    return this.selectedProduct; // Return selected product
+  }
 
-}
-
-
-  
-  getProducts(): Observable<Product[]> {
-    return this.http.get<any>(`${this.apiUrl}/dealer/2`).pipe(
-      map(response => response.data) // Assuming APIResponse format
-    );
+  clearSelectedProduct() {
+    this.selectedProduct = null; // Reset selection after use
   }
 }

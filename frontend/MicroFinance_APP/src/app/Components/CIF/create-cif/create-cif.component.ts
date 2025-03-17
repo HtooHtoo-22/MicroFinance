@@ -139,8 +139,8 @@ export class CreateCifComponent implements OnInit {
       this.cifService.createCif(cifData, this.frontNRCFile, this.backNRCFile, this.userPhotoFile).subscribe({
         next: (response) => {
           console.log('CIF created successfully', response);
+          this.showSuccessModal = true; // Add this line
           this.cifForm.reset();
-          this.router.navigate(['/dashboard/cif-list']);
         },
         error: (err) => {
           console.error('Error creating CIF:', err);

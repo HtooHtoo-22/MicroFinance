@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CifRegisterComponent } from './Components/cif-register/cif-register.component';
 import { TransactionComponent } from './Components/transaction/transaction.component';
 import { TransactionHistoryComponent } from './Components/transaction-history/transaction-history.component';
 import { CurrentAccListComponent } from './Components/current-acc-list/current-acc-list.component';
@@ -36,6 +35,18 @@ import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
 import { BranchAccountCountComponent } from './Components/counting/branch-account-count/branch-account-count.component';
 import { BranchUserCountComponent } from './Components/counting/branch-user-count/branch-user-count.component';
+import { CifDetailComponent } from './Components/CIF/cif-detail/cif-detail.component';
+import { DealerDetailComponent } from './Components/Account/dealer-detail/dealer-detail.component';
+import { DealerDashboardComponent } from './Components/dealer-dashboard/dealer-dashboard.component';
+import { DealerAuthGuard } from './guards/dealer-auth.guard';
+import { DealerTransactionComponent } from './Components/Dealer/dealer-transaction/dealer-transaction.component';
+import { CreateEditProductComponent } from './Components/Product/create-edit-product/create-edit-product.component';
+import { AllproductListComponent } from './Components/Product/allproduct-list/allproduct-list.component';
+import { HpLoanListComponent } from './Components/hp-loan/hp-loan-list-approval/hp-loan-list.component';
+import { HpLoanFormComponent } from './Components/hp-loan/hp-loan-form/hp-loan-form.component';
+import { HpLoanDetailComponent } from './Components/hp-loan/hp-loan-detail/hp-loan-detail.component';
+import { HpLoanScheduleComponent } from './Components/hp-loan/hp-loan-schedule/hp-loan-schedule.component';
+import { HpLoanListFinishedComponent } from './Components/hp-loan/hp-loan-list-finished/hp-loan-list-finished.component';
 
 
 const routes: Routes = [
@@ -45,7 +56,6 @@ const routes: Routes = [
     component: DashboardComponent, canActivate: [AuthGuard],
     children: [
       { path: 'home', component: BranchAccountCountComponent },
-      { path: 'cif-register', component: CifRegisterComponent },
       { path: 'current-account-register', component: CurrentAccountRegisterComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction/create/:currentAccountId', component: TransactionComponent },
@@ -78,7 +88,26 @@ const routes: Routes = [
       { path: 'update-current-account/:id', component: UpdateComponent },
       { path: 'cif-details/:id', component: CustomerDetailComponent },
       { path: 'create-dealer', component: CreateDealerComponent },
-      { path: 'dealer-list', component: DealerListComponent }
+      { path: 'dealer-list', component: DealerListComponent },
+      { path: 'cif-detail-view/:id', component: CifDetailComponent },
+      { path: 'dealer-detail', component: DealerDetailComponent },
+      { path: 'all-list', component: AllproductListComponent},
+      { path: 'hp-register', component: HpLoanFormComponent },
+      { path: 'hp-loan-list', component: HpLoanListComponent },
+      { path: 'hp-loan-detail/:id', component: HpLoanDetailComponent },
+      { path: 'hp-loan-schedule/:id', component: HpLoanScheduleComponent },
+      { path: 'hp-loan-list-finished', component: HpLoanListFinishedComponent }
+    ]
+  },
+  {
+    path: 'dealer-dashboard',
+    component: DealerDashboardComponent,
+    canActivate: [DealerAuthGuard], // Use DealerAuthGuard for dealers
+    children: [
+      { path: 'dealer-transaction', component: DealerTransactionComponent },
+      { path: 'create-product', component: CreateEditProductComponent },
+      { path: 'procuct-list', component: AllproductListComponent}, 
+      { path: 'all-list', component: AllproductListComponent}
     ]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
