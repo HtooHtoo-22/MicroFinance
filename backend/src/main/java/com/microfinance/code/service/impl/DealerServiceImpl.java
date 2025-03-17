@@ -88,6 +88,7 @@ public class DealerServiceImpl implements DealerService {
         user.setActive(false);
         user.setCreateDate(LocalDateTime.now());
         user.setBranch(branch);
+        user.setDealer(dealer);
 
         userRepo.save(user);
 

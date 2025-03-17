@@ -20,6 +20,6 @@ public class AuthenticationResponse {
     private String branchId;
     @JsonProperty("role")
     private String role;
-    @JsonProperty("currentAccount")
-    private String currentAccountId;
+    @JsonProperty("dealerId")
+    private Integer dealerId;
 }

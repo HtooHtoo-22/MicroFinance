@@ -1,5 +1,7 @@
 package com.microfinance.code.service.impl;
 
+import com.microfinance.code.dto.HPScheduleDTO;
+import com.microfinance.code.mapper.HPScheduleMapper;
 import com.microfinance.code.model.HPLoan;
 import com.microfinance.code.model.HPSchedule;
 import com.microfinance.code.repository.*;
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class HPScheduleServiceImpl implements HPScheduleService {
@@ -28,6 +31,8 @@ public class HPScheduleServiceImpl implements HPScheduleService {
     private HPScheduleRepo hpScheduleRepo;
     @Autowired
     private HPLoanRepo hpLoanRepo;
+    @Autowired
+    private HPScheduleMapper hpScheduleMapper;
 
     @Override
     public void createSchedule(HPLoan hpLoan) {
@@ -114,5 +119,11 @@ public class HPScheduleServiceImpl implements HPScheduleService {
             dueDate = dueDate.plusDays(1);
         }
         return dueDate;
+    }
+
+    @Override
+    public List<HPScheduleDTO> getSchedulesByLoanId(Integer hpLoanId) {
+        List<HPSchedule> schedules = hpScheduleRepo.findByHpLoanId(hpLoanId);
+        return hpScheduleMapper.toDTOList(schedules);
     }
 }

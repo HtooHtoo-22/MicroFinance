@@ -4,11 +4,11 @@ import com.microfinance.code.dto.ProductDTO;
 import com.microfinance.code.model.Dealer;
 import com.microfinance.code.model.Product;
 
+import com.microfinance.code.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
-
     public ProductDTO toDTO(Product product) {
         if (product == null) {
             return null;
@@ -18,9 +18,8 @@ public class ProductMapper {
         dto.setProductName(product.getProductName());
         dto.setValue(product.getValue());
         dto.setPhoto(product.getPhoto());
-        dto.setDealerRegisterId(product.getDealer().getId()); // Fixed reference
-        dto.setStatus(product.isStatus()); // Boolean mapping
-
+        dto.setDealerId(product.getDealer().getId());
+        dto.setStatus(product.isStatus());
         return dto;
     }
 
@@ -34,13 +33,12 @@ public class ProductMapper {
         product.setValue(dto.getValue());
         product.setPhoto(dto.getPhoto());
 
-        // Fix: Corrected method name to match DTO field
-        Dealer dealerRegister = new Dealer();
-        dealerRegister.setId(dto.getDealerRegisterId()); // Fixed reference
-        product.setDealer(dealerRegister);
+        // Map dealer
+        Dealer dealer = new Dealer();
+        dealer.setId(dto.getDealerId());
+        product.setDealer(dealer);
 
-        product.setStatus(dto.getStatus()); // Boolean mapping
-
+        product.setStatus(dto.getStatus());
         return product;
     }
 }

@@ -27,6 +27,7 @@ public class HPLoanMapper {
         dto.setLoanAmount(hpLoan.getLoanAmount());
         dto.setInterestRate(hpLoan.getInterestRate());
         dto.setGracePeriod(hpLoan.getGracePeriod());
+        hpLoan.setTenor(dto.getTenor()); // Add this line to map tenor
 
         // Convert dates to String
         dto.setRegisteredDate(hpLoan.getRegisteredDate() != null ? hpLoan.getRegisteredDate().format(DATE_TIME_FORMATTER) : null);
@@ -37,18 +38,23 @@ public class HPLoanMapper {
         dto.setDuration(hpLoan.getDuration());
 
         // Store only IDs for related entities
+// Set user IDs and names
         dto.setEntryUserId(hpLoan.getEntryUser() != null ? hpLoan.getEntryUser().getId() : null);
+        dto.setEntryUserName(hpLoan.getEntryUser() != null ? hpLoan.getEntryUser().getName() : null);
         dto.setApprovedUserId(hpLoan.getApprovedUser() != null ? hpLoan.getApprovedUser().getId() : null);
-        dto.setCurrentAccountId(hpLoan.getCurrentAccount() != null ? hpLoan.getCurrentAccount().getId() : null);
+        dto.setApprovedUserName(hpLoan.getApprovedUser() != null ? hpLoan.getApprovedUser().getName() : null);
+        dto.setCurrentAccountId(hpLoan.getCurrentAccount().getAccountId() != null ? hpLoan.getCurrentAccount().getAccountId() : null);
+        dto.setCurrentAccountId(hpLoan.getCurrentAccount().getCif().getCifId() != null ? hpLoan.getCurrentAccount().getCif().getCifId() : null);
+        dto.setBorrowerName(hpLoan.getCurrentAccount().getCif().getUserName());
         dto.setProductId(hpLoan.getProduct() != null ? hpLoan.getProduct().getId() : null);
-
+        dto.setProductName(hpLoan.getProduct().getProductName());
+        dto.setProductPhoto(hpLoan.getProduct().getPhoto());
         dto.setDownPaymentRate(hpLoan.getDownPaymentRate());
         dto.setDealerCommissionRate(hpLoan.getDealerCommissionRate());
 
         return dto;
     }
 
-    // Convert DTO to Entity
     public static HPLoan toEntity(HPLoanDTO dto) {
         if (dto == null) {
             return null;
@@ -58,17 +64,18 @@ public class HPLoanMapper {
         hpLoan.setId(dto.getId());
         hpLoan.setLoanId(dto.getLoanId());
         hpLoan.setLoanAmount(dto.getLoanAmount());
+        if (dto.getInterestRate() == null) {
+            throw new IllegalArgumentException("Interest Rate cannot be null");
+        }
         hpLoan.setInterestRate(dto.getInterestRate());
         hpLoan.setGracePeriod(dto.getGracePeriod());
 
-        // Convert String to LocalDateTime / LocalDate
         hpLoan.setRegisteredDate(dto.getRegisteredDate() != null ? LocalDateTime.parse(dto.getRegisteredDate(), DATE_TIME_FORMATTER) : null);
         hpLoan.setApprovedDate(dto.getApprovedDate() != null ? LocalDateTime.parse(dto.getApprovedDate(), DATE_TIME_FORMATTER) : null);
         hpLoan.setEndDate(dto.getEndDate() != null ? LocalDate.parse(dto.getEndDate(), DATE_FORMATTER) : null);
         hpLoan.setStatus(dto.getStatus());
         hpLoan.setDuration(dto.getDuration());
 
-        // Set related entity references using only IDs
         if (dto.getEntryUserId() != null) {
             User entryUser = new User();
             entryUser.setId(dto.getEntryUserId());
@@ -83,7 +90,7 @@ public class HPLoanMapper {
 
         if (dto.getCurrentAccountId() != null) {
             CurrentAccount currentAccount = new CurrentAccount();
-            currentAccount.setId(dto.getCurrentAccountId());
+            currentAccount.setAccountId(dto.getCurrentAccountId()); // Already a String
             hpLoan.setCurrentAccount(currentAccount);
         }
 

@@ -29,9 +29,9 @@ public class HPLoanIDGenerator {
 
     private static String getLastLoanId(String dateCode) {
         String lastLoanId = null;
-        String query = "SELECT loan_id FROM sme_loan WHERE loan_id LIKE ? ORDER BY loan_id DESC LIMIT 1";
+        String query = "SELECT loan_id FROM hp_loan WHERE loan_id LIKE ? ORDER BY loan_id DESC LIMIT 1";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/microfinance", "root", "root");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/microfinance", "root", "youarewinhtetaung");
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, PREFIX + "-" + dateCode + "-%");

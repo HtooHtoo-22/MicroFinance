@@ -80,12 +80,20 @@ public class AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
 
+        // Include dealerId only if the user is a dealer
+        Integer dealerId = null;
+        if (user.getRole().getRoleName().equals("DEALER")) {
+            dealerId = user.getDealer() != null ? user.getDealer().getId() : null;
+        }
+
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .Id(user.getId())
                 .branchId(user.getBranch().getId().toString())
                 .role(user.getRole().getRoleName())
+                .dealerId(dealerId)
                 .build();
     }
 

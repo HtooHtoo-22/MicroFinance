@@ -28,8 +28,19 @@ public class HPLoanDTO {
     private int duration;
     private Integer entryUserId;
     private Integer approvedUserId;
-    private Integer currentAccountId;
+    private String currentAccountId;
+    private String cifId;
+    private String borrowerName;
     private Integer productId;
     private BigDecimal downPaymentRate;
     private BigDecimal dealerCommissionRate;
+
+    private String currentCode;
+    private String productName;
+    private BigDecimal productValue;
+    private int tenor;
+
+    private String entryUserName;
+    private String approvedUserName;
+    private String productPhoto;
 }

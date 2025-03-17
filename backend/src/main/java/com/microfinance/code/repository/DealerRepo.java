@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface DealerRepo extends JpaRepository<Dealer, Integer> {
-    Optional<Dealer> findByEmail(String email);
+    Optional<Dealer> findByEmail(String email); // Required for email-based lookup
     Optional<Dealer>findByBusinessName(String businessName);
     Optional<Dealer> findByCurrentAccountId(Integer currentAccountId);
     List<Dealer> findByStatusforDelar(DEALER dealer);

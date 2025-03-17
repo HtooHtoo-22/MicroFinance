@@ -41,6 +41,9 @@ public class User implements UserDetails{
     private LocalDateTime CreateDate;
     @Column(name = "status")
     private boolean active;
+    @ManyToOne
+    @JoinColumn(name = "dealer_id")
+    private Dealer dealer;
     @PrePersist
     protected void onCreate() {
         if (CreateDate == null) {

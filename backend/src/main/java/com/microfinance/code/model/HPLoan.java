@@ -1,5 +1,6 @@
 package com.microfinance.code.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.microfinance.code.status.LoanStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -48,19 +49,20 @@ public class HPLoan {
     @Column(name = "duration", nullable = false) // Added nullable
     private int duration;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User entryUser;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "approvedUser_id")
     private User approvedUser;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "current_account_id", nullable = false)
     private CurrentAccount currentAccount;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id",nullable = false)
     private Product product;
 

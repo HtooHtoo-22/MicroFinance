@@ -9,8 +9,10 @@ import com.microfinance.code.mapper.ProductMapper;
 import com.microfinance.code.model.Dealer;
 import com.microfinance.code.model.Product;
 
+import com.microfinance.code.model.User;
 import com.microfinance.code.repository.DealerRepo;
 import com.microfinance.code.repository.ProductRepo;
+import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.CloudinaryService;
 import com.microfinance.code.service.interFace.ProductService;
 
@@ -29,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
-  @Autowired
+    @Autowired
     private ProductMapper productMapper;
 
     @Autowired
@@ -39,34 +41,31 @@ public class ProductServiceImpl implements ProductService {
     private DealerRepo dealerRepo;
 
     @Autowired
-    private Cloudinary cloudinary;
-
-    @Autowired
     private CloudinaryService cloudinaryService;
-
 
     @Override
     public ProductDTO createProduct(ProductDTO dto, MultipartFile userPhoto) throws IOException {
         try {
-            // Upload image asynchronously
+            // Get dealer from DTO
+            Dealer dealer = dealerRepo.findById(dto.getDealerId())
+                    .orElseThrow(() -> new RuntimeException("Dealer not found"));
+
+            // Upload image
             CompletableFuture<String> photoUrlFuture = cloudinaryService.uploadFileAsync(userPhoto);
+            String photoUrl = photoUrlFuture.get();
 
-            // Wait for the upload to complete and get the URL
-            String photoUrl = photoUrlFuture.get(); // Blocking call to wait for the result
-
-            // Convert DTO to Entity
+            // Create product
             Product product = productMapper.toEntity(dto);
-            product.setPhoto(photoUrl); // Set Cloudinary URL
+            product.setDealer(dealer); // Set dealer relationship
+            product.setPhoto(photoUrl);
 
-            // Save to DB
             product = productRepo.save(product);
-
-            // Convert back to DTO
             return productMapper.toDTO(product);
         } catch (Exception e) {
-            throw new IOException("Error uploading image to Cloudinary", e);
+            throw new IOException("Error creating product: " + e.getMessage(), e);
         }
     }
+
     @Override
     public List<ProductDTO> getProductsByDealerId(Integer dealerId) {
         List<Product> products = productRepo.findByDealerId(dealerId); // Fetch from DB
@@ -74,6 +73,15 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDTO) // Convert to DTOs
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productRepo.findAll();
+        return products.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo) {
         Optional<Product> optionalProduct = productRepo.findById(id);
@@ -91,11 +99,6 @@ public class ProductServiceImpl implements ProductService {
                     break;
                 case "value":
                     product.setValue(new BigDecimal(value.toString()));
-                    break;
-                case "dealerRegisterId":
-                    Dealer dealer = dealerRepo.findById((Integer) value)
-                            .orElseThrow(() -> new RuntimeException("Dealer not found with ID: " + value));
-                    product.setDealer(dealer);
                     break;
                 case "status":
                     product.setStatus((Boolean) value);
@@ -123,6 +126,7 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productRepo.save(product);
         return productMapper.toDTO(updatedProduct);
     }
+
     @Override
     public ApiResponse<String> deleteProduct(Integer id) {
         Optional<Product> optionalProduct = productRepo.findById(id);
@@ -134,5 +138,4 @@ public class ProductServiceImpl implements ProductService {
         productRepo.deleteById(id);
         return ApiResponse.success(HttpStatus.OK, 200, "Product deleted successfully", "Deleted product ID: " + id, "success");
     }
-
 }

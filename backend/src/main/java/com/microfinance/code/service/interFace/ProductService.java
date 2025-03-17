@@ -15,6 +15,6 @@ public interface ProductService {
 
     ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo);
 
-
     ApiResponse<String> deleteProduct(Integer id);
+    List<ProductDTO> getAllProducts();
 }

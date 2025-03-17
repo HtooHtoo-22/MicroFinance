@@ -1,5 +1,6 @@
 package com.microfinance.code.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,8 +11,7 @@ public class ProductDTO {
     private String productName;
     private BigDecimal value;
     private String photo;
-    private Integer dealerRegisterId;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY) // Client cannot set this
+    private Integer dealerId;
     private Boolean status; // Changed from Byte to Boolean
-
-    // Getters and Setters
 }

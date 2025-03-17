@@ -33,6 +33,12 @@ public class SecurityConfig {
             "/api/dealers/list"
     };
 
+    private  static final String[] HP_LIST_URL = {
+            "/api/hp-loans/**",
+            "/api/hp-loans/list",
+            "/api/hp-loans-schedule/**"
+    };
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -48,7 +54,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/cif").hasAnyAuthority( "ENTRY")
                                 .requestMatchers("/api/users/**").hasAnyAuthority( "ADMIN", "ENTRY", "MANAGER", "OPERATION")
                                 .requestMatchers("/api/users").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN", "ENTRY")
                                 .requestMatchers("/rates").hasAnyAuthority( "ADMIN")
                                 .requestMatchers("/api/branches/**").hasAnyAuthority( "ADMIN","MANAGER", "ENTRY", "OPERATION")
                                 .requestMatchers("/api/roles/**").hasAnyAuthority( "ADMIN")
@@ -59,8 +65,13 @@ public class SecurityConfig {
                                 .requestMatchers("/accounts/**").hasAnyAuthority("ENTRY")
                                 .requestMatchers("/accounts").hasAnyAuthority("ENTRY", "ADMIN")
                                 .requestMatchers("/api/dealers/create").hasAnyAuthority("ENTRY")
-                                .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("MANAGER")
+                                .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY")
                                 .requestMatchers("/transactions/**").hasAnyAuthority("ENTRY")
+                                .requestMatchers("/api/products").hasAnyAuthority("DEALER")
+                                .requestMatchers("/api/products/**").hasAnyAuthority("DEALER", "ENTRY")
+                                .requestMatchers("/api/hp-loans/register").hasAnyAuthority("ENTRY")
+                                .requestMatchers(HP_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY")
+
 
                                 .anyRequest().authenticated()
                 )

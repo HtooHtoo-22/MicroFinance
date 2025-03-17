@@ -31,4 +31,6 @@ public interface HPScheduleRepo extends JpaRepository<HPSchedule,Integer> {
             @Param("statuses") List<RepaymentStatus> statuses);
 
     List<HPSchedule> findByHpLoanAndStatus(HPLoan hpLoan , RepaymentStatus status);
+
+    List<HPSchedule> findByHpLoanId(Integer hpLoanId);
 }

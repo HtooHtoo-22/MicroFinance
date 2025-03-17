@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -41,6 +42,9 @@ public class Dealer {
     @Enumerated(EnumType.STRING)
     @Column(name = "statusfordelar", nullable = false, length = 10)
     private DEALER statusforDelar;
+
+    @OneToMany(mappedBy = "dealer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> users;
 
     @PrePersist
     protected void onCreate() {
