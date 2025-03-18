@@ -41,7 +41,7 @@ export class UpdateRateComponent  implements OnInit {
       if (!idParam) {
         console.error('No ID parameter provided');
         alert('No rate ID provided');
-        this.router.navigate(['/dashboard/list-rate']);
+        this.router.navigate(['/admin-dashboard/list-rate']);
         return;
       }
 
@@ -49,7 +49,7 @@ export class UpdateRateComponent  implements OnInit {
       if (isNaN(parsedId) || parsedId <= 0) {
         console.error('Invalid ID parameter:', idParam);
         alert('Invalid rate ID format');
-        this.router.navigate(['/dashboard/list-rate']);
+        this.router.navigate(['/admin-dashboard/list-rate']);
         return;
       }
 
@@ -72,13 +72,13 @@ export class UpdateRateComponent  implements OnInit {
         } else {
           console.error('No rate data received for ID:', id);
           alert('Rate not found');
-          this.router.navigate(['/dashboard/list-rate']);
+          this.router.navigate(['/admin-dashboard/list-rate']);
         }
       },
       error: (error) => {
         console.error('Error retrieving rate:', error);
         alert('Error retrieving rate: ' + (error.message || 'Unknown error'));
-        this.router.navigate(['/dashboard/list-rate']);
+        this.router.navigate(['/admin-dashboard/list-rate']);
       }
     });
   }
@@ -99,7 +99,7 @@ export class UpdateRateComponent  implements OnInit {
       next: (updatedRate: Rate) => {
         console.log('Rate updated successfully:', updatedRate);
         alert('Rate updated successfully');
-        this.router.navigate(['/dashboard/list-rate']);
+        this.router.navigate(['/admin-dashboard/list-rate']);
       },
       error: (error) => {
         console.error('Error updating rate:', error);

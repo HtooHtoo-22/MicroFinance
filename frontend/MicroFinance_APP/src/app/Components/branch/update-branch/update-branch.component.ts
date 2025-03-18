@@ -31,7 +31,7 @@ export class UpdateBranchComponent implements OnInit {
       this.loadBranchData();
     } else {
       this.errorMessage = 'Invalid branch ID';
-      this.router.navigate(['/dashboard/branch-list']);
+      this.router.navigate(['/admin-dashboard/branch-list']);
     }
   }
 
@@ -79,7 +79,7 @@ export class UpdateBranchComponent implements OnInit {
       this.branchService.updateBranch(this.branchId, updatedBranch).subscribe({
         next: () => {
           alert('Branch updated successfully');
-          this.router.navigate(['/dashboard/branch-list']);
+          this.router.navigate(['/admin-dashboard/branch-list']);
         },
         error: (error) => {
           console.error('Error updating branch:', error);

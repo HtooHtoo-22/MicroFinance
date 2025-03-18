@@ -25,4 +25,6 @@ public interface SMERepaymentScheduleRepo extends JpaRepository<SMERepaymentSche
 
     List<SMERepaymentSchedule> findBySmeLoanAndStatus(SMELoan smeLoan , RepaymentStatus status);
 
+    List<SMERepaymentSchedule> findBySmeLoanId(Integer loanId);
+
 }

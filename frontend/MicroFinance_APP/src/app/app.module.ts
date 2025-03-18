@@ -3,7 +3,6 @@ import { BrowserModule, provideClientHydration, withEventReplay } from '@angular
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { TransactionComponent } from './Components/transaction/transaction.component';
 import { TransactionHistoryComponent } from './Components/transaction-history/transaction-history.component';
 import { CurrentAccListComponent } from './Components/current-acc-list/current-acc-list.component';
@@ -38,8 +37,6 @@ import { CreateComponent } from './Components/CurrentACC/create/create.component
 import { ListComponent } from './Components/CurrentACC/list/list.component';
 import { UpdateComponent } from './Components/CurrentACC/update/update.component';
 import { CustomerDetailComponent } from './Components/Account/customer-detail/customer-detail.component';
-import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
-import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
@@ -53,7 +50,6 @@ import { BranchUserCountComponent } from './Components/counting/branch-user-coun
 import { CifDetailComponent } from './Components/CIF/cif-detail/cif-detail.component';
 import { DealerDetailComponent } from './Components/Account/dealer-detail/dealer-detail.component';
 import { DealerDashboardComponent } from './Components/dealer-dashboard/dealer-dashboard.component';
-import { DealerTransactionComponent } from './Components/Dealer/dealer-transaction/dealer-transaction.component';
 import { HpLoanListComponent } from './Components/hp-loan/hp-loan-list-approval/hp-loan-list.component';
 import { CreateEditProductComponent } from './Components/Product/create-edit-product/create-edit-product.component';
 import { HpLoanFormComponent } from './Components/hp-loan/hp-loan-form/hp-loan-form.component';
@@ -62,12 +58,21 @@ import { AuthService } from './service/auth.service';
 import { HpLoanDetailComponent } from './Components/hp-loan/hp-loan-detail/hp-loan-detail.component';
 import { HpLoanScheduleComponent } from './Components/hp-loan/hp-loan-schedule/hp-loan-schedule.component';
 import { HpLoanListFinishedComponent } from './Components/hp-loan/hp-loan-list-finished/hp-loan-list-finished.component';
+import { EntryDashboardComponent } from './Components/entry-dashboard/entry-dashboard.component';
+import { OperationDashboardComponent } from './Components/operation-dashboard/operation-dashboard.component';
+import { ManagerDashboardComponent } from './Components/manager-dashboard/manager-dashboard.component';
+import { AdminDashboardComponent } from './Components/admin-dashboard/admin-dashboard.component';
+import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
+import { SmeOdLatefeeComponent } from './Components/sme-od-latefee/sme-od-latefee.component';
+import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loan-schedule.component';
+import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
+import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
+import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,
     CurrentAccListComponent,
     TransactionComponent,
     TransactionHistoryComponent,
@@ -97,8 +102,6 @@ import { HpLoanListFinishedComponent } from './Components/hp-loan/hp-loan-list-f
     ListComponent,
     UpdateComponent,
     CustomerDetailComponent,
-    CreateDealerComponent,
-    DealerListComponent,
     ModelComponent,
     ConfirmDialogComponent,
     BranchAccountCountComponent,
@@ -106,14 +109,25 @@ import { HpLoanListFinishedComponent } from './Components/hp-loan/hp-loan-list-f
     CifDetailComponent,
     DealerDetailComponent,
     DealerDashboardComponent,
-    DealerTransactionComponent,
     HpLoanListComponent,
     CreateEditProductComponent,
     HpLoanFormComponent,
     AllproductListComponent,
     HpLoanDetailComponent,
     HpLoanScheduleComponent,
-    HpLoanListFinishedComponent
+    HpLoanListFinishedComponent,
+    AdminDashboardComponent,
+    EntryDashboardComponent,
+    OperationDashboardComponent,
+    ManagerDashboardComponent,
+    CustomerDetailComponent,
+    DealerDetailComponent,
+    SmeLoanDetailComponent,
+    SmeLoanScheduleComponent,
+    SmeRepayTrackComponent,
+    SmeOdLatefeeComponent,
+    CreateDealerComponent,
+    DealerListComponent
   ],
   imports: [
     BrowserModule,

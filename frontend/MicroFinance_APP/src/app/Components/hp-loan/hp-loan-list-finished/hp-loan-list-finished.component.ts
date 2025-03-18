@@ -44,7 +44,7 @@ export class HpLoanListFinishedComponent implements OnInit {
 
   viewDetails(loanId: number | undefined): void {
     if (loanId) {
-      this.router.navigate(['/dashboard/hp-loan-detail', loanId]);
+      this.router.navigate(['/operation-dashboard/hp-loan-detail', loanId]);
     } else {
       console.warn('Loan ID is missing');
     }

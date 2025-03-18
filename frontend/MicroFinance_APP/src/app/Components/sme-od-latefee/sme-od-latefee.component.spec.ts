@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardComponent } from './dashboard.component';
+import { SmeOdLatefeeComponent } from './sme-od-latefee.component';
 
-describe('DashboardComponent', () => {
-  let component: DashboardComponent;
-  let fixture: ComponentFixture<DashboardComponent>;
+describe('SmeOdLatefeeComponent', () => {
+  let component: SmeOdLatefeeComponent;
+  let fixture: ComponentFixture<SmeOdLatefeeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DashboardComponent]
+      declarations: [SmeOdLatefeeComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DashboardComponent);
+    fixture = TestBed.createComponent(SmeOdLatefeeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

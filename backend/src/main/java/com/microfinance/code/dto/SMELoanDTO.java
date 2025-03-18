@@ -25,10 +25,14 @@ public class SMELoanDTO {
     private int duration;
     private BigDecimal principal;
     private int entryUserId;
+    private String entryUserGenerateId;
     private String entryUserName;
     private int approvedUserId;
     private String approvedUserName;
     private Integer currentAccountId;
     private String currentAccountaccId;
-
+    private String borrowerName;
+    private Integer cifId;
+    private String cifIdNumber;
+    private List<CollateralDTO> usedCollaterals;
 }

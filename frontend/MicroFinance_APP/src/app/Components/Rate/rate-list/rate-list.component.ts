@@ -44,7 +44,7 @@ export class RateListComponent implements OnInit {
       return;
     }
     // Navigate with rate data
-    this.router.navigate(['/dashboard/update-rate', rate.id], {
+    this.router.navigate(['/admin-dashboard/update-rate', rate.id], {
       state: { rateData: rate }
     });
   }

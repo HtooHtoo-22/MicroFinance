@@ -5,9 +5,11 @@ import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.CollateralMapper;
 import com.microfinance.code.model.Collateral;
 import com.microfinance.code.model.CollateralType;
+import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.SMELoan;
 import com.microfinance.code.repository.CollateralRepo;
 import com.microfinance.code.repository.CollateralTypeRepo;
+import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.SMELoanRepo;
 import com.microfinance.code.service.CloudinaryService;
 import com.microfinance.code.service.interFace.CollateralService;
@@ -36,6 +38,9 @@ public class CollateralServiceImpl implements CollateralService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private CurrentAccountRepository accountRepo;
     @Override
     public CollateralDTO createCollateral(CollateralDTO dto) {
         try {
@@ -77,5 +82,15 @@ public class CollateralServiceImpl implements CollateralService {
         Collateral collateral = collateralRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Collateral not found with ID: " + id));
         collateralRepo.delete(collateral);
+    }
+
+    @Override
+    public List<CollateralDTO> getCollateralByAccId(String id) {
+        CurrentAccount acc = accountRepo.findByAccountId(id)
+                .orElseThrow(()->new NotFoundException("Current Account Not Found With This ID : "+id));
+        List<Collateral> collaterals = collateralRepo.findByCurrentAccount(acc);
+        return collaterals.stream()
+                .map(collateralMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

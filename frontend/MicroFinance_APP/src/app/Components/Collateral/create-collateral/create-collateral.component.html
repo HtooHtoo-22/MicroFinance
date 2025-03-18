@@ -1,8 +1,39 @@
 <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-xl font-semibold text-center text-gray-800 mb-4">Register Collateral</h2>
-  
+    
     <form [formGroup]="collateralForm" (ngSubmit)="onSubmit()" class="space-y-4">
       <!-- Value Input -->
+      <div *ngIf="message" class="mt-4">
+        <div
+          [ngClass]="{
+            'bg-green-100 border-green-500 text-green-700': !error,
+            'bg-red-100 border-red-500 text-red-700': error
+          }"
+          class="border-l-4 p-4 rounded-md"
+        >
+          <p class="text-sm">{{ message }}</p>
+        </div>
+      </div>
+      
+       <div class="mb-4">
+
+        <div>
+          <label class="block text-sm/6 font-medium text-gray-900">Name</label>
+          <input type="text" formControlName="name" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+          <div *ngIf="collateralForm.get('name')?.invalid && collateralForm.get('name')?.touched" class="text-red-500 text-xs">
+            Name is required.
+          </div>
+        </div>
+
+        <label class="block text-sm font-medium text-gray-900">Current Account</label>
+        <select formControlName="currentAccountId"
+                class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md 
+                       focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+          <option *ngFor="let account of accountList" [value]="account.id">{{ account.accountId }}</option>
+        </select>
+      </div>
+
+      
       <div>
         <label class="block text-sm/6 font-medium text-gray-900">Value</label>
         <input type="number" formControlName="value" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
@@ -42,7 +73,7 @@
                     <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-[#0088CC]">
                       <span>Upload a file</span>
                       <input id="file-upload" name="file-upload" type="file" class="sr-only" 
-                      (change)="onFileChange($event, 'image')" 
+                      (change)="onFileChange($event)" 
                       accept="image/png,image/jpeg,image/gif">
                     </label>
                   <p class="pl-1">or drag and drop</p>
@@ -56,11 +87,11 @@
       <!-- Collateral Type Dropdown -->
       <div>
         <label class="block text-sm/6 font-medium text-gray-900">Collateral Type</label>
-        <select formControlName="collateralType" class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        <select formControlName="collateralTypeId" class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
           <option *ngFor="let type of collateralTypes" [value]="type.id">{{ type.name }}</option>
         </select>
       </div>
-  
+      
       <!-- Submit Button -->
       <button type="submit" class="w-full mt-2 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
         Register Collateral

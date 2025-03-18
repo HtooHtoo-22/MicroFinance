@@ -1,5 +1,7 @@
 package com.microfinance.code.service.impl;
 
+import com.microfinance.code.dto.SMEScheduleDTO;
+import com.microfinance.code.mapper.SMEScheduleMapper;
 import com.microfinance.code.model.SMELoan;
 import com.microfinance.code.model.SMERepaymentSchedule;
 import com.microfinance.code.repository.HolidayRepository;
@@ -16,6 +18,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleService {
@@ -27,6 +30,8 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
     private SMELoanRepo smeLoanRepo;
     @Autowired
     private RateRepository rateRepo;
+    @Autowired
+    private SMEScheduleMapper scheduleMapper;
     @Override
     public void createSchedule(SMELoan smeLoan) {
         // 1. Validate the input
@@ -44,7 +49,7 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             dueDate = adjustForHoliday(dueDate);
             BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
             // 4. Calculate interest amount
-            BigDecimal interestAmount = calculateInterest(smeLoan.getLoanAmount(), interestRate, dueDate,smeLoan.getDuration());
+            BigDecimal interestAmount = calculateInterest(smeLoan.getLoanAmount(), interestRate, dueDate);
             // 4.5. Calculate grace period end date
             LocalDate gracePeriodEndDate = null;
             if (smeLoan.getGracePeriod()>0) {
@@ -91,7 +96,7 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             System.out.println("Changed Principal : "+changedPrincipal);
             // Recalculate the interest based on the new principal
             BigDecimal interestRate  = rateRepo.findValueByRateType("SME Loan Interest Rate");
-            BigDecimal newInterest = calculateInterest(changedPrincipal,interestRate,schedule.getDueDate(),smeLoan.getDuration());
+            BigDecimal newInterest = calculateInterest(changedPrincipal,interestRate,schedule.getDueDate());
             System.out.println("New interest : "+newInterest);
             // Update the interest in the schedule
             schedule.setInterestAmount(newInterest);
@@ -100,16 +105,33 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
             smeRepaymentScheduleRepo.save(schedule);
         }
     }
-    private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate,int duration) {
-        // Get number of days in the month
-        int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());
-        int totalDays = getTotalDaysForLoanDuration(duration, dueDate);
-        // Interest Formula: (Loan Amount * Interest Rate / 100) / 365 * Days in Month
-        return loanAmount.multiply(interestRate)
-                .divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(totalDays), 6, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(daysInMonth));
+
+    @Override
+    public List<SMEScheduleDTO> getSchedulesByLoanId(Integer loanId) {
+        List<SMERepaymentSchedule> schedules = smeRepaymentScheduleRepo.findBySmeLoanId(loanId);
+        return schedules.stream()
+                .map(scheduleMapper::toDTO)
+                .collect(Collectors.toList());
     }
+
+    private BigDecimal calculateInterest(BigDecimal loanAmount, BigDecimal interestRate, LocalDate dueDate) {
+        // 1. Get the number of days in the current month
+        LocalDate previousMonthDueDate = dueDate.minusMonths(1);
+        int daysBetween = (int) ChronoUnit.DAYS.between(previousMonthDueDate, dueDate);
+//        int daysInMonth = dueDate.getMonth().length(dueDate.isLeapYear());
+//        int totalDays = getTotalDaysForLoanDuration(duration, dueDate);
+
+        // 2. Annual Rate to Daily Rate = (interestRate / 100) / 365
+        BigDecimal dailyRate = interestRate.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(365), 6, RoundingMode.HALF_UP);
+
+        // 3. Interest = LoanAmount × DailyRate × DaysInMonth
+        BigDecimal interest = loanAmount.multiply(dailyRate)
+                .multiply(BigDecimal.valueOf(daysBetween));
+
+        return interest.setScale(2, RoundingMode.HALF_UP); // Round to 2 decimal places
+    }
+
     private int getTotalDaysForLoanDuration(int durationInMonths, LocalDate startDate) {
         LocalDate endDate = startDate.plusMonths(durationInMonths);
         return (int) ChronoUnit.DAYS.between(startDate, endDate);

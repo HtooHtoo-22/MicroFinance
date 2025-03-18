@@ -1,1 +1,243 @@
-<p>sme-laon-history works!</p>
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6 text-[#00A1FF]">SME Loan Management</h2>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p class="mt-4 text-gray-600">Loading loans...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <span class="block sm:inline">{{ errorMessage }}</span>
+        <button class="absolute top-0 bottom-0 right-0 px-4" (click)="errorMessage = null">
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="mb-4 flex justify-between items-center">
+        <div class="text-sm text-gray-600">Total {{ filteredLoans.length }} loans found</div>
+        <select 
+            [(ngModel)]="selectedStatus" 
+            (change)="filterLoans()"
+            class="px-3 py-1.5 border rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-sm"
+        >
+            
+            <option value="PENDING">Pending</option>
+            <option value="APPROVE">Approved</option>
+            <option value="REJECT">Rejected</option>
+        </select>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!loading && !errorMessage" class="overflow-x-auto bg-white rounded-lg shadow border">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Loan ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Entry User</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registered Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Borrower Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Duration</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let loan of paginatedLoans" class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ loan.loanId }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loan.loanAmount | currency }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loan.entryUserName }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            [ngClass]="{
+                                'bg-yellow-100 text-yellow-800': loan.status === 'Pending',
+                                'bg-green-100 text-green-800': loan.status === 'Approve',
+                                'bg-red-100 text-red-800': loan.status === 'Reject'
+                            }">
+                            {{ loan.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loan.registeredDate | date:'mediumDate' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loan.borrowerName }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loan.duration }} months</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <!-- Pending State Actions -->
+                            <ng-container *ngIf="loan.status === 'Pending'">
+                                <!-- Button in List -->
+<button 
+(click)="openApprovalModal(loan.id!)"
+class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-md hover:bg-emerald-100 transition-colors text-sm min-w-[100px] justify-center">
+<svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+</svg>
+Approve
+</button>
+
+<!-- Approval Modal -->
+<div *ngIf="showApprovalModal" class="fixed inset-0 bg-white-/70 backdrop-blur-[1.5px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white  rounded-xl shadow-xl p-6 max-w-lg w-full mx-4">
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">Confirm Loan Approval</h3>
+          <p class="text-xs text-gray-500 mt-1">ID: {{ selectedLoan?.loanId }}</p>
+        </div>
+        <button 
+          (click)="showApprovalModal = false"
+          class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Compact Details -->
+      <div class="space-y-4 text-sm">
+        <!-- Borrower Row -->
+        <div class="flex justify-between items-center py-2 border-b">
+          <span class="text-gray-500">Borrower:</span>
+          <span class="font-medium">{{ selectedLoan?.borrowerName }}</span>
+        </div>
+  
+        <!-- Key Numbers -->
+        <div class="grid grid-cols-3 gap-4 py-2">
+          <div class="text-center">
+            <div class="text-gray-500">Amount</div>
+            <div class="font-semibold text-blue-600">{{ selectedLoan?.loanAmount | currency }}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-gray-500">Rate</div>
+            <div class="font-semibold">{{ selectedLoan?.interestRate }}%</div>
+          </div>
+          <div class="text-center">
+            <div class="text-gray-500">Term</div>
+            <div class="font-semibold">{{ selectedLoan?.duration }} months</div>
+          </div>
+        </div>
+  
+        <!-- Collateral Summary -->
+        <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded">
+          <span class="text-gray-600">Total Collateral:</span>
+          <span class="font-medium">
+            {{ getTotalCollateral() | currency }}
+          </span>
+        </div>
+  
+        <!-- Dates -->
+        <div class="flex justify-between items-center text-sm">
+          <div class="text-gray-600">
+            <div>Start Date</div>
+            <div class="font-medium">{{ currentDate | date:'dd MMM yyyy' }}</div>
+          </div>
+          <div class="text-gray-600 text-right">
+            <div>Maturity Date</div>
+            <div class="font-medium">{{ estimatedEndDate | date:'dd MMM yyyy' }}</div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Compact Actions -->
+      <div class="mt-6 flex justify-end gap-2">
+        <button 
+          (click)="showApprovalModal = false"
+          class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+          Cancel
+        </button>
+        <button 
+          (click)="approveLoan(selectedLoan?.id!)"
+          class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+          Confirm Approval
+        </button>
+      </div>
+    </div>
+  </div>
+                                <button 
+                                    (click)="rejectLoan(loan.id!)"
+                                    class="inline-flex items-center px-3 py-1.5 bg-rose-50 text-rose-700 rounded-md hover:bg-rose-100 transition-colors text-sm min-w-[100px] justify-center"
+                                >
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Reject
+                                </button>
+                            </ng-container>
+
+                            <!-- View Details Button -->
+                            <button 
+                                (click)="viewDetails(loan.id)"
+                                class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm min-w-[100px] justify-center"
+                            >
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                                </svg>
+                                Details
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="paginatedLoans.length === 0">
+                    <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                        No SME loans found
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Showing <span class="font-medium">{{ startIndex }}</span> to 
+                    <span class="font-medium">{{ endIndex }}</span> of
+                    <span class="font-medium">{{ totalLoans }}</span> results
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button 
+                        (click)="previousPage()" 
+                        [disabled]="currentPage === 1"
+                        class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors border"
+                        [class.opacity-50]="currentPage === 1"
+                        [class.cursor-not-allowed]="currentPage === 1"
+                        [class.bg-white]="currentPage !== 1"
+                        [class.text-gray-700]="currentPage !== 1"
+                    >
+                        Previous
+                    </button>
+
+                    <div class="flex gap-1">
+                        <button *ngFor="let page of pages" 
+                            (click)="goToPage(page)"
+                            class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors border"
+                            [class.bg-blue-500]="currentPage === page"
+                            [class.text-white]="currentPage === page"
+                            [class.bg-white]="currentPage !== page"
+                            [class.text-gray-700]="currentPage !== page"
+                        >
+                            {{ page }}
+                        </button>
+                    </div>
+
+                    <button 
+                        (click)="nextPage()" 
+                        [disabled]="currentPage === totalPages"
+                        class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors border"
+                        [class.opacity-50]="currentPage === totalPages"
+                        [class.cursor-not-allowed]="currentPage === totalPages"
+                        [class.bg-white]="currentPage !== totalPages"
+                        [class.text-gray-700]="currentPage !== totalPages"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

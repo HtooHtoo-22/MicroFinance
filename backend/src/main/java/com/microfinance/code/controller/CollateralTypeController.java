@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/collateral-types")
+@CrossOrigin
 public class CollateralTypeController {
     @Autowired
     private CollateralTypeService collateralTypeService;
@@ -25,7 +26,7 @@ public class CollateralTypeController {
     }
 
     // Get All Active Collateral Types
-    @GetMapping
+    @GetMapping("/all")
     public ApiResponse<List<CollateralTypeDTO>> getAllCollateralTypes() {
         List<CollateralTypeDTO> collateralTypes = collateralTypeService.getAllCollateralTypes();
         return ApiResponse.success(HttpStatus.OK, 200, "Collateral Types retrieved successfully", collateralTypes);

@@ -38,10 +38,26 @@ export class LoginComponent {
         next: (response) => {
           if (response.access_token) {
             const userRole = this.authService.getCurrentUserRole();
-            if (userRole === 'DEALER') {
-              this.router.navigate(['/dealer-dashboard']); // Navigate to dealer dashboard
-            } else {
-              this.router.navigate(['/dashboard']); // Navigate to default dashboard
+            switch (userRole) {
+              case 'ADMIN':
+                this.router.navigate(['/admin-dashboard']);
+                break;
+              case 'ENTRY':
+                this.router.navigate(['/entry-dashboard']);
+                break;
+              case 'MANAGER':
+                this.router.navigate(['/manager-dashboard']);
+                break;
+              case 'OPERATION':
+                this.router.navigate(['/operation-dashboard']);
+                break;
+              case 'DEALER':
+                this.router.navigate(['/dealer-dashboard']);
+                break;
+              default:
+                this.errorMessage = 'Unknown role. Please contact support.';
+                this.router.navigate(['/login']);
+                break;
             }
           } else {
             this.errorMessage = 'Invalid login response';

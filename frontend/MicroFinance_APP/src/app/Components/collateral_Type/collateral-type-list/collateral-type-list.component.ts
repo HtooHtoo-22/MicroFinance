@@ -42,7 +42,7 @@ export class CollateralTypeListComponent implements OnInit {
   }
 
   editCollateralType(id: number): void {
-    this.router.navigate([`/dashboard/edit-collateral-type/${id}`]);
+    this.router.navigate([`/admin-dashboard/edit-collateral-type/${id}`]);
   }
 
   deleteCollateralType(id: number): void {

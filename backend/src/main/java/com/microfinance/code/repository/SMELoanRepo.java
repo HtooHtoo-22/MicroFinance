@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,5 +19,7 @@ public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
 
     @Query("SELECT s.currentAccount FROM SMELoan s WHERE s.id = :smeLoanId")
     Optional<CurrentAccount> findCurrentAccountBySmeLoanId(@Param("smeLoanId") Integer smeLoanId);
+
+    List<SMELoan> findByEntryUser_Branch_Id(Integer branchId);
 
 }

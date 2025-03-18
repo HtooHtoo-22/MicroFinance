@@ -33,6 +33,10 @@ public class SecurityConfig {
             "/api/dealers/list"
     };
 
+    private static final String[] SME_LIST_URL = {
+            "/api/sme-loans/**"
+    };
+
     private  static final String[] HP_LIST_URL = {
             "/api/hp-loans/**",
             "/api/hp-loans/list",
@@ -54,23 +58,23 @@ public class SecurityConfig {
                                 .requestMatchers("/api/cif").hasAnyAuthority( "ENTRY")
                                 .requestMatchers("/api/users/**").hasAnyAuthority( "ADMIN", "ENTRY", "MANAGER", "OPERATION")
                                 .requestMatchers("/api/users").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN", "ENTRY")
+                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN", "ENTRY", "OPERATION")
                                 .requestMatchers("/rates").hasAnyAuthority( "ADMIN")
                                 .requestMatchers("/api/branches/**").hasAnyAuthority( "ADMIN","MANAGER", "ENTRY", "OPERATION")
                                 .requestMatchers("/api/roles/**").hasAnyAuthority( "ADMIN")
                                 .requestMatchers("/api/roles").hasAnyAuthority( "ADMIN")
-                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/api/collateral-types").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/accounts/**").hasAnyAuthority("ENTRY")
+                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN", "ENTRY")
+                                .requestMatchers("/accounts/**").hasAnyAuthority("ENTRY", "OPERATION")
                                 .requestMatchers("/accounts").hasAnyAuthority("ENTRY", "ADMIN")
                                 .requestMatchers("/api/dealers/create").hasAnyAuthority("ENTRY")
                                 .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY")
                                 .requestMatchers("/transactions/**").hasAnyAuthority("ENTRY")
+                                .requestMatchers("/api/collaterals/**").hasAnyAuthority("ENTRY", "OPERATION" )
                                 .requestMatchers("/api/products").hasAnyAuthority("DEALER")
-                                .requestMatchers("/api/products/**").hasAnyAuthority("DEALER", "ENTRY")
-                                .requestMatchers("/api/hp-loans/register").hasAnyAuthority("ENTRY")
-                                .requestMatchers(HP_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY")
+                                .requestMatchers("/api/products/**").hasAnyAuthority("DEALER", "ENTRY", "OPERATION")
+                                .requestMatchers("/api/hp-loans/register").hasAnyAuthority("OPERATION")
+                                .requestMatchers(HP_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY", "OPERATION")
+                                .requestMatchers(SME_LIST_URL).hasAnyAuthority("ENTRY", "OPERATION", "MANAGER")
 
 
                                 .anyRequest().authenticated()

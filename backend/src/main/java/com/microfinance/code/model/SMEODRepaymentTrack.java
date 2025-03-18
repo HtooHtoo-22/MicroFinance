@@ -25,4 +25,10 @@ public class SMEODRepaymentTrack {
     @Column(name = "date")
     private LocalDateTime date;
 
+    @Column(name = "od_end_status")
+    private boolean odEndStatus;
+
+
+
 }
+

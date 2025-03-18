@@ -1,0 +1,5 @@
+/* your-component.component.css */
+ul {
+    max-height: 200px;
+    overflow-y: auto;
+  }

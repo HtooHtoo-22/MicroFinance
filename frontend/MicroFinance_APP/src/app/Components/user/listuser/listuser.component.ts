@@ -67,7 +67,7 @@ export class ListuserComponent implements OnInit {
   }
 
   editUser (id: number): void {
-    this.router.navigate([`/dashboard/edit-user/${id}`]); // Ensure this route matches your routing configuration
+    this.router.navigate([`/admin-dashboard/edit-user/${id}`]); // Ensure this route matches your routing configuration
   }
 
 // Add these methods

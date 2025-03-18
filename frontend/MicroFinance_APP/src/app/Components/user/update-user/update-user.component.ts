@@ -136,7 +136,7 @@ export class UpdateUserComponent implements OnInit {
       () => {
         this.loading = false;
         alert('User updated successfully!');
-        this.router.navigate(['/dashboard/users']);
+        this.router.navigate(['/admin-dashboard/users']);
       },
       (error) => {
         console.error('Error updating user:', error);

@@ -1,0 +1,229 @@
+<!-- loan-details.component.html -->
+<div class="max-w-6xl mx-auto p-6">
+  <!-- Header Section -->
+  <div class="flex items-center justify-between mb-8 min-h-[88px]">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">
+        Loan Details: <span class="text-blue-600">#{{loan?.loanId}}</span>
+      </h1>
+      <div class="mt-2 flex items-center space-x-4">
+        <span class="text-sm font-medium">Status:</span>
+        <span [class]="'px-3 py-1 rounded-full text-sm ' + statusStyles[loan?.status || 'default']">
+          {{loan?.status}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="border-b border-gray-200 mb-6">
+    <nav class="flex space-x-8">
+      <button 
+        (click)="switchTab('details')"
+        [class]="activeTab === 'details' 
+          ? 'border-b-2 border-blue-500 text-blue-600' 
+          : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'"
+        class="pb-4 px-1 text-sm font-medium">
+        Loan Details
+      </button>
+      <button 
+    *ngIf="loan?.status === 'Approve'"
+    [ngClass]="{
+      'text-blue-600 border-b-2 border-blue-600': activeTab === 'schedule',
+      'text-gray-500 hover:text-gray-700': activeTab !== 'schedule'
+    }"
+    class="pb-3 px-1"
+    (click)="activeTab = 'schedule'">
+    Repayment Schedule
+  </button>
+  <button 
+      *ngIf="loan?.status === 'Approve'"
+      [ngClass]="{
+        'text-blue-600 border-b-2 border-blue-600': activeTab === 'track',
+        'text-gray-500 hover:text-gray-700': activeTab !== 'track'
+      }"
+      class="pb-3 px-1"
+      (click)="activeTab = 'track'">
+      Repayment Track
+    </button>
+    <button 
+      *ngIf="loan?.status === 'Approve'"
+      [ngClass]="{
+        'text-blue-600 border-b-2 border-blue-600': activeTab === 'lateFee',
+        'text-gray-500 hover:text-gray-700': activeTab !== 'lateFee'
+      }"
+      class="pb-3 px-1"
+      (click)="activeTab = 'lateFee'">
+      Late Fees & Overdue
+    </button>
+    </nav>
+  </div>
+
+  <!-- Tab Content -->
+  <div [ngSwitch]="activeTab" class="pt-6 min-h-[500px]">
+    <!-- Loan Details Tab -->
+    <div *ngSwitchCase="'details'">
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Loan Overview Card -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">Loan Overview</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm text-gray-600">Loan Amount</label>
+              <p class="font-medium text-gray-900">{{loan?.loanAmount | currency}}</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Interest Rate</label>
+              <p class="font-medium text-gray-900">{{loan?.interestRate}}%</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Duration</label>
+              <p class="text-gray-900">{{loan?.duration}} months</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Grace Period</label>
+              <p class="text-gray-900">{{loan?.gracePeriod || 'N/A'}} days</p>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Key Dates Card -->
+        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">Key Dates</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="text-sm text-gray-600">Registered Date</label>
+              <p class="text-gray-900">{{loan?.registeredDate | date}}</p>
+            </div>
+            <div *ngIf="loan?.status === 'Approve'">
+              <label class="text-sm text-gray-600">Approved Date</label>
+              <p class="text-gray-900">{{loan?.approvedDate | date}}</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Expiration Date</label>
+              <p class="text-gray-900">{{loan?.expiredDate | date}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Details Section -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mb-8">
+          <h2 class="text-lg font-semibold mb-6 text-gray-800 border-b border-gray-200 pb-4">Loan Details</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Loan Purpose & Borrower -->
+            <div class="border-b border-gray-200 pb-4">
+              <label class="text-sm text-gray-600 block mb-1">Loan Purpose</label>
+              <p class="text-gray-900 font-medium">{{loan?.loanPurpose || 'N/A'}}</p>
+            </div>
+            <div class="border-b border-gray-200 pb-4">
+              <label class="text-sm text-gray-600 block mb-1">Borrower Name</label>
+              <p class="text-gray-900 font-medium">{{loan?.borrowerName}}</p>
+            </div>
+        
+            <!-- CIF & Account -->
+            <div class="border-b border-gray-200 pb-4">
+              <label class="text-sm text-gray-600 block mb-1">CIF ID</label>
+              <a (click)="viewCifDetail()" class="text-blue-600 hover:underline cursor-pointer font-medium">
+                {{loan?.cifIdNumber}}
+              </a>
+            </div>
+            <div class="border-b border-gray-200 pb-4">
+              <label class="text-sm text-gray-600 block mb-1">Account Number</label>
+              <a (click)="viewAccountDetail()" class="text-blue-600 hover:underline cursor-pointer font-medium">
+                {{loan?.currentAccountaccId}}
+              </a>
+            </div>
+            
+            <!-- User Information -->
+            <div class="md:col-span-2 pt-6 mt-4 border-t-2 border-gray-300">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-sm text-gray-600 block mb-1">Entry User</label>
+                  <p class="text-gray-900 font-medium">{{loan?.entryUserName || 'N/A'}}</p>
+                </div>
+                <div *ngIf="loan?.status === 'Approve'">
+                  <label class="text-sm text-gray-600 block mb-1">Approved By</label>
+                  <p class="text-gray-900 font-medium">{{loan?.approvedUserName || 'N/A'}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+      <!-- Financial Details -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mb-8">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">Financial Information</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label class="text-sm text-gray-600">Document Fee</label>
+            <p class="text-gray-900">{{loan?.documentFee | currency}}</p>
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Service Charge</label>
+            <p class="text-gray-900">{{loan?.serviceCharge | currency}}</p>
+          </div>
+          <div>
+            <label class="text-sm text-gray-600">Principal Amount</label>
+            <p class="text-gray-900">{{loan?.principal | currency}}</p>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Collateral Section -->
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">Collateral Assets</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div *ngFor="let collateral of loan?.usedCollaterals">
+              <div *ngIf="collateral.usedValue > 0"
+                   class="border border-gray-100 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                <img *ngIf="collateral.image" 
+                     [src]="collateral.image" 
+                     alt="Collateral" 
+                     class="w-full h-48 object-cover">
+                <div class="p-4">
+                  <h3 class="font-medium text-gray-900 mb-2">{{collateral.name}}</h3>
+                  <p class="text-sm text-gray-600 mb-4">{{collateral.description}}</p>
+                  <div class="flex justify-between text-sm">
+                    <div>
+                      <p class="text-gray-600">Value</p>
+                      <p class="text-gray-900">{{collateral.value | currency}}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-600">Used Value</p>
+                      <p class="text-blue-600 font-medium">
+                        {{ collateral.usedValue | currency }}
+                      </p>
+                    </div>
+                  </div>
+                  <button (click)="viewCollateralDetail(collateral.id!)"
+                          class="mt-4 text-sm text-blue-600 hover:underline">
+                    View Collateral Details →
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repayment Schedule Tab -->
+    <div *ngSwitchCase="'schedule'" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold mb-6 text-gray-800">Repayment Schedule</h2>
+      <app-sme-loan-schedule 
+        [loanId]="loan?.id"
+        [loanData]="loan">
+      </app-sme-loan-schedule>
+    </div>
+    <div *ngSwitchCase="'track'" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold mb-6 text-gray-800">Repayment Tracking</h2>
+      <!-- Add your tracking content here -->
+      <app-sme-repay-track [loanId]="loan?.id"></app-sme-repay-track>
+    </div>
+    <div *ngSwitchCase="'lateFee'" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold mb-6 text-gray-800">Late Fees & Overdue</h2>
+      <app-sme-od-latefee  [loanId]="loan?.id"></app-sme-od-latefee>
+    </div>
+  </div>
+</div>

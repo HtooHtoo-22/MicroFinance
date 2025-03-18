@@ -92,6 +92,5 @@ roleIdControl: any;
 
   closeModal(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/dashboard/list-users']);
   }
 }

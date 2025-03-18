@@ -1,76 +1,285 @@
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl">
-      <h2 class="text-3xl font-bold mb-8 text-center text-[#00A1FF]">SME Loan Register</h2>
-      <form [formGroup]="smeLoanForm" (ngSubmit)="onSubmit()" class="space-y-6">
-  
-        <!-- Loan Amount and Interest Rate -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label for="loanAmount" class="block text-sm font-semibold text-gray-700">Loan Amount</label>
-            <input id="loanAmount" formControlName="loanAmount" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl overflow-hidden">
+    <!-- Form Progress Indicator -->
+    <div class="bg-gray-100 px-8 py-4 border-b">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div [class]="'w-8 h-8 rounded-full flex items-center justify-center ' + (isStepOne ? 'bg-[#00A1FF] text-white' : 'bg-white border-2 border-[#00A1FF]')">
+            1
           </div>
-  
-          <div class="space-y-2">
-            <label for="interestRate" class="block text-sm font-semibold text-gray-700">Interest Rate</label>
-            <input id="interestRate" formControlName="interestRate" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
+          <span class="text-sm font-medium text-gray-700">Loan Details</span>
+        </div>
+        <div class="flex-1 h-px bg-gray-300 mx-4"></div>
+        <div class="flex items-center space-x-2">
+          <div [class]="'w-8 h-8 rounded-full flex items-center justify-center ' + (!isStepOne ? 'bg-[#00A1FF] text-white' : 'bg-white border-2 border-[#00A1FF]')">
+            2
+          </div>
+          <span class="text-sm font-medium text-gray-700">Collateral</span>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="smeLoanForm" (ngSubmit)="onSubmit()" class="p-8">
+      <!-- Show error alert -->
+<!-- Error -->
+<div *ngIf="error" role="alert" class="p-3 mb-4 flex justify-between items-center bg-red-50 border-l-4 border-red-500">
+  <div class="flex gap-2 text-red-800">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span class="text-sm">{{ message }}</span>
+  </div>
+  <button (click)="error = false; message = ''" class="text-red-600 hover:text-red-800">&times;</button>
+</div>
+
+<!-- Success -->
+<div *ngIf="!error && message" role="alert" class="p-3 mb-4 flex justify-between items-center bg-green-50 border-l-4 border-green-500">
+  <div class="flex gap-2 text-green-800">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span class="text-sm">{{ message }}</span>
+  </div>
+  <button (click)="message = ''" class="text-green-600 hover:text-green-800">&times;</button>
+</div>
+
+      <!-- Step 1: Loan Details -->
+      <div *ngIf="isStepOne" class="space-y-8">
+        <!-- Account Selection Section -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Linked Account</label>
+              <div class="relative">
+                <input id="currentAccountaccId" formControlName="currentAccountaccId" type="text"
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent"
+                       placeholder="Search account...">
+                <div *ngIf="filteredAccounts.length > 0" class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200">
+                  <div class="max-h-60 overflow-auto">
+                    <div *ngFor="let account of filteredAccounts" 
+                         class="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                         (click)="selectAccount(account)">
+                      <span class="font-medium">{{ account.accountId }}</span>
+                      <span class="text-sm text-gray-500">{{ account.totalBalance | currency }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-1 text-sm text-gray-500">Select your primary business account</div>
+            </div>
           </div>
         </div>
+        <!-- Add to Loan Parameters Section -->
+
+
+<!-- Add Loan Purpose Section -->
+
+        <!-- Loan Parameters Section -->
+       <!-- Loan Parameters Section -->
+<div class="bg-gray-50 p-6 rounded-lg">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Loan Parameters</h3>
   
-        <!-- Grace Period and Loan Purpose -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label for="gracePeriod" class="block text-sm font-semibold text-gray-700">Grace Period (Optional)</label>
-            <input id="gracePeriod" formControlName="gracePeriod" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
-          </div>
-        </div>
-  
-        <div class="space-y-2">
-          <label for="loanPurpose" class="block text-sm font-semibold text-gray-700">Loan Purpose</label>
-          <textarea id="loanPurpose" formControlName="loanPurpose" rows="3"
-          class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm"></textarea>
-        </div>
-  
-        <!-- Document Fee and Service Charge -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label for="documentFee" class="block text-sm font-semibold text-gray-700">Document Fee</label>
-            <input id="documentFee" formControlName="documentFee" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
-          </div>
-  
-          <div class="space-y-2">
-            <label for="serviceCharge" class="block text-sm font-semibold text-gray-700">Service Charge</label>
-            <input id="serviceCharge" formControlName="serviceCharge" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
-          </div>
-        </div>
-  
-        <!-- Duration and Principal -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label for="duration" class="block text-sm font-semibold text-gray-700">Duration (Months)</label>
-            <input id="duration" formControlName="duration" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
-          </div>
-  
-          <div class="space-y-2">
-            <label for="principal" class="block text-sm font-semibold text-gray-700">Principal</label>
-            <input id="principal" formControlName="principal" type="number"
-                   class="w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200">
-          </div>
-        </div>
-  
-        <!-- Submit Button -->
-        <div class="text-center pt-6">
-          <button type="submit"
-          class="w-full mt-1 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
-            Submit
-          </button>
-        </div>
-      </form>
+  <!-- Grid for numerical inputs -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Grace Period -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Grace Period</label>
+      <div class="relative">
+        <input id="gracePeriod" formControlName="gracePeriod" type="number"
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF]"
+               placeholder="0">
+        <span class="absolute right-[11rem] top-1/2 -translate-y-1/2 text-gray-500">days</span>
+      </div>
+      
+      
+      <div *ngIf="smeLoanForm.get('gracePeriod')?.invalid && smeLoanForm.get('gracePeriod')?.touched" 
+           class="text-red-500 text-sm mt-1">
+        Grace period cannot be negative
+      </div>
+    </div>
+
+    <!-- Interest Rate -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Interest Rate</label>
+      <div class="relative">
+        <input id="rateValue" type="number" formControlName="interestRate" readonly
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 pr-10">
+               <span class="absolute right-[12rem] top-1/2 -translate-y-1/2 text-gray-800">%</span>
+
+      </div>
+      <div class="mt-1 text-sm text-gray-500">Current market rate</div>
+    </div>
+
+    <!-- Duration -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+      <div class="relative">
+        <input id="duration" formControlName="duration" type="number"
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF]">
+        <span class="absolute right-[9.5rem] top-1/2 -translate-y-1/2 text-gray-500">months</span>
+      </div>
     </div>
   </div>
-  
+
+  <!-- Loan Purpose -->
+  <div class="grid grid-cols-1 gap-6">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Purpose of Loan</label>
+      <textarea id="loanPurpose" formControlName="loanPurpose" rows="4"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF]"
+                placeholder="Describe the intended use of the loan..."></textarea>
+      <div *ngIf="smeLoanForm.get('loanPurpose')?.invalid && smeLoanForm.get('loanPurpose')?.touched" 
+           class="text-red-500 text-sm mt-1">
+        <span *ngIf="smeLoanForm.get('loanPurpose')?.hasError('required')">Loan purpose is required</span>
+        <span *ngIf="smeLoanForm.get('loanPurpose')?.hasError('maxlength')">Maximum 200 characters</span>
+      </div>
+    </div>
+  </div>
+</div>
+      
+        <!-- Fees & Charges Section -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Fees & Charges</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Documentation Fee</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                <input id="documentFee" formControlName="documentFee" type="number"
+                       class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg">
+              </div>
+            </div>
+            
+            
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-end pt-6">
+          <button 
+          type="button" 
+          (click)="goToNextStep()" 
+          class="px-8 py-2.5 bg-[#00A1FF] text-white rounded-lg font-medium hover:bg-[#0088CC] transition-colors"
+        >
+          Next Step
+          <svg class="w-4 h-4 inline-block ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Collateral Selection -->
+      <div *ngIf="!isStepOne" class="space-y-8">
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-lg font-semibold text-gray-800 mb-6">Collateral Security</h3>
+          
+          <!-- Collateral Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let item of collaterals" 
+                 class="border rounded-xl p-4 transition-all"
+                 [class.opacity-50]="item.remainingValue <= 0"
+                 [class.ring-2]="isSelected(item)"
+                 [class.ring-[#00A1FF]]="isSelected(item)">
+              <div class="flex items-start gap-4">
+                <input type="checkbox" 
+                       [disabled]="item.remainingValue <= 0"
+                       [checked]="isSelected(item)"
+                       (change)="toggleSelection(item)"
+                       class="mt-1 w-5 h-5 rounded border-gray-300 text-[#00A1FF] focus:ring-[#00A1FF]">
+                
+                <img [src]="item.image" alt="Collateral" class="w-20 h-20 object-cover rounded-lg border">
+                
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900">{{ item.name }}</h4>
+                  <dl class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <dt class="text-gray-500">Initial Value</dt>
+                      <dd class="font-medium">{{ item.value | currency }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-gray-500">Available Value</dt>
+                      <dd [class.text-red-500]="item.remainingValue <= 0">
+                        {{ item.remainingValue | currency }}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Summary -->
+          <div class="mt-8 bg-white border rounded-xl p-6 shadow-sm sticky bottom-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-lg font-semibold text-gray-800">Total Collateral Value</h4>
+                <p class="text-sm text-gray-500">Selected {{ selectedCollaterals.size }} assets</p>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-[#00A1FF]">
+                  {{ totalSelectedCollateral | currency }}
+                </p>
+                <p class="text-sm mt-1" [class.text-red-500]="totalSelectedCollateral < requiredCollateral">
+                  Minimum required: {{ requiredCollateral | currency }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Loan & Charges Section -->
+<div class="bg-white p-6 rounded-lg border border-gray-200 mt-6">
+  <h4 class="text-lg font-semibold text-gray-800 mb-4">Loan & Charges</h4>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Loan Amount -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-3">Loan Amount</label>
+      <div class="relative">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+        <input id="loanAmount" formControlName="loanAmount" type="number"
+               class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition-all"
+               placeholder="0.00">
+      </div>
+      <p class="text-xs text-gray-500 mt-2">
+        Maximum available: {{ totalSelectedCollateral | currency }}
+      </p>
+    </div>
+
+    <!-- Service Charge -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-3">
+        Service Charge <span class="text-gray-500">({{ serviceChargeValue }}%)</span>
+      </label>
+      <div class="relative">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+        <input id="serviceCharge" formControlName="serviceCharge" type="text" readonly
+               class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00A1FF] cursor-not-allowed"
+               [value]="smeLoanForm.get('serviceCharge')?.value | currency">
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between pt-6 border-t">
+          <button type="button" (click)="goToPreviousStep()" 
+                  class="px-8 py-2.5 text-gray-700 bg-white border rounded-lg hover:bg-gray-50 transition-colors">
+            ← Back to Details
+          </button>
+          <button type="submit" [disabled]="!smeLoanForm.valid " 
+                  class="px-8 py-2.5 bg-[#00A1FF] text-white rounded-lg font-medium hover:bg-[#0088CC] transition-colors">
+            Submit Application
+          </button>
+         
+
+        </div>
+        <button type="button" (click)="logFormValue()"
+        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+        Test Form Value
+      </button>
+      </div>
+      </div>
+    </form>
+    
+  </div>
+</div>

@@ -85,7 +85,7 @@ export class HpLoanFormComponent {
   }
 
   goToProductList() {
-    this.router.navigate(['/dashboard/all-list']);
+    this.router.navigate(['/operation-dashboard/all-list']);
   }
 
   submitLoan() {

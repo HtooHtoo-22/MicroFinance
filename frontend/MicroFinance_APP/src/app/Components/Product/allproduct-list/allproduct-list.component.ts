@@ -50,6 +50,6 @@ export class AllproductListComponent implements OnInit {
 
   selectProduct(product: any) {
     this.productService.setSelectedProduct(product);
-    this.router.navigate(['dashboard/hp-register']); 
+    this.router.navigate(['operation-dashboard/hp-register']); 
   }
 }
