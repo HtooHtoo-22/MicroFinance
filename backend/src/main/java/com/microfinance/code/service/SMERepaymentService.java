@@ -32,7 +32,7 @@ public class SMERepaymentService {
     @Autowired
     private SMERepaymentTrackRepo repaymentTrackRepo;
     @Transactional
-   // @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
 

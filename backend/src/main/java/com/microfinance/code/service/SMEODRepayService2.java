@@ -1,5 +1,7 @@
 package com.microfinance.code.service;
 
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.status.RepaymentStatus;
@@ -37,7 +39,7 @@ public class SMEODRepayService2 {
     }
 
     @Transactional
-   // @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
     public void processODRepayment() {
         System.out.println("++++++++++++++++++++++++++Processing OD Repayment++++++++++++++++++++++++++++++");
         List<SMERepaymentSchedule> overdueSchedules = scheduleRepo.findByStatusInAndLateFeeStatus(
@@ -53,7 +55,7 @@ public class SMEODRepayService2 {
     }
 
     private void processRepaymentForSchedule(SMERepaymentSchedule schedule) {
-
+        LocalDate today = LocalDate.now();
         List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(schedule.getSmeLoan().getId());
         int maxLateDays = calculations.stream()
                 .mapToInt(SMELateFeeCalculation::getLateDays)
@@ -68,6 +70,22 @@ public class SMEODRepayService2 {
                 schedule.setLateFeeStatus(true);
                 scheduleRepo.save(schedule);
                 applyLateFee(schedule);
+
+                String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() +
+                        " is still overdue. Late fees will start accumulating from today (" + today + "). " +
+                        "Please make your repayment as soon as possible to avoid additional penalties.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                String emailSubject = "SME Loan Overdue - Late Fee Started";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We would like to inform you that your SME loan Term: " + schedule.getTermNumber() +
+                        " is still overdue as the due date has ended on " + schedule.getDueDate() + ".\n" +
+                        "Late fees have started accumulating from today (" + today + ").\n\n" +
+                        "Please make your repayment immediately to avoid further charges.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
             return;
         }
@@ -82,6 +100,22 @@ public class SMEODRepayService2 {
                 schedule.setLateFeeStatus(true);
                 scheduleRepo.save(schedule);
                 applyLateFee(schedule);
+                // ===== SMS Message =====
+                String smsMessage = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() +
+                        " has received a partial repayment. Since full repayment was not made, late fees and late days are being applied from today (" + today + ")." +
+                        " Please clear the remaining balance soon to avoid additional charges.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+                // ===== Email Notification =====
+                String emailSubject = "SME Loan Partial Repayment - Late Fee Applied";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We have received a partial repayment for your SME loan Term: " + schedule.getTermNumber() + ".\n" +
+                        "However, the full repayment amount of " + schedule.getInterestODAmount().add(schedule.getTotalRepaidAmount()) + " was not covered. As a result, late days and late fees are being calculated starting from today (" + today + ").\n\n" +
+                        "Amount Paid: " + schedule.getTotalRepaidAmount() + "\n" +
+                        "Remaining Due: " + schedule.getInterestODAmount() + "\n\n" +
+                        "Please repay the remaining amount as soon as possible to avoid further charges.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
         }
     }
@@ -103,6 +137,22 @@ public class SMEODRepayService2 {
         if (remainingAmount.compareTo(BigDecimal.ZERO) == 0) {
             schedule.setStatus(RepaymentStatus.PAID);
             schedule.setFullyPaidDate(LocalDate.now());
+            // ===== SMS Message =====
+            String smsMessage = "RichCoin: Thank you! Your SME loan Term: " + schedule.getTermNumber() +
+                    " has been fully repaid successfully. We appreciate your timely repayment.";
+
+            SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            // ===== Email Notification =====
+            String emailSubject = "SME Loan Payment Successfully Completed";
+            String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We are pleased to inform you that your SME loan Term: " + schedule.getTermNumber() +
+                    " has been fully repaid successfully.\n\n" +
+                    "Thank you for your repayment. We appreciate your commitment.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+
+            EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         } else {
             schedule.setStatus(RepaymentStatus.PARTIAL_OVERDUE);
         }

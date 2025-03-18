@@ -37,4 +37,12 @@ public class SmsSender {
             System.err.println("❌ Failed to send SMS: " + e.getMessage());
         }
     }
+    public static void main(String[] args) {
+        // 📱 Recipient's phone number (make sure to use E.164 format)
+        String recipientPhoneNumber = "+959793616719"; // Replace with a real phone number
+        String messageBody = "Hello from Microfinance System! 📨";
+
+        // 📤 Send SMS
+        SmsSender.sendSms(recipientPhoneNumber, messageBody);
+    }
 }

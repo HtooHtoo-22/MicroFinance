@@ -18,7 +18,7 @@ public class CollateralTypeController {
     private CollateralTypeService collateralTypeService;
 
     // Create Collateral Type
-    @PostMapping("/")
+    @PostMapping("/create")
     public ApiResponse<CollateralTypeDTO> createCollateralType(@RequestBody CollateralTypeDTO dto) {
         CollateralTypeDTO createdDTO = collateralTypeService.createCollateralType(dto);
         return ApiResponse.success(HttpStatus.CREATED, 201, "Collateral Type created successfully", createdDTO);
