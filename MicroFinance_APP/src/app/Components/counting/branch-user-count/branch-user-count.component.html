@@ -1,0 +1,37 @@
+<!-- branch-user-count.component.html -->
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-university"></i>
+      <h3>Select Branch for Officers</h3>
+    </div>
+    <div class="card-body">
+      <label for="branch">Branch:</label>
+      <select 
+        id="branch" 
+        [(ngModel)]="selectedBranchId" 
+        (change)="loadActiveUserCount()"
+        class="styled-select"
+      >
+        <option *ngFor="let branch of branches" [value]="branch.id">
+          {{ branch.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="activeUserCount !== null" class="card result-card">
+    <div class="result-content">
+      <i class="fas fa-user-check success-icon"></i>
+      <p>Active Officers in Branch</p>
+      <h2>{{ activeUserCount }}</h2>
+    </div>
+  </div>
+
+  <div *ngIf="activeUserCount === null && selectedBranchId" class="card loading-card">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading officer count...</p>
+    </div>
+  </div>
+</div>

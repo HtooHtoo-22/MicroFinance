@@ -1,0 +1,39 @@
+<div class="navbar">
+    <!-- Example navigation bar -->
+    <a routerLink="/list-role">List Roles</a>
+    <a routerLink="/create-role">Create Role</a>
+  </div>
+  
+  <div class="container">
+    <h2>Edit Role</h2>
+    <form (ngSubmit)="updateRole()" #editRoleForm="ngForm">
+      <div>
+        <label for="roleName">Role Name:</label>
+        <input 
+          type="text" 
+          id="roleName" 
+          name="roleName" 
+          [(ngModel)]="role.roleName" 
+          required>
+      </div>
+      <div>
+        <label for="roleDescription">Description:</label>
+        <input 
+          type="text" 
+          id="roleDescription" 
+          name="roleDescription" 
+          [(ngModel)]="role.roleDescription" 
+          required>
+      </div>
+      <div>
+        <label for="active">Active:</label>
+        <input 
+          type="checkbox" 
+          id="active" 
+          name="active" 
+          [(ngModel)]="role.active">
+      </div>
+      <button type="submit" [disabled]="editRoleForm.invalid">Update Role</button>
+    </form>
+  </div>
+  

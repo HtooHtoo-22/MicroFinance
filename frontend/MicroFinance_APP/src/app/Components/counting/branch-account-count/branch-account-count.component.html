@@ -1,0 +1,23 @@
+
+
+<app-branch-user-count></app-branch-user-count>
+
+<div class="container">
+  <div class="card">
+    <label for="branch">Select a Branch:</label>
+    <select id="branch" [(ngModel)]="selectedBranchId" (change)="loadCurrentAccountCount()">
+      <option *ngFor="let branch of branches || []" [value]="branch.id">
+        {{ branch.name }}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="accountCount !== null" class="card result-card">
+    <p>Total Current Accounts:</p>
+    <h2>{{ accountCount }}</h2>
+  </div>
+
+  <div *ngIf="accountCount === null && selectedBranchId" class="card loading-card">
+    <p>Loading current account count...</p>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="container mx-auto px-4 py-8" *ngIf="cif && !loading">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+    <!-- Profile Header -->
+    <div class="bg-[#00A1FF] p-6 flex items-center">
+      <div class="flex-shrink-0">
+        <img [src]="cif.userPhotoURL || 'https://via.placeholder.com/150'" 
+             class="h-16 w-16 rounded-full border-4 border-white"
+             alt="User photo">
+      </div>
+      <div class="ml-6 text-white">
+        <h1 class="text-2xl font-bold">{{ cif.userFullName }}</h1>
+        <p class="mt-1">CIF ID: {{ cif.cifId }}</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Personal Information -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Personal Information</h2>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Gender</label>
+          <p class="mt-1">{{ cif.gender }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Date of Registration</label>
+          <p class="mt-1">{{ cif.createdDate | date }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Branch</label>
+          <p class="mt-1">{{ cif.branchName }} ({{ cif.code }})</p>
+        </div>
+      </div>
+
+      <!-- Identification -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Identification</h2>
+        <div>
+          <label class="text-sm font-medium text-gray-600">NRC Number</label>
+          <p class="mt-1">{{ cif.nrc }}</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-medium text-gray-600">Front NRC</label>
+            <img [src]="cif.frontNRCUrl" 
+                 class="mt-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Back NRC</label>
+            <img [src]="cif.backNRCUrl" 
+                 class="mt-2 rounded-lg border">
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Contact Information</h2>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Address</label>
+          <p class="mt-1">{{ cif.address }}</p>
+          <p class="mt-1">{{ cif.township }}, {{ cif.state }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Phone</label>
+          <p class="mt-1">{{ cif.phone }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Email</label>
+          <p class="mt-1">{{ cif.email || 'N/A' }}</p>
+        </div>
+      </div>
+
+      <!-- Financial Information -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Financial Information</h2>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Occupation</label>
+          <p class="mt-1">{{ cif.job }}</p>
+        </div>
+        <div>
+          <label class="text-sm font-medium text-gray-600">Monthly Income</label>
+          <p class="mt-1">{{ cif.incomeAmount | currency }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+      <div class="flex space-x-4">
+        <button [routerLink]="['/dashboard/updated-cif', cif.id]" 
+                class="px-4 py-2 bg-[#ffca68] text-white rounded-md hover:bg-yellow-600 transition">
+          Edit CIF
+        </button>
+        <button [routerLink]="['/dashboard/create-current-account', cif.id]"
+                class="px-4 py-2 bg-[#00A1FF] text-white rounded-md hover:bg-blue-600 transition">
+          Create Current Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

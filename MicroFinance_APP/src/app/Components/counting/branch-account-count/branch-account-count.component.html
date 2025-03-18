@@ -1,0 +1,41 @@
+
+
+<app-branch-user-count></app-branch-user-count>
+
+<!-- branch-account-count.component.html -->
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-university"></i>
+      <h3>Select Branch for Accounts</h3>
+    </div>
+    <div class="card-body">
+      <label for="branch">Branch:</label>
+      <select 
+        id="branch" 
+        [(ngModel)]="selectedBranchId" 
+        (change)="loadCurrentAccountCount()"
+        class="styled-select"
+      >
+        <option *ngFor="let branch of branches || []" [value]="branch.id">
+          {{ branch.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="accountCount !== null" class="card result-card">
+    <div class="result-content">
+      <i class="fas fa-wallet success-icon"></i>
+      <p>Total Current Accounts</p>
+      <h2>{{ accountCount }}</h2>
+    </div>
+  </div>
+
+  <div *ngIf="accountCount === null && selectedBranchId" class="card loading-card">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading account count...</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+body {
+    margin: 0;
+    padding: 0;
+  }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.input-field {
+  @apply w-full px-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent transition duration-200;
+}

@@ -1,0 +1,43 @@
+<h2>{{ isEditing ? 'Edit Product' : 'Create Product' }}</h2>
+
+<!-- Success & Error Messages -->
+<div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+<div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+<!-- Loading Indicator -->
+<div *ngIf="loading" class="loading">Loading...</div>
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Product Name:</label>
+    <input type="text" formControlName="productName" required />
+  </div>
+
+  <div>
+    <label>Value:</label>
+    <input type="number" formControlName="value" required />
+  </div>
+
+  <div>
+    <label>Dealer ID:</label>
+    <input type="number" formControlName="dealerRegisterId" required />
+  </div>
+
+  <div>
+    <label>Status:</label>
+    <select formControlName="status">
+      <option [value]="true">Active</option>
+      <option [value]="false">Inactive</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Photo:</label>
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+    <img *ngIf="previewImage" [src]="previewImage" alt="Preview" width="100" height="100" />
+  </div>
+
+  <button type="submit" [disabled]="loading">
+    {{ isEditing ? 'Update Product' : 'Create Product' }}
+  </button>
+</form>

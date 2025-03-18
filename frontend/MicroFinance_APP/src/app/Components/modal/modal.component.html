@@ -1,0 +1,35 @@
+<div class="modal-container">
+    <div class="modal border-2 rounded-lg p-4 shadow-md bg-white"
+         [ngClass]="data.success ? 'border-green-500' : 'border-red-500'">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-full p-2 flex items-center justify-center"
+               [ngClass]="data.success ? 'bg-green-100' : 'bg-red-100'">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                 [ngClass]="data.success ? 'text-green-500' : 'text-red-500'">
+              <path *ngIf="data.success" fill-rule="evenodd" 
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                    clip-rule="evenodd"></path>
+              <path *ngIf="!data.success" fill-rule="evenodd" 
+                    d="M10 9l-3-3a1 1 0 011.414-1.414L10 7.586l3.293-3.293A1 1 0 1114.707 6.7L11.414 10l3.293 3.293a1 1 0 01-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 10z" 
+                    clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <p class="text-sm font-semibold text-gray-900">
+            {{ message }}
+          </p>
+          
+          
+          
+        </div>
+        <button (click)="close()" class="text-gray-400 hover:text-gray-900">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" 
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10z" 
+                  clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  
