@@ -12,7 +12,7 @@ import { ApiResponse } from '../../../model/ApiResponse';
 export class HpLoanDetailComponent implements OnInit {
   loan: HPLoan | null = null;
   errorMessage: string | null = null;
-  activeTab: 'details' | 'schedule' = 'details';
+  activeTab: 'details' | 'schedule'| 'track' | 'lateFee' = 'details';
   statusStyles: { [key: string]: string } = {
     PENDING: 'bg-yellow-100 text-yellow-800',
     APPROVE: 'bg-green-100 text-green-800',
@@ -48,7 +48,7 @@ export class HpLoanDetailComponent implements OnInit {
     });
   }
 
-  switchTab(tab: 'details' | 'schedule'): void {
+  switchTab(tab: 'details' | 'schedule' | 'track' | 'lateFee'): void {
     this.activeTab = tab;
   }
 

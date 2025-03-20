@@ -1,13 +1,17 @@
 package com.microfinance.code.controller;
 
 import com.microfinance.code.dto.HPLoanDTO;
+import com.microfinance.code.dto.HPRepaymentTrackDTO;
 import com.microfinance.code.dto.SMELoanDTO;
+import com.microfinance.code.dto.SMERepaymentTrackDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.User;
 import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.interFace.HPLoanService;
+import com.microfinance.code.service.interFace.HPRepaymentTrackService;
 import com.microfinance.code.service.interFace.SMELoanService;
+import com.microfinance.code.service.interFace.SMERepaymentTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -25,6 +29,8 @@ public class HPLoanController {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private HPRepaymentTrackService repaymentTrackService;
     @PostMapping("/register")
     public ApiResponse<HPLoanDTO> createLoan(@RequestBody HPLoanDTO dto) {
         HPLoanDTO createdLoan = hpLoanService.createSMELoan(dto);
@@ -71,5 +77,10 @@ public class HPLoanController {
             return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "HP loan not found for this id " + id);
         }
         return ApiResponse.success(HttpStatus.OK, HttpStatus.OK.value(), "Successfully fetched HP loan with ID: " + id, loan);
+    }
+    @GetMapping("getRepaymentTracks/{loanId}")
+    public ApiResponse<List<HPRepaymentTrackDTO>> getRepaymentTracksByLoanId(@PathVariable("loanId")Integer loanId){
+        List<HPRepaymentTrackDTO> repayTrackList = repaymentTrackService.getTrackListByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "HP Repay Tracks retrieved successfully", repayTrackList);
     }
 }

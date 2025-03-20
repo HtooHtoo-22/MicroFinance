@@ -68,6 +68,8 @@ import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loa
 import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { HpLoanTrackComponent } from './Components/hp-loan/hp-loan-track/hp-loan-track.component';
+import { HpLoanLatefeeComponent } from './Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component';
 
 
 @NgModule({
@@ -127,7 +129,9 @@ import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list
     SmeRepayTrackComponent,
     SmeOdLatefeeComponent,
     CreateDealerComponent,
-    DealerListComponent
+    DealerListComponent,
+    HpLoanTrackComponent,
+    HpLoanLatefeeComponent
   ],
   imports: [
     BrowserModule,
