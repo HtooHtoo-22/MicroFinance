@@ -115,7 +115,7 @@ export class ListComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) { // If user confirmed
-        this.router.navigate(['/dashboard/update-current-account', account.accountId]);
+        this.router.navigate(['/entry-dashboard/update-current-account', account.accountId]);
       }
     });
   }

@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../service/user.service';
 import { finalize } from 'rxjs';
 import { Branch, Role, UserDTO, UserResponseDTO } from '../../../model/user';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-update-user',
@@ -34,7 +36,8 @@ export class UpdateUserComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,  
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog,
 
 
   ){
@@ -121,6 +124,8 @@ export class UpdateUserComponent implements OnInit {
         this.errorMessage = 'Failed to load roles';
       }
     );
+
+    
   }
   
 
@@ -140,9 +145,18 @@ export class UpdateUserComponent implements OnInit {
       },
       (error) => {
         console.error('Error updating user:', error);
+        this.showModal('Failed to update user', false);
         this.errorMessage = 'Failed to update user';
         this.loading = false;
       }
     );
   }
+
+
+  showModal(message: string, success: boolean): void {
+        this.dialog.open(ModelComponent, {
+          width: '300px',
+          data: { message, success, }
+        });
+      }
 }

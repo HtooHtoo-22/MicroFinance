@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { CurrentAccount } from '../model/CurrentAcc';
 import { ApiResponse } from '../model/ApiResponse';
 import { Branch } from '../model/user';
@@ -16,9 +16,18 @@ export class CurrentAccService {
   constructor(private http: HttpClient) {}
 
   // Create a new current account
+  // createCurrentAccount(accountData: CurrentAccount): Observable<ApiResponse<CurrentAccount>> {
+  //   return this.http.post<ApiResponse<CurrentAccount>>(`${this.apiUrl}/currentAcc`, accountData);
+  // }
+
+
   createCurrentAccount(accountData: CurrentAccount): Observable<ApiResponse<CurrentAccount>> {
-    return this.http.post<ApiResponse<CurrentAccount>>(`${this.apiUrl}/currentAcc`, accountData);
-  }
+    return this.http.post<ApiResponse<CurrentAccount>>(`${this.apiUrl}/currentAcc`, accountData)
+        .pipe(
+            tap((response: any) => console.log("API Response:", response)) // ✅ Log response
+        );
+}
+
 
   // Get a current account by account ID
   getCurrentAccountById(accountId: string): Observable<ApiResponse<CurrentAccount>> {

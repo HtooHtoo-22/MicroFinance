@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { TransactionType } from '../../model/Transaction';
+import { Transaction, TransactionType } from '../../model/Transaction';
 import { TransactionService } from '../../service/transaction.service';
+import { ApiResponse } from '../../model/ApiResponse';
+
 
 @Component({
   selector: 'app-transaction',
@@ -18,6 +20,8 @@ export class TransactionComponent implements OnInit {
   errorMessage: string = '';
   accountId: string | null = null;
   showConfirmModal = false;
+  id: number | null = null;
+
 
   constructor(
     private fb: FormBuilder, 
@@ -53,12 +57,24 @@ export class TransactionComponent implements OnInit {
     const transactionData = this.transactionForm.getRawValue();
     
     this.transactionService.createTransaction(transactionData).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<Transaction[]>) => {
         console.log('Transaction created successfully:', response);
         this.showConfirmModal = false;
         this.showSuccessModal = true;
+
+       
+        const transaction = response.data as unknown as Transaction;
+        if (transaction && !Array.isArray(transaction) && transaction.id) {
+          this.id = (response.data as unknown as Transaction).id ?? null;
+          this.downloadReport();  // Auto-download the report
+        }
         this.resetForm();
-        setTimeout(() => this.closeModal(), 3000);
+        setTimeout(() => this.closeModal(), 10000);
+
+        
+
+
+        
       },
       error: (error) => {
         console.error('Error creating transaction:', error);
@@ -84,4 +100,32 @@ export class TransactionComponent implements OnInit {
     this.showErrorModal = false;
     this.showConfirmModal = false;
   }
+
+
+  
+
+  downloadReport() {
+    if (!this.id) return;
+
+    this.transactionService.downloadTransactionReport(this.id).subscribe(response => {
+      if (response) {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'TransactionReport.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error('Received empty response for transaction report');
+      }
+    }, error => {
+      console.error('Error downloading transaction report:', error);
+    });
+  }
+  
+  
+  
 }

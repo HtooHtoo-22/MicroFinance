@@ -40,7 +40,13 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
         String accountId = generateAccountId(dto.getCifId());
         dto.setAccountId(accountId);
+        dto.setCifCode(cif.getCifId());
+        System.out.println("Cif code"+ cif.getCifId());
         CurrentAccount account = CurrentAccountMapper.toEntity(dto);
+
+
+        System.out.println("Generated Account ID: " + accountId); // ✅ Log Account ID
+        System.out.println("Retrieved CIF Code: " + cif.getCifId());
         account.setCif(cif); // Set the CIF entity
         account.setFreezeStatus(true);
         CurrentAccount savedAccount = currentAccountRepository.save(account);

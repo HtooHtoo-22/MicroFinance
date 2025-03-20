@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Branch, Role, UserDTO } from '../../../model/user';
 import { UserService } from '../../../service/user.service';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-createuser',
@@ -27,7 +29,8 @@ roleIdControl: any;
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -75,10 +78,10 @@ roleIdControl: any;
           this.showSuccessModal = true;
           setTimeout(() => this.closeModal(), 3000);
         },
-        error: () => this.showError('Error creating user')
+        error: () => this.showModal('Error creating user', false),
       });
     } else {
-      this.showError('Please fill in all required fields correctly.');
+      this.showModal('Please fill in all required fields correctly.',false);
     }
   }
 
@@ -93,4 +96,11 @@ roleIdControl: any;
   closeModal(): void {
     this.showSuccessModal = false;
   }
+
+  showModal(message: string, success: boolean): void {
+      this.dialog.open(ModelComponent, {
+        width: '300px',
+        data: { message, success, }
+      });
+    }
 }

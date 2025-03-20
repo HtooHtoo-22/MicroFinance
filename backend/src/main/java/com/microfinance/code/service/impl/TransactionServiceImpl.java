@@ -11,12 +11,18 @@ import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.TransactionRepository;
 import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.status.transactionType;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,6 +102,35 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions.stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public byte[] generateTransactionReport(Integer transactionId) throws JRException {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        // Convert single transaction to list (Jasper requires Collection)
+        List<Transaction> transactionList = Collections.singletonList(transaction);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(transactionList);
+
+        // Load Jasper template
+        InputStream jasperStream = getClass().getResourceAsStream("/reports/TransactionReport.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(jasperStream);
+
+        // Set parameters
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Transaction Report");
+        parameters.put("accountId", transaction.getCurrentAccountId().getAccountId());
+        parameters.put("accountBalance", transaction.getCurrentAccountId().getTotalBalence());
+        parameters.put("transactionAmount", transaction.getAmount());
+        parameters.put("transactionDate", Timestamp.valueOf(transaction.getDate()));
+        parameters.put("transactionType", transaction.getType().name());
+
+        // Fill the report
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Export to PDF
+        return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 }
 

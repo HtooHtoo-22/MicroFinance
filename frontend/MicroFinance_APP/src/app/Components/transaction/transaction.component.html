@@ -14,6 +14,7 @@
             </svg>
           </div>
           <p class="text-sm font-semibold  text-[#00A1FF]">Transaction created successfully!</p>
+          
         </div>
         <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -70,12 +71,14 @@
               <span class="font-semibold">Amount:</span>
               <span class="ml-2">${{ transactionForm.get('amount')?.value }}</span>
             </div>
+
+            
           </div>
         </div>
         
         <div class="flex justify-center gap-4 mt-6">
           <button 
-            (click)="confirmTransaction()"
+            (click)="confirmTransaction()" 
             class="px-4 py-2 bg-[#00A1FF] text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
             Confirm
           </button>
@@ -88,6 +91,9 @@
       </div>
     </div>
   </div>
+
+ 
+
 
   <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-4 " >
 

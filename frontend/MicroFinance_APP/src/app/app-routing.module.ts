@@ -99,7 +99,7 @@ const routes: Routes = [
       { path: 'updated-cif/:id', component: CreateCifComponent },
       { path: 'create-current-account/:cifId', component: CreateComponent },
       { path: 'current-acc-list', component: ListComponent },
-      { path: 'update-current-account/:id', component: UpdateComponent },
+      { path: 'update-current-account/:accountId', component: UpdateComponent },
       { path: 'cif-details/:id', component: CustomerDetailComponent },
       { path: 'create-dealer', component: CreateDealerComponent },
       { path: 'dealer-list', component: RateListComponent },
