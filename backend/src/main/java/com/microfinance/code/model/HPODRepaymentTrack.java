@@ -1,5 +1,6 @@
 package com.microfinance.code.model;
 
+import com.microfinance.code.status.RepaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,5 +29,9 @@ public class HPODRepaymentTrack {
 
     @Column(name = "date")
     private LocalDateTime date;  // Repayment Date
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="repayment_status")
+    private RepaymentStatus repayStatus;
 }
 

@@ -46,7 +46,7 @@ public class HPLateFeeRepayService {
     private RateRepository rateRepo;
 
     @Transactional
-   // @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
     public void processLateFees() {
         System.out.println("================================Hp late fee hehe ==================================");
 

@@ -26,6 +26,7 @@ public class HPRepaymentTrack {
     @Column(name = "date")
     private LocalDate date;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="repayment_status")
     private RepaymentStatus repayStatus;
 }
