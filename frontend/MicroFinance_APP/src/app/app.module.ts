@@ -68,6 +68,7 @@ import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loa
 import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { CurrentAccService } from './service/current-acc.service';
 
 
 @NgModule({
@@ -150,6 +151,7 @@ import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    CurrentAccService
   ],
   bootstrap: [AppComponent]
 })

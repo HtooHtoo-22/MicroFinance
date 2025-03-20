@@ -44,6 +44,7 @@ export class UpdateComponent implements OnInit {
       next: (response) => {
         const account = response.data;
         this.currentAccountForm.patchValue({
+          totalBalance: account.totalBalance,
           maxAmount: account.maxAmount,
           minAmount: account.minAmount,
           freezeStatus: account.freezeStatus
@@ -54,7 +55,7 @@ export class UpdateComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading account:', error);
-        alert('Failed to load account details.');
+        this.showModal('Failed to load account details.',false);
       }
     });
   }
@@ -70,6 +71,7 @@ export class UpdateComponent implements OnInit {
     if (this.currentAccountForm.valid) {
       const formData = this.currentAccountForm.value;
       const accountData: CurrentAccount = {
+        id: 0, // Placeholder (not used in update)
         accountId: this.accountId,
         maxAmount: formData.maxAmount,
         minAmount: formData.minAmount,

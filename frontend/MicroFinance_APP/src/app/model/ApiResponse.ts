@@ -1,5 +1,6 @@
 // src/app/model/ApiResponse.ts
 export interface ApiResponse<T> {
+  
   httpStatus: string;
   statusCode: number;
   message: string;

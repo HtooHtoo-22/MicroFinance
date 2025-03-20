@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../service/user.service';
-import { finalize } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Branch, Role, UserDTO, UserResponseDTO } from '../../../model/user';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-update-user',
@@ -34,7 +36,8 @@ export class UpdateUserComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,  
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+     private dialog:MatDialog,
 
 
   ){
@@ -51,6 +54,7 @@ export class UpdateUserComponent implements OnInit {
     if (!this.userId) {
       console.error('Invalid userId:', this.userId);
       this.errorMessage = 'Invalid User ID';
+      this.showModal('Invalid User Id',false);
       return;
     }
   
@@ -88,6 +92,7 @@ export class UpdateUserComponent implements OnInit {
         console.error('Error loading user:', error);
         this.errorMessage = 'Failed to load user data';
         this.loading = false;
+        this.showModal('Failed to load user date',false)
       }
     );
   }
@@ -103,6 +108,7 @@ export class UpdateUserComponent implements OnInit {
       (error) => {
         console.error('Error loading branches:', error);
         this.errorMessage = 'Failed to load branches';
+        this.showModal('Failed to load branches ', false)
       }
     );
   }
@@ -119,6 +125,7 @@ export class UpdateUserComponent implements OnInit {
       (error) => {
         console.error('Error loading roles:', error);
         this.errorMessage = 'Failed to load roles';
+        this.showModal('Failed to load roles',false)
       }
     );
   }
@@ -135,14 +142,22 @@ export class UpdateUserComponent implements OnInit {
     this.userService.updateUser(this.userId, this.userForm.value).subscribe(
       () => {
         this.loading = false;
-        alert('User updated successfully!');
-        this.router.navigate(['/admin-dashboard/users']);
+        this.showModal('User updated successfully!',true);
+        this.router.navigate(['/admin-dashboard/list-users']);
       },
       (error) => {
         console.error('Error updating user:', error);
         this.errorMessage = 'Failed to update user';
         this.loading = false;
+        this.showModal('Error Updating user',false);
       }
     );
   }
+
+  showModal(message: string, success: boolean): void {
+      this.dialog.open(ModelComponent, {
+        width: '300px',
+        data: { message, success, }
+      });
+    }
 }

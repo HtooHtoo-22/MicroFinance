@@ -28,4 +28,10 @@ export class TransactionService {
     return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-account/${accountId}`);
   }
 
+  downloadTransactionReport(transactionId: number) {
+    return this.http.get(`${this.apiUrl}/download-report/${transactionId}`, {
+      responseType: 'blob'
+    });
+  }
+
 }
