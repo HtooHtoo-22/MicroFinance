@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CollateralService } from '../../../service/collateral.service';
 import { CurrentAccService } from '../../../service/current-acc.service';
 import { CollateralDTO } from '../../../model/CollateralDTO';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-collateral',
@@ -18,10 +20,12 @@ export class CreateCollateralComponent implements OnInit {
   collateralDTO !: CollateralDTO ;
   message :string = '';
   error : boolean = false;
+  filteredAccounts: any[] = [];
   constructor(
     private collateralService: CollateralService,
     private currentAccService: CurrentAccService,
     private fb: FormBuilder,
+    private dialog: MatDialog,
     
     
     // Add your service here: private collateralService: CollateralService
@@ -36,6 +40,7 @@ export class CreateCollateralComponent implements OnInit {
   private initForm(): void {
     this.collateralForm = this.fb.group({
       currentAccountId: [null, Validators.required],
+    currentAccountDisplay: ['', Validators.required],
       value: [null, [Validators.required, Validators.min(0)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
       status: [true, Validators.required],
@@ -56,6 +61,8 @@ export class CreateCollateralComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching collateral types:', err);
+        this.showModal('Failed to fetch collateral types', false
+        );
       }
     });
   }
@@ -68,9 +75,41 @@ export class CreateCollateralComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching Current Account types:', err);
+        this.showModal('Failed to fetch current accounts', false);
       }
     });
   }
+  onAccountInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement; // Cast to HTMLInputElement
+    const value = input.value; // Now you can safely access the value
+  
+    if (!value) {
+      this.filteredAccounts = [];
+      return;
+    }
+  
+    const lowerCaseValue = value.toLowerCase();
+    this.filteredAccounts = this.accountList.filter(account =>
+      account.accountId.toLowerCase().includes(lowerCaseValue)
+    );
+  }
+  // selectAccount(account: any): void {
+  //   currentAccountId: account.id;
+  //   const currentAccountControl = this.collateralForm.get('currentAccountId');
+  //   if (currentAccountControl) {
+  //     currentAccountControl.setValue(account.accountId);
+  //   }
+  //   this.filteredAccounts = []; // Clear the suggestions
+  // }
+
+  selectAccount(account: any): void {
+    this.collateralForm.patchValue({
+      currentAccountDisplay: account.accountId, // Show string accountId in UI
+      currentAccountId: account.id  // Use integer id for backend submission
+    });
+    this.filteredAccounts = [];
+  }
+  
   
 
   onFileChange(event: any): void {
@@ -84,6 +123,9 @@ export class CreateCollateralComponent implements OnInit {
   
     if (this.collateralForm.valid) {
       console.log("Form values:", this.collateralForm.value);
+
+      delete this.collateralForm.value.currentAccountDisplay; 
+      this.collateralForm.value.currentAccountId = Number(this.collateralForm.value.currentAccountId);
       this.collateralDTO = {
         ...this.collateralForm.value,
         imageFile: this.selectedFile || undefined // Attach the selected file
@@ -98,6 +140,7 @@ export class CreateCollateralComponent implements OnInit {
             this.collateralForm.reset(); // Reset form after success
           } else {
             console.error("Error:", response.message);
+            this.showModal('Failed to create collateral', false);
            
           }
         },
@@ -120,6 +163,7 @@ export class CreateCollateralComponent implements OnInit {
   
       this.markFormGroupTouched(this.collateralForm);
       console.log("Form is invalid");
+      this.showModal('Failed to create collateral', false);
     }
   }
   
@@ -133,4 +177,11 @@ export class CreateCollateralComponent implements OnInit {
       }
     });
   }
+
+  showModal(message: string, success: boolean): void {
+          this.dialog.open(ModelComponent, {
+            width: '300px',
+            data: { message, success, }
+          });
+        }
 }

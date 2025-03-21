@@ -28,45 +28,48 @@
   
         
   
-          <!-- Branch Selection -->
-          <div class="mb-4">
-            <label for="branchId" class="block text-gray-700 text-sm font-bold mb-2">Branch</label>
-            <select
-            class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder:text-sm"
-            [ngClass]="{'border-red-500': submitted && branchIdControl?.invalid}"
-            id="branchId"
-            formControlName="branchId"
-          > <option value="">Select Branch</option>
-            <option *ngFor="let branch of branches" [value]="branch.id.toString()">
-              {{ branch.name }}
-            </option>
-          </select>
-          
-            <div class="text-red-500 text-sm mt-1" *ngIf="submitted && branchIdControl?.invalid">
-              Please select a branch
-            </div>
-          </div>
-  
-          <!-- Role Selection -->
-          <div class="mb-4">
-            <label for="roleId" class="block text-gray-700 text-sm font-bold mb-2">Role</label>
-            <select
-  class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder:text-sm"
-  [ngClass]="{'border-red-500': submitted && roleIdControl?.invalid}"
-  id="roleId"
-  formControlName="roleId"
->  <option value="">Select Role</option>
+         
 
-  <option *ngFor="let role of roles" [value]="role.id.toString()">
-    {{ role.roleName }}
-  </option>
-</select>
 
-            <div class="text-red-500 text-sm mt-1" *ngIf="submitted && roleIdControl?.invalid">
-              Please select a role
-            </div>
-          </div>
-  
+<!-- Branch Selection -->
+<div class="mb-4">
+  <label for="branchId" class="block text-gray-700 text-sm font-bold mb-2">Branch</label>
+  <select
+    class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder:text-sm"
+    [ngClass]="{'border-red-500': submitted && branchIdControl?.invalid}"
+    id="branchId"
+    formControlName="branchId"
+  >
+    <option value="">{{ selectedBranchName ? 'Current: ' + selectedBranchName : 'Select Branch' }}</option>
+    <option *ngFor="let branch of branches" [value]="branch.id.toString()">
+      {{ branch.name }}
+    </option>
+  </select>
+  <div class="text-red-500 text-sm mt-1" *ngIf="submitted && branchIdControl?.invalid">
+    Please select a branch
+  </div>
+</div>
+
+<!-- Role Selection -->
+<div class="mb-4">
+  <label for="roleId" class="block text-gray-700 text-sm font-bold mb-2">Role</label>
+  <select
+    class="w-full px-4 p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder:text-sm"
+    [ngClass]="{'border-red-500': submitted && roleIdControl?.invalid}"
+    id="roleId"
+    formControlName="roleId"
+  >
+    <option value="">{{ selectedRoleName ? 'Current: ' + selectedRoleName : 'Select Role' }}</option>
+    <option *ngFor="let role of roles" [value]="role.id.toString()">
+      {{ role.roleName }}
+    </option>
+  </select>
+  <div class="text-red-500 text-sm mt-1" *ngIf="submitted && roleIdControl?.invalid">
+    Please select a role
+  </div>
+</div>
+
+
           <!-- Submit Button -->
           <button
             type="submit"
@@ -75,6 +78,14 @@
           >
             <span *ngIf="loading" class="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
             {{ loading ? 'Updating...' : 'Update User' }}
+          </button>
+
+          <!-- Cancel Button -->
+          <button
+            type="button"
+            class="w-full mt-1 py-2 px-4 bg-gray-300 text-gray-700 font-semibold rounded-md shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+            (click)="cancelUpdate()">
+            Cancel
           </button>
         </form>
       </div>

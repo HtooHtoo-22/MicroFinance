@@ -21,6 +21,9 @@ export class UpdateUserComponent implements OnInit {
   errorMessage: string | null = null;
   roles: Role[]=[];
   branches: Branch[] = [];
+  selectedBranchName: string = '';
+  selectedRoleName: string = '';
+
 
   get nameControl() {
     return this.userForm.get('name');
@@ -53,6 +56,7 @@ export class UpdateUserComponent implements OnInit {
   
     if (!this.userId) {
       console.error('Invalid userId:', this.userId);
+      this.showModal('Invalid User ID', false);
       this.errorMessage = 'Invalid User ID';
       return;
     }
@@ -75,20 +79,23 @@ export class UpdateUserComponent implements OnInit {
           this.loading = false;
           return;
         }
-        console.log('Branch ID:', response.branchId, 'Type:', typeof response.branchId);
-        console.log('Role ID:', response.roleId, 'Type:', typeof response.roleId);
+        
   
         this.userForm.patchValue({
           name: response.name ?? '',
-          branchId: response.branchId ? response.branchId.toString() : '', // Ensure value exists
+          branchId: response.branchId ? response.branchId.toString() : '', 
           roleId: response.roleId ? response.roleId.toString() : ''
         });
+
+        this.selectedBranchName = response.branchName ?? 'Unknown Branch';
+        this.selectedRoleName = response.roleName ?? 'Unknown Role';
   
       
         this.loading = false;
       },
       (error) => {
         console.error('Error loading user:', error);
+        this.showModal('Failed to load user data', false);
         this.errorMessage = 'Failed to load user data';
         this.loading = false;
       }
@@ -104,7 +111,8 @@ export class UpdateUserComponent implements OnInit {
        
       },
       (error) => {
-        console.error('Error loading branches:', error);
+       
+        this.showModal('Failed to load branches', false);
         this.errorMessage = 'Failed to load branches';
       }
     );
@@ -121,7 +129,8 @@ export class UpdateUserComponent implements OnInit {
       },
       (error) => {
         console.error('Error loading roles:', error);
-        this.errorMessage = 'Failed to load roles';
+        this.showModal('Failed to load roles', false);
+        // this.errorMessage = 'Failed to load roles';
       }
     );
 
@@ -140,8 +149,8 @@ export class UpdateUserComponent implements OnInit {
     this.userService.updateUser(this.userId, this.userForm.value).subscribe(
       () => {
         this.loading = false;
-        alert('User updated successfully!');
-        this.router.navigate(['/admin-dashboard/users']);
+        this.showModal('User updated successfully!', true);
+        this.router.navigate(['/admin-dashboard/list-users']);
       },
       (error) => {
         console.error('Error updating user:', error);
@@ -158,5 +167,9 @@ export class UpdateUserComponent implements OnInit {
           width: '300px',
           data: { message, success, }
         });
+      }
+
+      cancelUpdate() {
+        this.router.navigate(['/admin-dashboard/list-users']);
       }
 }

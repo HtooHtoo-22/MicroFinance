@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { DealerService } from '../../../service/dealer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dealer } from '../../../model/Dealer';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dealer-list',
@@ -15,7 +17,8 @@ export class DealerListComponent implements OnInit {
 
   constructor(
     private dealerService: DealerService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -34,8 +37,12 @@ export class DealerListComponent implements OnInit {
       next: () => {
         this.snackBar.open('Dealer approved', 'Close', { duration: 3000 });
         this.loadDealers();
+        this.showModal('Dealer approved successfully!', true);
       },
-      error: (err) => this.snackBar.open(err.error || 'Error approving dealer', 'Close', { duration: 3000 })
+      error: (err) => {
+        this.snackBar.open(err.error || 'Error approving dealer', 'Close', { duration: 3000 });
+        this.showModal('Error approving dealer', false); // Show error message
+      }     
     });
   }
 
@@ -44,8 +51,18 @@ export class DealerListComponent implements OnInit {
       next: () => {
         this.snackBar.open('Dealer rejected', 'Close', { duration: 3000 });
         this.loadDealers();
+        this.showModal('Dealer rejected successfully!', true);
       },
-      error: (err) => this.snackBar.open(err.error || 'Error rejecting dealer', 'Close', { duration: 3000 })
-    });
+      error: (err) => {
+        this.snackBar.open(err.error || 'Error rejecting dealer', 'Close', { duration: 3000 });
+        this.showModal('Error rejecting dealer', false); // Show error message
+      }    });
   }
+
+  showModal(message: string, success: boolean): void {
+      this.dialog.open(ModelComponent, {
+        width: '300px',
+        data: { message, success, }
+      });
+    }
 }
