@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../model/ApiResponse';
+import { HPRepaymentTrack } from '../model/HPRepaymentTrack';
 
 export interface HPLoan {
   id: number;
@@ -62,5 +63,9 @@ export class HpLoanService {
   getApprovedHPLoans(): Observable<ApiResponse<HPLoan[]>> {
     return this.http.get<ApiResponse<HPLoan[]>>(`${this.apiUrl}/approved`);
   }
-
+  getRepaymentTracksByLoanId(loanId: number): Observable<ApiResponse<HPRepaymentTrack[]>> {
+    return this.http.get<ApiResponse<HPRepaymentTrack[]>>(
+      `${this.apiUrl}/getRepaymentTracks/${loanId}`
+    );
+  }
 }
