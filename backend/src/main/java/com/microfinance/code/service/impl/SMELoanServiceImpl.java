@@ -259,9 +259,10 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch overdue repayment schedules
         List<SMERepaymentSchedule> schedules = scheduleRepo.findBySmeLoanIdAndStatusIn(loanId, List.of(RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
 
-        // Check if no overdue schedules are found
+        // If no overdue schedules are found, return an empty DTO or a flag indicating no data
         if (schedules.isEmpty()) {
-            throw new NotFoundException("No overdue repayment schedules found for loan ID: " + loanId);
+            System.out.println("No overdue repayment schedules found for loan ID: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or possibly a DTO with a "not found" flag
         }
 
         List<SMEScheduleDTO> odScheduleDTOs = schedules.stream()
@@ -273,9 +274,10 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch late fee calculations
         List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(loanId);
 
-        // Check if no late fee calculations are found
+        // If no late fee calculations are found, log and continue (or return an empty DTO)
         if (calculations.isEmpty()) {
-            throw new NotFoundException("No late fee calculations found for loan ID: " + loanId);
+            System.out.println("No late fee calculations found for loan ID: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
         }
 
         // Find max late days
@@ -294,7 +296,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch late fee rate before 90 days
         BigDecimal rateBf90 = rateRepo.findValueByRateType("SME Late Fee Before 90 Days");
         if (rateBf90 == null) {
-            throw new NotFoundException("Late fee rate before 90 days not found for loan ID: " + loanId);
+            System.out.println("Late fee rate before 90 days not found for loan ID: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
         }
         System.out.println("Before 90 Late Fee Rate : " + rateBf90);
         lateFeeSummaryDTO.setLateFeeRateBf90(rateBf90);
@@ -302,7 +305,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch late fee rate after 90 days
         BigDecimal rateAf90 = rateRepo.findValueByRateType("SME Late Fee After 90 Days");
         if (rateAf90 == null) {
-            throw new NotFoundException("Late fee rate after 90 days not found for loan ID: " + loanId);
+            System.out.println("Late fee rate after 90 days not found for loan ID: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
         }
         System.out.println("After 90 Late Fee Rate : " + rateAf90);
         lateFeeSummaryDTO.setLateFeeRateAf90(rateAf90);
@@ -310,7 +314,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch late fee holding
         SMELateFeeHolding lateFeeHolding = fetchLateFeeHolding(loanId);
         if (lateFeeHolding == null) {
-            throw new NotFoundException("No late fee holding found for loan ID: " + loanId);
+            System.out.println("No late fee holding found for loan ID: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
         }
         BigDecimal heldAmount = lateFeeHolding.getHoldAmount();
         System.out.println("Hold Amount : " + heldAmount);
@@ -319,7 +324,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch loan information to calculate outstanding amount
         Optional<SMELoan> optionalLoan = smeLoanRepository.findById(loanId);
         if (!optionalLoan.isPresent()) {
-            throw new NotFoundException("Loan ID not found: " + loanId);
+            System.out.println("Loan ID not found: " + loanId);
+            return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
         }
         BigDecimal outstandingAmount = calculateOutstandingAmount(optionalLoan.get());
         System.out.println("Outstanding Amount : " + outstandingAmount);
@@ -327,6 +333,7 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         return lateFeeSummaryDTO;
     }
+
 
     private BigDecimal calculateTotalLateFees(List<SMELateFeeCalculation> lateFees) {
         return lateFees.stream()
@@ -344,7 +351,7 @@ public class SMELoanServiceImpl implements SMELoanService {
                 smeLoan.getId(), List.of(RepaymentStatus.NOT_DUE_YET, RepaymentStatus.PARTIAL_OVERDUE, RepaymentStatus.FULL_OVERDUE));
 
         if (repaymentSchedules.isEmpty()) {
-            throw new RuntimeException("No repayment schedules found for the loan");
+            System.out.println("No repayment schedules found for the loan");
         }
 
         // Find the minimum principal amount

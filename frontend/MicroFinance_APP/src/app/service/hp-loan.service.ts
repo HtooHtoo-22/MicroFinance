@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../model/ApiResponse';
 import { HPRepaymentTrack } from '../model/HPRepaymentTrack';
+import { HPLateFeeSummary } from '../model/HPLateFeeSummary';
 
 export interface HPLoan {
   id: number;
@@ -68,4 +69,9 @@ export class HpLoanService {
       `${this.apiUrl}/getRepaymentTracks/${loanId}`
     );
   }
+  getLateFeeSummaryByLoanId(loanId: number): Observable<ApiResponse<HPLateFeeSummary>> {
+      return this.http.get<ApiResponse<HPLateFeeSummary>>(
+        `${this.apiUrl}/getLateFeeSummary/${loanId}`
+      );
+    }
 }

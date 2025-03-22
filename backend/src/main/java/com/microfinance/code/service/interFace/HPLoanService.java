@@ -1,5 +1,6 @@
 package com.microfinance.code.service.interFace;
 
+import com.microfinance.code.dto.HPLateFeeSummaryDTO;
 import com.microfinance.code.dto.HPLoanDTO;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface HPLoanService {
     HPLoanDTO getHPLoanById(Integer id); // New method
 
     List<HPLoanDTO> getApprovedHPLoans();
+
+    public HPLateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId);
 }

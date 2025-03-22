@@ -1,9 +1,6 @@
 package com.microfinance.code.controller;
 
-import com.microfinance.code.dto.HPLoanDTO;
-import com.microfinance.code.dto.HPRepaymentTrackDTO;
-import com.microfinance.code.dto.SMELoanDTO;
-import com.microfinance.code.dto.SMERepaymentTrackDTO;
+import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.User;
@@ -82,5 +79,10 @@ public class HPLoanController {
     public ApiResponse<List<HPRepaymentTrackDTO>> getRepaymentTracksByLoanId(@PathVariable("loanId")Integer loanId){
         List<HPRepaymentTrackDTO> repayTrackList = repaymentTrackService.getTrackListByLoanId(loanId);
         return ApiResponse.success(HttpStatus.OK, 200, "HP Repay Tracks retrieved successfully", repayTrackList);
+    }
+    @GetMapping("/getLateFeeSummary/{loanId}")
+    public ApiResponse<HPLateFeeSummaryDTO> getLateFeeSummaryByLoanId(@PathVariable("loanId")Integer loanId){
+        HPLateFeeSummaryDTO lateFeeSummaryDTO = hpLoanService.getLateFeeAndODByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "HP OD and Late Fee Summary retrieved successfully", lateFeeSummaryDTO);
     }
 }
