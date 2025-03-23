@@ -20,14 +20,18 @@ import com.microfinance.code.status.LoanStatus;
 import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +64,7 @@ public class SMELoanServiceImpl implements SMELoanService {
     private SMELateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private SMELateFeeHoldingRepo lateFeeHoldingRepo;
+
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -379,4 +384,77 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         return outstandingAmount;
     }
+
+
+
+
+//    @Override
+//    public byte[] generateLoanReport(Integer id) throws JRException {
+////        Optional<SMELoan> loanReport = smeLoanRepository.findById(id);
+//
+//        SMELoan loanReport = smeLoanRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Loan id  not found"));
+//
+//
+//        List<SMELoan> reportData = Collections.singletonList(loanReport);
+//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+//
+//        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("reports/SMELoanReport.jrxml");
+//        if (reportStream == null) {
+//            throw new JRException("Report template file 'SMELoanReport.jrxml' not found.");
+//        }
+//
+//        URL reportUrl = getClass().getClassLoader().getResource("reports/SMELoanReport.jrxml");
+//        if (reportUrl == null) {
+//            System.out.println("Report template file 'SMELoanReport.jrxml' NOT found in classpath!");
+//        } else {
+//            System.out.println("Report found at: " + reportUrl);
+//        }
+//
+//
+//        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+//
+//        Map<String, Object> parameters = new HashMap<>();
+//        parameters.put("ReportTitle", "Loan Report");
+//
+//        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+//        return JasperExportManager.exportReportToPdf(jasperPrint);
+//    }
+
+
+    @Override
+    public byte[] generateLoanReport(Integer id) throws JRException {
+        SMELoan loanReport = smeLoanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan id not found"));
+
+
+        List<Collateral> collaterals = collateralRepo.findByCurrentAccount(loanReport.getCurrentAccount());
+
+        // Calculate the total collateral value
+        BigDecimal totalCollateralValue = collaterals.stream()
+                .map(Collateral::getValue)
+                .filter(Objects::nonNull) // Exclude null values
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<SMELoan> reportData = Collections.singletonList(loanReport);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("reports/SMELoanReport.jrxml");
+        if (reportStream == null) {
+            throw new JRException("Report template file 'SMELoanReport.jrxml' not found.");
+        }
+
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Loan Report");
+        parameters.put("approvedDate", Timestamp.valueOf(loanReport.getApprovedDate()));
+        parameters.put("expiredDate",Timestamp.valueOf(loanReport.getExpiredDate().atStartOfDay()));
+        parameters.put("totalCollateralValue", totalCollateralValue);  // Make sure this is passed
+
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
 }

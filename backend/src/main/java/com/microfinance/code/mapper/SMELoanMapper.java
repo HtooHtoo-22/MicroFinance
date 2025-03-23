@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +60,10 @@ public class SMELoanMapper {
                 ? smeLoan.getCurrentAccount().getCif().getUserName() : null);
         dto.setCifId(smeLoan.getCurrentAccount().getCif().getId());
         dto.setCifIdNumber(smeLoan.getCurrentAccount().getCif().getCifId());
+
+        BigDecimal totalCollateralValue = loanHasCollateralRepo.findTotalCollateralValueByLoanId(smeLoan.getId());
+        dto.setTotalCollateralValue(totalCollateralValue != null ? totalCollateralValue : BigDecimal.ZERO);
+
 
         List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(dto.getId());
         if (collaterals != null && !collaterals.isEmpty()) {

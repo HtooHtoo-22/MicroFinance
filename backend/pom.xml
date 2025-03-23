@@ -201,6 +201,22 @@
             </plugin>
 
         </plugins>
+
+
+            <resources>
+                <resource>
+                    <directory>src/main/resources</directory>
+                    <includes>
+                        <include>**/*.properties</include>
+                        <include>**/*.yml</include>
+                        <include>**/*.jrxml</include>
+                    </includes>
+                </resource>
+            </resources>
+
+
+
+
     </build>
 
 </project>

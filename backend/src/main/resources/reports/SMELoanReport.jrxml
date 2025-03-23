@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN"
+        "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="Loan Report" pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- Define Parameters -->
+    <parameter name="totalCollateralValue" class="java.math.BigDecimal"/>
+    <parameter name="approvedDate" class="java.util.Date"/>
+    <parameter name="expiredDate" class="java.util.Date"/>
+
+    <!-- Query for fetching data -->
+    <queryString>
+        <![CDATA[
+        SELECT
+            sl.loanId,
+            ca.cif.userName AS borrowerName,
+            sl.loanAmount,
+            sl.interestRate,
+            sl.duration,
+            sl.approvedDate,
+            sl.expiredDate,
+            COALESCE(SUM(col.value), 0) AS totalCollateralValue
+        FROM sme_loan sl
+        JOIN current_account ca ON sl.current_account_id = ca.id
+        LEFT JOIN collateral col ON col.current_account_id = ca.id
+        GROUP BY sl.loanId, ca.cif.userName, sl.loanAmount, sl.interestRate, sl.duration, sl.approvedDate, sl.expiredDate
+        ]]>
+    </queryString>
+
+    <!-- Define Fields -->
+    <field name="loanId" class="java.lang.String"/>
+    <field name="borrowerName" class="java.lang.String"/>
+    <field name="loanAmount" class="java.math.BigDecimal"/>
+    <field name="interestRate" class="java.math.BigDecimal"/>
+    <field name="duration" class="java.lang.Integer"/>
+    <field name="approvedDate" class="java.util.Date"/>
+    <field name="expiredDate" class="java.util.Date"/>
+
+    <!-- Title Section -->
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="180" y="10" width="250" height="30" forecolor="#111827"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Loan Approval Confirmation]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <detail>
+        <band height="130"> <!-- Increased band height from 120 to 130 -->
+            <!-- Borrower Information -->
+            <staticText>
+                <reportElement x="10" y="5" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Borrower:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="5" width="200" height="20"/>
+                <textFieldExpression><![CDATA[$F{borrowerName}]]></textFieldExpression>
+            </textField>
+
+            <!-- Key Numbers (Amount, Rate, Term) -->
+            <staticText>
+                <reportElement x="10" y="25" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Amount:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="25" width="120" height="20"/>
+                <textFieldExpression><![CDATA[$F{loanAmount}.setScale(2, java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="45" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Rate:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="45" width="120" height="20"/>
+                <textFieldExpression><![CDATA[String.valueOf($F{interestRate}) + " %"]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="65" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Term:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="65" width="120" height="20"/>
+                <textFieldExpression><![CDATA[String.valueOf($F{duration}) + " months"]]></textFieldExpression>
+            </textField>
+
+            <!-- Dates Section -->
+            <staticText>
+                <reportElement x="10" y="85" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Start Date:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="85" width="120" height="20"/>
+                <textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd MMM yyyy").format($P{approvedDate})]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="105" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Maturity Date:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="105" width="120" height="20"/>
+                <textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd MMM yyyy").format($P{expiredDate})]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+
+    <!-- Collateral Summary -->
+    <summary>
+        <band height="40">
+            <staticText>
+                <reportElement x="10" y="5" width="150" height="20"/>
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total Collateral:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="160" y="5" width="120" height="20"/>
+                <textElement textAlignment="Right">
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{totalCollateralValue}.setScale(2, java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+</jasperReport>
+

@@ -29,4 +29,8 @@ public interface SMELoanHasCollateralRepo extends JpaRepository<SMELoanHasCollat
     @Query("SELECT DISTINCT shc.smeLoan.id FROM SMELoanHasCollateral shc WHERE shc.collateral.id = :collateralId")
     List<Integer> getSMELoanPrimaryIdListUsedByThisCollateral(@Param("collateralId") Integer collateralId);
 
+    @Query("SELECT COALESCE(SUM(c.value), 0) FROM Collateral c " +
+            "JOIN c.currentAccount ca WHERE ca.id = :loanId")
+    BigDecimal findTotalCollateralValueByLoanId(@Param("loanId") Integer loanId);
+
 }

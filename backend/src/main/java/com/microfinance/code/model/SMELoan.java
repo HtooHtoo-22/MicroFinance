@@ -85,4 +85,14 @@ public class SMELoan {
         }
 
     }
+
+
+    public String getBorrowerName() {
+        return this.currentAccount != null && this.currentAccount.getCif() != null
+                ? this.currentAccount.getCif().getUserName()
+                : "";
+    }
+
+
+
 }

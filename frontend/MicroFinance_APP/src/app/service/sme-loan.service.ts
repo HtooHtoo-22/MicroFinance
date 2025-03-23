@@ -55,5 +55,11 @@ export class SmeLoanService {
     );
   }
   
+  downloadLoanReport(loanId: number) {
+    // const headers = new HttpHeaders({ 'Accept': 'application/pdf' });
+    return this.http.get(`${this.apiUrl}/download-report/${loanId}`, { 
+    responseType: 'blob'  });
+  }
+  
   
 }

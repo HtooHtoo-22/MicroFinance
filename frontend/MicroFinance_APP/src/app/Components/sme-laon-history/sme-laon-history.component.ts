@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { AuthService } from '../../service/auth.service';
 import { Smeloan } from '../../model/SmeLoan';
@@ -101,24 +103,40 @@ goToPage(page: number): void {
 onStatusChange(): void {
   this.filterLoans();
 }
+
+
+
 approveLoan(loanId: number): void {
   this.smeLoanService.approveLoan(loanId).subscribe({
     next: (response) => {
       console.log('Loan Approved successfully:', response.message);
       
-      // Navigate to loan details
-      this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
-      
-      // Optional: Add query params if needed
-      // this.router.navigate(['/loans', loanId], {
-      //   queryParams: { refresh: true }
-      // });
+      // Fetch the updated loan details
+      this.smeLoanService.getLoanById(loanId).subscribe({
+        next: (loanResponse) => {
+          this.selectedLoan = loanResponse.data;
+          this.currentDate = new Date();
+          if (this.selectedLoan?.duration) {
+            this.estimatedEndDate = this.addMonths(this.currentDate, this.selectedLoan.duration);
+          }
+          
+          // Automatically trigger the report download
+          
+          // this.downloadSmeReport();
+          // Navigate to loan details page
+          this.downloadSmeReport();
+          this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
+        },
+        error: (err) => console.error('Error fetching updated loan details:', err)
+      });
     },
     error: (error) => {
       console.error('Error while approving loan:', error);
     }
   });
 }
+
+
 rejectLoan(loanId: number): void {
   this.smeLoanService.rejectLoan(loanId).subscribe({
     next: (response) => {
@@ -178,6 +196,27 @@ getTotalCollateral(): number {
   return total;
 }
 
+downloadSmeReport(): void {
+  if (!this.selectedLoan?.id) {
+    alert('Loan ID is missing.');
+    return;
+  }
+
+  // Assuming downloadLoanReport is a method in SmeLoanService to download the report
+  this.smeLoanService.downloadLoanReport(this.selectedLoan.id).subscribe(response => {
+    const blob = new Blob([response], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LoanReport_${this.selectedLoan?.id}.pdf`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }, error => {
+    console.error('Error generating report:', error);
+    alert('Failed to generate report. Please try again.');
+  });
+}
+
 
 
 private addMonths(date: Date, months: number): Date {
@@ -191,4 +230,7 @@ private addMonths(date: Date, months: number): Date {
   
   return result;
 }
+
+
+
 }

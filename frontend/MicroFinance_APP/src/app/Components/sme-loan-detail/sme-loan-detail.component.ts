@@ -94,4 +94,30 @@ private handleError(err: any): void {
   switchTab(tab: 'details' | 'schedule') {
     this.activeTab = tab;
   }
+
+  downloadLoanReport() {
+    if (!this.loan?.id) {
+      console.error("Loan ID is missing");
+      return;
+    }
+  
+    this.smeloanService.downloadLoanReport(this.loan.id).subscribe({
+      next: (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Loan_Report_${this.loan?.loanId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => console.error("Error downloading report:", err)
+    });
+  }
+  
+
+ 
+  
 }
