@@ -386,4 +386,11 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         return outstandingAmount;
     }
+    @Override
+    public List<SMELoanDTO> getApprovedLoansByBranchId(Integer branchId){
+        List<SMELoan> loans = smeLoanRepository.findByEntryUser_Branch_IdAndStatus(branchId, com.microfinance.code.model.LoanStatus.APPROVE);
+        return loans.stream()
+                .map(loanMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

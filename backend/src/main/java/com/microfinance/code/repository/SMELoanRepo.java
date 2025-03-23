@@ -1,6 +1,7 @@
 package com.microfinance.code.repository;
 
 import com.microfinance.code.model.CurrentAccount;
+import com.microfinance.code.model.LoanStatus;
 import com.microfinance.code.model.SMELoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +22,7 @@ public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
     Optional<CurrentAccount> findCurrentAccountBySmeLoanId(@Param("smeLoanId") Integer smeLoanId);
 
     List<SMELoan> findByEntryUser_Branch_Id(Integer branchId);
+
+    List<SMELoan> findByEntryUser_Branch_IdAndStatus(Integer branchId, LoanStatus loanStatus);
 
 }

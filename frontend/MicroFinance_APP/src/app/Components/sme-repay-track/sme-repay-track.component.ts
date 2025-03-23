@@ -16,6 +16,7 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   currentDate = new Date();
   selectedFilter: 'all' | 'od' | 'lateFee' = 'all';
   isRefreshing = false;
+  isLoading = false;
   constructor(private smeLoanService: SmeLoanService) {}
 
   ngOnInit(): void {
@@ -120,5 +121,22 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
         this.isRefreshing = false;
       }
     });
+  }
+  getStatusStyles(status: string): any {
+    const base = 'inline-flex items-center transition-colors';
+    
+    if (status.includes('Paid') || status.includes('All Paid')) {
+      return `${base} bg-emerald-100 text-emerald-700`;
+    }
+    if (status.includes('Partial')) {
+      return `${base} bg-amber-100 text-amber-700`;
+    }
+    if (status.includes('OD Balence') || status.includes('Neither')) {
+      return `${base} bg-rose-100 text-rose-700`;
+    }
+    if (status.includes('Late Fee')) {
+      return `${base} bg-indigo-100 text-indigo-700`;
+    }
+    return `${base} bg-gray-100 text-gray-700`;
   }
 }

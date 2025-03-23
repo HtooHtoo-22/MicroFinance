@@ -27,4 +27,5 @@ export interface Smeloan {
   cifId: number;
   cifIdNumber: string;
   usedCollaterals: CollateralDTO[];
+  loanStatus: string;
 }

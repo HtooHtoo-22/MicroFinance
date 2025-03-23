@@ -50,6 +50,8 @@ import { CreateEditProductComponent } from './Components/Product/create-edit-pro
 import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { SmeApproveLoansComponent } from './Components/sme-approve-loans/sme-approve-loans.component';
+import { HpApproveLoansComponent } from './Components/hp-approve-loans/hp-approve-loans.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -144,6 +146,8 @@ const routes: Routes = [
       { path: 'all-list', component: AllproductListComponent },
       { path: 'sme-loan-detail/:id', component: SmeLoanDetailComponent},
       { path: 'sme-loan-list', component: SmeLaonHistoryComponent },
+      { path: 'sme-approve-loan-list',component: SmeApproveLoansComponent},
+      { path: 'hp-approve-loan-list',component: HpApproveLoansComponent}
       
 
 

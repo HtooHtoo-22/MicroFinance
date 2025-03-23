@@ -68,4 +68,9 @@ public class SMELoanController {
         SMELateFeeSummaryDTO lateFeeSummaryDTO = smeLoanService.getLateFeeAndODByLoanId(loanId);
         return ApiResponse.success(HttpStatus.OK, 200, "SME OD and Late Fee Summary retrieved successfully", lateFeeSummaryDTO);
     }
+    @GetMapping("/approved-loans/{branchId}")
+    public ResponseEntity<ApiResponse<List<SMELoanDTO>>> getApprovedLoans(@PathVariable("branchId")Integer branchId) {
+        List<SMELoanDTO> smeLoanDTOList = smeLoanService.getApprovedLoansByBranchId(branchId);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "SME Approve loan list retrieved. ", smeLoanDTOList));
+    }
 }
