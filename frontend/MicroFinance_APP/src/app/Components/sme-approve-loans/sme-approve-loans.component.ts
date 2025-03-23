@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { AuthService } from '../../service/auth.service';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { Smeloan } from '../../model/SmeLoan';
 
 @Component({
@@ -28,7 +28,7 @@ export class SmeApproveLoansComponent {
   }
   fetchLoans(): void {
     this.loading = true;
-    this.smeLoanService.getLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
+    this.smeLoanService.getApprovedLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
       (data) => {
         if (Array.isArray(data)) {
           this.loans = data;
@@ -53,6 +53,20 @@ export class SmeApproveLoansComponent {
 }
 private updatePagination(): void {
   this.totalPages = Math.ceil(this.filteredLoans.length / this.itemsPerPage) || 1;
+}
+getStatusClass(status: string): string {
+  const statusClasses = {
+    'ACTIVE': 'bg-green-100 text-green-800',
+    'PENDING': 'bg-yellow-100 text-yellow-800',
+    'CLOSED': 'bg-gray-100 text-gray-800',
+    'DEFAULTED': 'bg-red-100 text-red-800',
+    'COMPLETED': 'bg-blue-100 text-blue-800'
+  };
+  return statusClasses[status.toUpperCase() as keyof typeof statusClasses] || 'bg-gray-100 text-gray-800';
+}
+viewDetails(loanId: Smeloan): void {
+}
+downloadReport(loan:Smeloan): void {
 }
   // Add filter function
  

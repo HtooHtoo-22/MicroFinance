@@ -20,6 +20,7 @@ import com.microfinance.code.status.LoanStatus;
 import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
+import org.aspectj.apache.bcel.generic.ClassGen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,7 @@ public class SMELoanServiceImpl implements SMELoanService {
     private SMELateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private SMELateFeeHoldingRepo lateFeeHoldingRepo;
+
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -69,7 +71,6 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch approved user
         User entryUser = userRepository.findById(dto.getEntryUserId())
                 .orElseThrow(() -> new NotFoundException("Entry user not found"));
-
 
 
 // Fetch current account
@@ -129,8 +130,8 @@ public class SMELoanServiceImpl implements SMELoanService {
         transactionService.createTransaction(transactionDTO);
         scheduleService.createSchedule(smeLoan);
         SmsSender.sendSms(smeLoan.getCurrentAccount().getCif().getPhone(),
-                "RichCoin: Your SME loan of MMK "+smeLoan.getLoanAmount() +" has been approved. " +
-                        "Please visit the "+smeLoan.getEntryUser().getBranch().getName()+" branch to proceed.");
+                "RichCoin: Your SME loan of MMK " + smeLoan.getLoanAmount() + " has been approved. " +
+                        "Please visit the " + smeLoan.getEntryUser().getBranch().getName() + " branch to proceed.");
         String email = smeLoan.getCurrentAccount().getCif().getEmail();  // Assuming email is stored in CIF
         String emailSubject = "Loan Approved - RichCoin";
         String emailBody = "Dear customer,\n\nYour SME loan of MMK " + smeLoan.getLoanAmount() +
@@ -140,8 +141,9 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Call the sendEmail method
         boolean emailSent = EmailSender.sendEmail(email, emailSubject, emailBody);
     }
+
     @Override
-    public void rejectSMELoan(Integer smeLoanId){
+    public void rejectSMELoan(Integer smeLoanId) {
         SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
                 .orElseThrow(() -> new NotFoundException("SME Loan with ID " + smeLoanId + " not found."));
         smeLoan.setStatus(LoanStatus.REJECT);
@@ -154,6 +156,7 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Save the SME Loan status update
         smeLoanRepository.save(smeLoan);
     }
+
     @Override
     public void repayPrincipal(Integer smeLoanId, BigDecimal repaidPrincipal) {
         // Retrieve the SME loan by its ID
@@ -240,18 +243,21 @@ public class SMELoanServiceImpl implements SMELoanService {
             smeLoanHasCollateralRepo.save(loanHasCollateral);
         }
     }
+
     @Override
-    public SMELoanDTO getLoanById(Integer id){
+    public SMELoanDTO getLoanById(Integer id) {
         SMELoan loan = smeLoanRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("SME Loan  not found with ID: " + id));
         return loanMapper.toDTO(loan);
     }
+
     @Override
-    public SMELoanDTO getLoanByLoanId(String id){
+    public SMELoanDTO getLoanByLoanId(String id) {
         SMELoan loan = smeLoanRepository.findByLoanId(id)
                 .orElseThrow(() -> new NotFoundException("SME Loan  not found with Loan ID: " + id));
         return loanMapper.toDTO(loan);
     }
+
     @Override
     public SMELateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId) {
         SMELateFeeSummaryDTO lateFeeSummaryDTO = new SMELateFeeSummaryDTO();
@@ -340,9 +346,11 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .map(SMELateFeeCalculation::getLateFees)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
     private SMELateFeeHolding fetchLateFeeHolding(Integer smeLoanId) {
         return lateFeeHoldingRepo.findBySmeLoan_Id(smeLoanId).orElse(null);
     }
+
     private BigDecimal calculateOutstandingAmount(SMELoan smeLoan) {
         BigDecimal outstandingAmount = BigDecimal.ZERO;
 
@@ -386,11 +394,78 @@ public class SMELoanServiceImpl implements SMELoanService {
 
         return outstandingAmount;
     }
+
     @Override
-    public List<SMELoanDTO> getApprovedLoansByBranchId(Integer branchId){
-        List<SMELoan> loans = smeLoanRepository.findByEntryUser_Branch_IdAndStatus(branchId, com.microfinance.code.model.LoanStatus.APPROVE);
+    public List<SMELoanDTO> getApprovedLoansByBranchId(Integer branchId) {
+        List<SMELoan> loans =
+                smeLoanRepository.findByEntryUser_Branch_IdAndStatus(branchId,LoanStatus.APPROVE);
+        if(loans == null){
+            throw new NotFoundException("Approve Loan List Not Found");
+        }
         return loans.stream()
-                .map(loanMapper::toDTO)
+                .map(loan -> {
+                    // Check the loan status for each loan
+                    String loanStatus = getLoanStatus(loan); // Get the loan status based on repayment schedules
+                    SMELoanDTO loanDTO = loanMapper.toDTO(loan); // Map to DTO
+                    loanDTO.setLoanStatus(loanStatus); // Set the loan status in the DTO
+                    return loanDTO;
+                })
                 .collect(Collectors.toList());
+    }
+
+    // Helper method to determine the loan status
+    private String getLoanStatus(SMELoan loan) {
+        // Fetch all repayment schedules for the loan
+        List<SMERepaymentSchedule> repaymentSchedules = scheduleRepo.findBySmeLoanId(loan.getId());
+
+        // Handle case where there are no repayment schedules
+        if (repaymentSchedules == null || repaymentSchedules.isEmpty()) {
+            // Log an error or return a default loan status if no repayment schedules exist
+            return "No Repayment Schedules";
+        }
+
+        // Fetch all late fee calculations for the loan
+        List<SMELateFeeCalculation> lateFees = lateFeeRepo.findBySmeLoanId(loan.getId());
+
+
+        // Additional loan status checks
+        boolean isPaid = true;
+        boolean isHealthy = true;
+
+        // Check the repayment schedule statuses
+        for (SMERepaymentSchedule schedule : repaymentSchedules) {
+            if (schedule.getStatus() == RepaymentStatus.PAID) {
+                continue; // Skip PAID schedules for Paid Loan check
+            } else if (schedule.getStatus() == RepaymentStatus.PARTIAL_OVERDUE || schedule.getStatus() == RepaymentStatus.FULL_OVERDUE) {
+                isHealthy = false; // If any schedule is overdue, the loan is not healthy
+            } else if (schedule.getStatus() != RepaymentStatus.PAID) {
+                isPaid = false; // If any schedule is not PAID, the loan is not fully paid
+            }
+        }
+
+        // Determine the loan status
+        if (isPaid) {
+            return "Paid Loan"; // All schedules are PAID
+        } else if (isHealthy) {
+            return "Healthy Loan"; // No overdue schedules
+        } else {
+            if (lateFees == null || lateFees.isEmpty()) {
+                // Log an error or return a default loan status if no late fee calculations exist
+                return "No Late Fees";
+            }
+            int maxLateDays = lateFees.stream()
+                    .mapToInt(SMELateFeeCalculation::getLateDays)
+                    .max()
+                    .orElse(0); // Default to 0 if there are no late fees
+
+            // Check for Watchlist or NPL status based on maxLateDays
+            if (maxLateDays >= 90) {
+                return "NPL Loan"; // If max late days are 90 or more, it's an NPL loan
+            } else if (maxLateDays > 0) {
+                return "Watchlist Loan"; // If max late days are less than 90 but greater than 0, it's a Watchlist loan
+            }else{
+                return "gg";
+            }
+        }
     }
 }

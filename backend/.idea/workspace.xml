@@ -6,14 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanRepo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
