@@ -46,6 +46,9 @@ public class Dealer {
     @OneToMany(mappedBy = "dealer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;
 
+    @Column(name = "information", nullable = true, length = 80)
+    private String information;
+
     @PrePersist
     protected void onCreate() {
         if (statusforDelar == null) {

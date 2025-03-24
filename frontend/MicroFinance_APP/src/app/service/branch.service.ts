@@ -26,7 +26,7 @@ export class BranchService {
   }
 
   createBranch(branch: Branch): Observable<Branch> {
-    return this.http.post<ApiResponse<Branch>>(`${this.apiUrl}/`, branch)
+    return this.http.post<ApiResponse<Branch>>(`${this.apiUrl}/create`, branch)
       .pipe(
         map(response => response.data)
       );

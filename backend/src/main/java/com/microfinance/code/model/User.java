@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -34,9 +35,10 @@ public class User implements UserDetails{
     @ManyToOne
     @JoinColumn(name = "branch_id")
     private Branch branch;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
+
     @Column(name = "create_date", nullable = false)
     private LocalDateTime CreateDate;
     @Column(name = "status")
@@ -55,13 +57,14 @@ public class User implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+        return role != null ? role.getAuthorities() : Collections.emptyList();
     }
 
     @Override
     public String getUsername() {
         return getEmail();
     }
+
 
     @Override
     public boolean isAccountNonExpired() {

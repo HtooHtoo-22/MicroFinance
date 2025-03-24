@@ -10,15 +10,19 @@ import { debounceTime, map, Observable, take } from 'rxjs';
   selector: 'app-create-cif',
   standalone: false,
   templateUrl: './create-cif.component.html',
-  styleUrl: './create-cif.component.css'
+  styleUrls: ['./create-cif.component.css']
 })
 export class CreateCifComponent implements OnInit {
   cifForm: FormGroup;
   frontNRCFile?: File;
   backNRCFile?: File;
   userPhotoFile?: File;
+  frontNRCUrl: string | ArrayBuffer | null = null;
+  backNRCUrl: string | ArrayBuffer | null = null;
+  userPhotoUrl: string | ArrayBuffer | null = null;
   id?: number;
   cifId?: number;
+
   isEditMode = false;
   loading = false;
   errorMessage = '';
@@ -40,8 +44,8 @@ export class CreateCifComponent implements OnInit {
       gender: ['', Validators.required],
       job: ['', Validators.required],
       incomeAmount: [null, [Validators.required, Validators.min(0)]],
-      nrc: ['', Validators.required, this.isEditMode ? [] : [this.nrcExistsValidator()]], // Only apply validator in create mode
-    email: ['', [Validators.required, Validators.email], this.isEditMode ? [] : [this.emailExistsValidator()]],
+      nrc: ['', Validators.required, this.isEditMode ? [] : [this.nrcExistsValidator()]],
+      email: ['', [Validators.required, Validators.email], this.isEditMode ? [] : [this.emailExistsValidator()]],
       phone: ['+95 ', [Validators.required]],
       state: ['', Validators.required],
       township: ['', Validators.required],
@@ -52,23 +56,22 @@ export class CreateCifComponent implements OnInit {
   nrcExistsValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
       return this.cifService.checkNRC(control.value).pipe(
-        debounceTime(500), // Delay validation to prevent instant trigger
-      take(1),
-      map(exists => (exists ? { nrcExists: true } : null))
+        debounceTime(500),
+        take(1),
+        map(exists => (exists ? { nrcExists: true } : null))
       );
     };
   }
 
-    // Async Validator for Email
-    emailExistsValidator(): AsyncValidatorFn {
-      return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-        return this.cifService.checkEmail(control.value).pipe(
-          debounceTime(500), // Delay validation to prevent instant trigger
+  emailExistsValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      return this.cifService.checkEmail(control.value).pipe(
+        debounceTime(500),
         take(1),
         map(exists => (exists ? { emailExists: true } : null))
-        );
-      };
-    }
+      );
+    };
+  }
 
   ngOnInit() {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
@@ -96,6 +99,10 @@ export class CreateCifComponent implements OnInit {
           address: cif.address,
           status: cif.status.toUpperCase(),
         });
+        // Load existing images if available (assuming URLs are provided by the API)
+        this.frontNRCUrl = cif.frontNRCUrl || null;
+        this.backNRCUrl = cif.backNRCUrl || null;
+        this.userPhotoUrl = cif.userPhotoURL || null;
 
         this.cifForm.get('nrc')?.clearAsyncValidators();
         this.cifForm.get('email')?.clearAsyncValidators();
@@ -108,14 +115,37 @@ export class CreateCifComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any, fileType: string) {
-    const file = event.target.files[0];
+  onFileSelected(event: Event, fileType: string) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (fileType === 'frontNRC') {
+          this.frontNRCFile = file;
+          this.frontNRCUrl = e.target?.result ?? null;
+        } else if (fileType === 'backNRC') {
+          this.backNRCFile = file;
+          this.backNRCUrl = e.target?.result ?? null;
+        } else if (fileType === 'userPhoto') {
+          this.userPhotoFile = file;
+          this.userPhotoUrl = e.target?.result ?? null;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeFile(fileType: string) {
     if (fileType === 'frontNRC') {
-      this.frontNRCFile = file;
+      this.frontNRCFile = undefined;
+      this.frontNRCUrl = null;
     } else if (fileType === 'backNRC') {
-      this.backNRCFile = file;
+      this.backNRCFile = undefined;
+      this.backNRCUrl = null;
     } else if (fileType === 'userPhoto') {
-      this.userPhotoFile = file;
+      this.userPhotoFile = undefined;
+      this.userPhotoUrl = null;
     }
   }
 
@@ -123,37 +153,43 @@ export class CreateCifComponent implements OnInit {
     if (this.cifForm.valid && this.frontNRCFile && this.backNRCFile && this.userPhotoFile) {
       const userId = this.authService.getCurrentUserId();
       const branchId = this.authService.getCurrentUserBranchId();
-  
+
       if (!userId || !branchId) {
         console.error('No user ID or branch ID found. Please log in again.');
         this.router.navigate(['/login']);
         return;
       }
-  
+
       const cifData: Cif = {
         ...this.cifForm.value,
         userId: userId,
         branchId: branchId
       };
-  
+
       this.cifService.createCif(cifData, this.frontNRCFile, this.backNRCFile, this.userPhotoFile).subscribe({
         next: (response) => {
           console.log('CIF created successfully', response);
-          this.showSuccessModal = true; // Add this line
+          this.showSuccessModal = true;
           this.cifForm.reset();
+          this.frontNRCFile = undefined;
+          this.backNRCFile = undefined;
+          this.userPhotoFile = undefined;
+          this.frontNRCUrl = null;
+          this.backNRCUrl = null;
+          this.userPhotoUrl = null;
         },
         error: (err) => {
           console.error('Error creating CIF:', err);
-          if (err.status) {
-            console.error('HTTP Error Status:', err.status);
-          }
-          if (err.error) {
-            console.error('Error Response:', err.error);
-          }
+          this.alertType = 'error';
+          this.alertMessage = 'Error creating CIF record.';
+          this.showAlert = true;
         }
       });
     } else {
       console.warn('Please fill in all fields and select all required files.');
+      this.alertType = 'error';
+      this.alertMessage = 'Please fill in all fields and upload all required photos.';
+      this.showAlert = true;
     }
   }
 
@@ -168,20 +204,19 @@ export class CreateCifComponent implements OnInit {
           this.showSuccessModal = true;
         },
         error: (err) => {
-          console.error('Error creating CIF:', err);
+          console.error('Error updating CIF:', err);
           if (err.error?.message.includes("Email already exists")) {
             this.alertType = 'error';
             this.alertMessage = 'Email already exists. Please use a different email.';
-            this.showAlert = true;
           } else {
             this.alertType = 'error';
-            this.alertMessage = 'Error creating CIF record.';
-            this.showAlert = true;
-          }}
+            this.alertMessage = 'Error updating CIF record.';
+          }
+          this.showAlert = true;
+        }
       });
     }
   }
-
 
   onSubmit() {
     this.submitted = true;
@@ -196,5 +231,4 @@ export class CreateCifComponent implements OnInit {
     this.showSuccessModal = false;
     this.router.navigate(['/dashboard/cif-list']);
   }
-  
 }

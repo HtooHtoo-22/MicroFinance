@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 @Service
@@ -39,6 +40,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private DealerRepo dealerRepo;
+
+    @Autowired
+    private UserRepo userRepository;
 
     @Autowired
     private CloudinaryService cloudinaryService;
@@ -81,6 +85,13 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+//    @Override
+//    public List<ProductDTO> getProductByBranchId(Integer branchId) {
+//        return productRepo.findProductsByBranchId(branchId).stream()
+//                .map(productMapper::toDTO)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public ProductDTO updateProduct(Integer id, Map<String, Object> updates, MultipartFile photo) {
@@ -137,5 +148,22 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.deleteById(id);
         return ApiResponse.success(HttpStatus.OK, 200, "Product deleted successfully", "Deleted product ID: " + id, "success");
+    }
+    @Override
+    public List<ProductDTO> getProductByBranchId(Integer branchId) {
+        // Step 1: Find all users in the given branch
+        List<User> users = userRepository.findByBranchId(branchId);
+
+        // Step 2: Filter out users with null dealers and find all dealers associated with those users
+        Set<Dealer> dealers = users.stream()
+                .filter(user -> user.getDealer() != null) // Filter out users with null dealers
+                .map(User::getDealer)
+                .collect(Collectors.toSet());
+
+        // Step 3: Find all products associated with those dealers and map them to DTOs
+        return dealers.stream()
+                .flatMap(dealer -> productRepo.findByDealer(dealer).stream())
+                .map(productMapper::toDTO) // Map each Product entity to ProductDTO
+                .collect(Collectors.toList());
     }
 }

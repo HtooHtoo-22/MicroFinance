@@ -22,7 +22,8 @@
                 <!-- Product Details -->
                 <div class="space-y-2">
                     <h3 class="text-2xl font-bold text-gray-900">{{ product.productName }}</h3>
-                    <p class="text-lg text-[#00A1FF]">{{ product.value }} MMK</p>
+                    <p class="text-sm text-gray-500">Dealer: {{ dealerMap[product.dealerId!] }}</p>
+                    <p class="text-lg text-[#00A1FF]">{{ product.value | currency:'MMK' }}</p>
                 </div>
 
                 <!-- Select Button -->

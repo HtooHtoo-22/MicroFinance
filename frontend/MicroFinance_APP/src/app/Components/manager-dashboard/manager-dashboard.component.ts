@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
+import { WebSocketService } from '../../service/websocket.service';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-manager-dashboard',
@@ -7,34 +10,68 @@ import { AuthService } from '../../service/auth.service';
   templateUrl: './manager-dashboard.component.html',
   styleUrl: './manager-dashboard.component.css'
 })
-export class ManagerDashboardComponent {
-  isCustomerDropdownOpen: boolean = false;
-  isLoanDropdownOpen: boolean = false;
-  isCifDropdownOpen: boolean = false;
-  isDealerDropdownOpen: boolean = false;
-  isACCDropdownOpen: boolean = false;
+export class ManagerDashboardComponent implements OnDestroy {
   imagePath: string = "image/richcon-logo.png";
+  hpLoanCount: number = 0;
+  newDealerCount: number = 0;
+  smeLoanCount: number = 0;
 
-  constructor(private authService: AuthService) {}
+  private dealerSubscription!: Subscription;
+  private routerSubscription!: Subscription;
+  private hpLoanSubscription!: Subscription;
+  private smeLoanSubscription!: Subscription;
 
-  toggleCustomerDropdown(): void {
-    this.isCustomerDropdownOpen = !this.isCustomerDropdownOpen;
+
+  constructor(
+    private authService: AuthService,
+    private webSocketService: WebSocketService,
+    private router: Router,
+    private cd: ChangeDetectorRef
+  ) {
+    this.setupWebSocketListeners();
+    this.setupRouteListener();
   }
 
-  toggleLoanDropdown(): void {
-    this.isLoanDropdownOpen = !this.isLoanDropdownOpen;
+  private setupWebSocketListeners() {
+    this.dealerSubscription = this.webSocketService.getNewDealers().subscribe(dealer => {
+      if (dealer && dealer.status === 'PENDING') {
+        this.newDealerCount++;
+      }
+    });
+    this.hpLoanSubscription = this.webSocketService.getNewHPLoans().subscribe(loan => {
+      if (loan && loan.status === 'PENDING') {
+        this.hpLoanCount++;
+      }
+    });
+    this.smeLoanSubscription = this.webSocketService.getNewSMELoans().subscribe(loan => {
+      if (loan && loan.status === 'PENDING') {
+        this.smeLoanCount++;
+        this.cd.detectChanges(); // Trigger change detection
+      }
+    });
   }
 
-  toggleCifDropdown(): void {
-    this.isCifDropdownOpen = !this.isCifDropdownOpen;
+  private setupRouteListener() {
+    this.routerSubscription = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        if (event.url.includes('/sme-loan-list')) {
+          this.smeLoanCount = 0;
+        }
+        if (event.url.includes('/dealer-list')) {
+          this.newDealerCount = 0;
+        }
+        if (event.url.includes('/hp-loan-list')) {
+          this.hpLoanCount = 0;
+        }
+      }
+    });
   }
 
-  toggleDealerDropdown(): void {
-    this.isDealerDropdownOpen = !this.isDealerDropdownOpen;
-  }
-
-  toggleACCDropdown(): void {
-    this.isACCDropdownOpen = !this.isACCDropdownOpen;
+  ngOnDestroy() {
+    this.dealerSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
+    this.hpLoanSubscription?.unsubscribe();
+    this.smeLoanSubscription?.unsubscribe();
   }
 
   isAdmin(): boolean {
@@ -52,4 +89,5 @@ export class ManagerDashboardComponent {
   isOperation(): boolean {
     return this.authService.isOperation();
   }
+  
 }

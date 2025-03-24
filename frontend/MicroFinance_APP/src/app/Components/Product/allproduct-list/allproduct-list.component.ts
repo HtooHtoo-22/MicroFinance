@@ -3,6 +3,7 @@ import { ProductService } from '../../../service/product.service';
 import { Product } from '../../../model/Product';
 import { AuthService } from '../../../service/auth.service';
 import { Router } from '@angular/router';
+import { DealerService } from '../../../service/dealer.service';
 
 @Component({
   selector: 'app-allproduct-list',
@@ -13,27 +14,27 @@ import { Router } from '@angular/router';
 export class AllproductListComponent implements OnInit {
   products: Product[] = [];
   error: string | null = null;
+  dealerMap: { [key: number]: string } = {}; // Map to store dealerId to businessName
 
   constructor(
     private productService: ProductService,
-    private authService: AuthService, // Add AuthService
+    private dealerservice: DealerService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {
-    console.log('AuthService instance:', this.authService);
-  console.log('getCurrentDealerId exists:', typeof this.authService.getCurrentDealerId === 'function');
-  }
+  ) {}
 
   ngOnInit(): void {
-    const dealerId = this.authService.getCurrentDealerId();
-    console.log('Dealer ID:', dealerId);
+    const branchId = this.authService.getCurrentUserBranchId();
+    console.log('Dealer ID:', branchId);
   
-    if (dealerId) {
-      this.productService.getProductsByDealerId(dealerId)
+    if (branchId) {
+      this.productService.getProductsByBranchId(Number(branchId))
         .subscribe({
           next: (products) => {
             console.log('Received products:', products);
-            this.products = products;
+            this.products = products.data;
+            this.fetchDealerNames();
             this.cdr.detectChanges();
           },
           error: (err) => {
@@ -46,6 +47,22 @@ export class AllproductListComponent implements OnInit {
       this.error = 'No dealer ID found. Please login as a dealer.';
       this.cdr.detectChanges();
     }
+  }
+
+  fetchDealerNames(): void {
+    this.products.forEach(product => {
+      if (product.dealerId) {
+        this.dealerservice.getDealerById(product.dealerId).subscribe({
+          next: (dealer) => {
+            this.dealerMap[product.dealerId!] = dealer.businessName;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error fetching dealer:', err);
+          }
+        });
+      }
+    });
   }
 
   selectProduct(product: any) {

@@ -42,7 +42,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         dto.setAccountId(accountId);
         CurrentAccount account = CurrentAccountMapper.toEntity(dto);
         account.setCif(cif); // Set the CIF entity
-        account.setFreezeStatus(true);
+        account.setFreezeStatus(false);
         CurrentAccount savedAccount = currentAccountRepository.save(account);
         return CurrentAccountMapper.toDTO(savedAccount);
     }

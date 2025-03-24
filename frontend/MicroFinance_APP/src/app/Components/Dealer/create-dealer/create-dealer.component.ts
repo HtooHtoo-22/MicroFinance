@@ -24,7 +24,8 @@ export class CreateDealerComponent {
       phone: ['', [Validators.required, Validators.pattern('[0-9]{10,11}')]],
       email: ['', [Validators.required, Validators.email]],
       currentAccountId: ['', Validators.required],
-      companyValue: ['', [Validators.required, Validators.min(0)]]
+      companyValue: ['', [Validators.required, Validators.min(0)]],
+      information: [''],
     });
   }
 

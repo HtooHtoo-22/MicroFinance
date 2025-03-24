@@ -50,6 +50,8 @@ import { CreateEditProductComponent } from './Components/Product/create-edit-pro
 import { SmeLoanDetailComponent } from './Components/sme-loan-detail/sme-loan-detail.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
+import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -99,13 +101,14 @@ const routes: Routes = [
       { path: 'updated-cif/:id', component: CreateCifComponent },
       { path: 'create-current-account/:cifId', component: CreateComponent },
       { path: 'current-acc-list', component: ListComponent },
-      { path: 'update-current-account/:id', component: UpdateComponent },
+      { path: 'update-current-account/:accountId', component: UpdateComponent },
       { path: 'cif-details/:id', component: CustomerDetailComponent },
       { path: 'create-dealer', component: CreateDealerComponent },
       { path: 'dealer-list', component: RateListComponent },
       { path: 'cif-detail-view/:id', component: CifDetailComponent },
       { path: 'dealer-detail', component: DealerDetailComponent },
-      { path: 'create-collateral', component: CreateCollateralComponent }
+      { path: 'create-collateral', component: CreateCollateralComponent },
+      { path: 'collateral-detail', component: CollateralDetailComponent }
 
     ]
   },
@@ -123,6 +126,8 @@ const routes: Routes = [
       { path: 'dealer-detail', component: DealerDetailComponent },
       { path: 'hp-loan-list', component: HpLoanListComponent },
       { path: 'sme-loan-list', component: SmeLaonHistoryComponent },
+      { path: 'dealer-detail/:id', component: DealerDetailviewComponent},
+      { path: 'hp-loan-detail/:id', component: HpLoanDetailComponent },
 
     ]
   },

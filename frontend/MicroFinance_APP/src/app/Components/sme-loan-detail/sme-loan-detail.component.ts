@@ -84,7 +84,7 @@ private handleError(err: any): void {
   }
   viewCollateralDetail(collateralId:number){
     if (collateralId) {
-      this.router.navigate(['/dashboard/collateralDetail', collateralId]);
+      this.router.navigate(['/entry-dashboard/collateralDetail', collateralId]);
       console.log(collateralId);
       
     } else {

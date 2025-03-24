@@ -96,4 +96,12 @@ public class ProductController {
         return productService.deleteProduct(id);
     }
 
+    @GetMapping("/branch/{branchId}")
+    public ApiResponse<List<ProductDTO>> getProductByBranchId(@PathVariable Integer branchId) {
+        System.out.println("Hi");
+        List<ProductDTO> products = productService.getProductByBranchId(branchId);
+        System.out.println("Products : "+products);
+        return ApiResponse.success(HttpStatus.OK, 200, "Products fetched successfully", products);
+    }
+
 }

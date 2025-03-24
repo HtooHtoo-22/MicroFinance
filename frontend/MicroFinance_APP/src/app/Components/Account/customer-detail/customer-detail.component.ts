@@ -19,8 +19,12 @@ export class CustomerDetailComponent implements OnInit {
   cif: Cif | null = null;
   currentAccounts: CurrentAccount[] = [];
   transactions: Transaction[] = [];
-  loading: boolean = true;
+  loading = true;
   errorMessage: string | null = null;
+  showSuccessModal = false;
+  showErrorModal = false;
+  message = '';
+  showAllTransactions = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,48 +45,75 @@ export class CustomerDetailComponent implements OnInit {
     }
   }
 
-  loadCifData(id: number): void {
+  get recentTransactions(): Transaction[] {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    return this.transactions.filter(transaction => {
+      const transactionDate = transaction.date ? new Date(transaction.date) : new Date();
+      return transactionDate >= sevenDaysAgo;
+    }).sort((a, b) => {
+      const dateA = new Date(a.date || 0);
+      const dateB = new Date(b.date || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }
+
+  trackByTransactionId(index: number, transaction: Transaction): number {
+    return transaction.id || index;
+  }
+
+  private loadCifData(id: number): void {
     this.cifService.getCifById(id).subscribe({
       next: (response: Cif) => {
         this.cif = response;
       },
       error: (error: any) => {
-        this.errorMessage = 'Failed to load CIF details.';
-        console.error('Error loading CIF details:', error);
+        this.handleError('Failed to load CIF details.', error);
       },
-      complete: () => {
-        this.loading = false;
-      }
+      complete: () => this.loading = false
     });
   }
 
-  getCurrentAccs(id: number): void {
+  private getCurrentAccs(id: number): void {
     this.currentAccountService.getAccountsByCifId(id).subscribe({
       next: (response: ApiResponse<CurrentAccount[]>) => {
-        if (response?.data) {
-          this.currentAccounts = response.data;
-        } else {
-          this.currentAccounts = [];
-        }
+        this.currentAccounts = response?.data || [];
       },
       error: (error: any) => {
-        this.errorMessage = 'Failed to load Current Accounts. Please try again later.';
-        console.error('Error fetching Current Accounts:', error);
+        this.handleError('Failed to load Current Accounts.', error);
       },
-      complete: () => {
-        this.loading = false;
+      complete: () => this.loading = false
+    });
+  }
+
+  private loadTransactions(): void {
+    if (!this.cifId) return;
+
+    this.transactionService.getTransactionsByCifId(this.cifId).subscribe({
+      next: (response) => {
+        this.transactions = response.data?.sort((a, b) => {
+          const dateA = new Date(a.date || 0);
+          const dateB = new Date(b.date || 0);
+          return dateB.getTime() - dateA.getTime();
+        }) || [];
+      },
+      error: (error) => {
+        this.handleError('Error loading transactions', error);
       }
     });
   }
 
-  loadTransactions(): void {
-    this.transactionService.getTransactionsByCifId(this.cifId!).subscribe({
-      next: (response) => {
-        if (response.data) this.transactions = response.data;
-      },
-      error: (error) => {
-        this.errorMessage = 'Error loading transactions';
-      }
-    });
+  private handleError(message: string, error: any): void {
+    this.errorMessage = message;
+    console.error(message, error);
+    this.showErrorModal = true;
+    this.message = message;
+    this.loading = false;
+  }
+
+  closeModal(): void {
+    this.showSuccessModal = false;
+    this.showErrorModal = false;
   }
 }

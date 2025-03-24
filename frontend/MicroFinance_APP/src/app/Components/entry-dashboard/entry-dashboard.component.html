@@ -1,109 +1,106 @@
 <div class="flex">
-    <!-- Sidebar -->
-    <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
-      <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
-      <ul class="space-y-4 text-gray-900 text-sm font-semibold">
-        <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-          <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
-          <a [routerLink]="['/entry-dashboard/home']" routerLinkActive="text-[#00A1FF]">Home</a>
-        </li>
+  <!-- Sidebar -->
+  <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
+    <img [src]="imagePath" class="w-34 h-16 object-contain mb-6" />
+
+    <ul class="space-y-4 text-gray-900 text-sm font-semibold">
+      <!-- Home -->
+      <li class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200"
+      routerLinkActive="active-link">
+    <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5" />
+    <a [routerLink]="['/entry-dashboard/home']" class="router-link-active">Home</a>
+  </li>
   
-        <!-- Customer Management -->
-        <li *ngIf="isEntry() || isOperation()">
-          <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleCustomerDropdown()">
-            <img src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-4-1/1024/user4-512.png" class="w-5 h-5">
-            <span>Customer Management</span>
-            <img [class.rotate-180]="isCustomerDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
-          </div>
-          <ul *ngIf="isCustomerDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/users-android-l-lollipop-icon-pack/24/user-512.png" class="w-5 h-5">
+
+
+      <ng-container *ngIf="isEntry()">
+        <li class="space-y-2">
+          <span class="block text-gray-700 font-medium pl-2">CIF Management</span>
+          <ul class="space-y-2">
+            <li class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-5 h-5" />
+              <a [routerLink]="['/entry-dashboard/create-cif']" routerLinkActive="text-[#00A1FF]">Create CIF</a>
+            </li>
+            <li class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5" />
+              <a [routerLink]="['/entry-dashboard/cif-list']" routerLinkActive="text-[#00A1FF]">CIF List</a>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+
+      <!-- Customer Management -->
+      <ng-container *ngIf="isEntry() || isOperation()">
+        <li class="space-y-2">
+          <span class="block text-gray-700 font-medium pl-2">Customer Management</span>
+          <ul class="space-y-2">
+            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/users-android-l-lollipop-icon-pack/24/user-512.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/current-account-register']" routerLinkActive="text-[#00A1FF]">Account Register</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5">
+            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200 " routerLinkActive="active-link">
+              <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/current-acc-list']" routerLinkActive="text-[#00A1FF]">Account List</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/marketplace-3/32/Marketplace-20-512.png" class="w-5 h-5">
+            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/marketplace-3/32/Marketplace-20-512.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/transaction']" routerLinkActive="text-[#00A1FF]">Transaction</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
+            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/transaction-history']" routerLinkActive="text-[#00A1FF]">Transaction History</a>
             </li>
           </ul>
         </li>
-  
-        <!-- Loan Management -->
-        <li *ngIf="isAdmin() || isEntry() || isManager()">
-          <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleLoanDropdown()">
-            <img src="https://cdn3.iconfinder.com/data/icons/loan-and-investment-1/85/loan_percent_interest_rates_money_finance-1024.png" class="w-5 h-5">
-            <span>Loan Management</span>
-            <img [class.rotate-180]="isLoanDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
-          </div>
-          <ul *ngIf="isLoanDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/174-1024.png" class="w-5 h-5">
+      </ng-container>
+
+      <!-- Loan Management -->
+      <ng-container *ngIf="isAdmin() || isEntry() || isManager()">
+        <li class="space-y-2">
+          <span class="block text-gray-700 font-medium pl-2">Loan Management</span>
+          <ul class="space-y-2">
+            <li *ngIf="isEntry()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/174-1024.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/create-collateral']" routerLinkActive="text-[#00A1FF]">Collateral</a>
             </li>
           </ul>
         </li>
-  
-        <!-- Dealer Management -->
-        <li *ngIf="isEntry() || isManager()">
-          <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleDealerDropdown()">
-            <img src="https://cdn4.iconfinder.com/data/icons/top-search-6/128/_work-_working_computer_user_freelancer_internet_user_office_work_online_employee-1024.png" class="w-6 h-6">
-            <span>Dealer Management</span>
-            <img [class.rotate-180]="isDealerDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
-          </div>
-          <ul *ngIf="isDealerDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
+      </ng-container>
+
+      <!-- Dealer Management -->
+      <ng-container *ngIf="isEntry() || isManager()">
+        <li class="space-y-2">
+          <span class="block text-gray-700 font-medium pl-2">Dealer Management</span>
+          <ul class="space-y-2">
+            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/create-dealer']" routerLinkActive="text-[#00A1FF]">Create Dealer</a>
             </li>
-            <li *ngIf="isAdmin() || isManager()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
+            <li *ngIf="isAdmin() || isManager()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/dealer-list']" routerLinkActive="text-[#00A1FF]">Dealer List</a>
             </li>
           </ul>
         </li>
-  
-        <!-- Cif Create -->
-        <li *ngIf="isEntry()">
-          <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleCifDropdown()">
-            <img src="https://cdn4.iconfinder.com/data/icons/top-search-6/128/_work-_working_computer_user_freelancer_internet_user_office_work_online_employee-1024.png" class="w-6 h-6">
-            <span>Cif Create</span>
-            <img [class.rotate-180]="isCifDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
-          </div>
-          <ul *ngIf="isCifDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
-              <a [routerLink]="['/entry-dashboard/create-cif']" routerLinkActive="text-[#00A1FF]">Create Cif</a>
-            </li>
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
-              <a [routerLink]="['/entry-dashboard/cif-list']" routerLinkActive="text-[#00A1FF]">Cif List</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Main content wrapper with fixed header -->
-    <div class="flex-1 ml-64">
-      <div class="fixed right-0 left-64 bg-white z-10 p-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8">
-          </div>
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8">
-          </div>
+      </ng-container>
+
+    </ul>
+  </div>
+
+  <!-- Main content wrapper with fixed header -->
+  <div class="flex-1 ml-64">
+    <div class="fixed right-0 left-64 bg-white z-10 p-4 shadow-md">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8" />
+        </div>
+        <div class="flex items-center space-x-2">
+          <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8" />
         </div>
       </div>
-      <div class="pt-24 p-7 bg-gray-100 min-h-screen">
-        <router-outlet></router-outlet>
-      </div>
+    </div>
+    <div class="pt-24 p-7 bg-gray-100 min-h-screen">
+      <router-outlet></router-outlet>
     </div>
   </div>
+</div>

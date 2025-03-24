@@ -1,59 +1,86 @@
-<div class="container mx-auto p-4">
-  <h2 class="text-2xl font-bold mb-6">Update Branch</h2>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex justify-center items-center py-4">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-  </div>
-
-  <!-- Error Message -->
-  <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-    {{ errorMessage }}
-  </div>
-
-  <form *ngIf="!loading" [formGroup]="branchForm" (ngSubmit)="onSubmit()" class="max-w-lg">
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">Code</label>
-      <input type="text" formControlName="code" 
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-xl">
+    
+    <!-- Success Modal -->
+    <div id="successModal" 
+         *ngIf="showSuccessModal"
+         class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
+      <div class="relative p-4 bg-white rounded-lg shadow-md border border-green-300">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-full bg-green-100 p-2 flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <p class="text-sm font-semibold text-gray-900">Successfully updated branch!</p>
+          </div>
+          <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-      <input type="text" formControlName="name" 
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    <!-- Error Alert -->
+    <div *ngIf="showAlert && alertType === 'error'" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+      <span class="block sm:inline">{{ alertMessage }}</span>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
-      <input type="text" formControlName="address" 
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-    </div>
+    <h2 class="text-3xl font-bold mb-8 text-center text-[#00A1FF]">Update Branch</h2>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">State</label>
-      <input type="text" formControlName="state" 
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-    </div>
+    <form *ngIf="!loading" [formGroup]="branchForm" (ngSubmit)="onSubmit()">
+      <!-- Code Field -->
+      <div class="mb-4">
+        <label for="code" class="block text-gray-700 text-sm font-bold mb-2">Code</label>
+        <input type="text" id="code" formControlName="code" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+        <div *ngIf="branchForm.get('code')?.touched && branchForm.get('code')?.invalid" class="text-red-500 text-sm mt-1">
+          Code is required
+        </div>
+      </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">Township</label>
-      <input type="text" formControlName="township" 
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-    </div>
+      <!-- Name Field -->
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+        <input type="text" id="name" formControlName="name" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+        <div *ngIf="branchForm.get('name')?.touched && branchForm.get('name')?.invalid" class="text-red-500 text-sm mt-1">
+          Name is required
+        </div>
+      </div>
 
-    <div class="flex items-center justify-between">
-      <button type="submit" 
-              [disabled]="!branchForm.valid || loading"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <!-- Address Field -->
+      <div class="mb-4">
+        <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+        <input type="text" id="address" formControlName="address" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+        <div *ngIf="branchForm.get('address')?.touched && branchForm.get('address')?.invalid" class="text-red-500 text-sm mt-1">
+          Address is required
+        </div>
+      </div>
+
+      <!-- State Field -->
+      <div class="mb-4">
+        <label for="state" class="block text-gray-700 text-sm font-bold mb-2">State</label>
+        <input type="text" id="state" formControlName="state" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+        <div *ngIf="branchForm.get('state')?.touched && branchForm.get('state')?.invalid" class="text-red-500 text-sm mt-1">
+          State is required
+        </div>
+      </div>
+
+      <!-- Township Field -->
+      <div class="mb-4">
+        <label for="township" class="block text-gray-700 text-sm font-bold mb-2">Township</label>
+        <input type="text" id="township" formControlName="township" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+        <div *ngIf="branchForm.get('township')?.touched && branchForm.get('township')?.invalid" class="text-red-500 text-sm mt-1">
+          Township is required
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" [disabled]="!branchForm.valid || loading" class="w-full mt-1 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md hover:bg-blue-500">
         {{ loading ? 'Updating...' : 'Update Branch' }}
       </button>
-      <button type="button" 
-              [disabled]="loading"
-              routerLink="/admin-dashboard/branch-list"
-              class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-        Cancel
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

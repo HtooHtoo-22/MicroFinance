@@ -135,20 +135,28 @@ class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative 
   <div class="grid grid-cols-2 gap-4 mt-4">
     <div>
       <div class="col-span-full">
-        <label for="frontNRC" class="block text-sm/6 font-medium text-gray-900">Front NRC photo</label>
+        <label for="frontNRC" class="block text-sm/6 font-medium text-gray-900">Front NRC Photo</label>
         <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
           <div class="text-center">
-            <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-            </svg>
-            <div class="mt-4 flex text-sm/6 text-gray-600">
-              <label for="frontNRC-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
-                <span>Upload a file</span>
-                <input id="frontNRC-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'frontNRC')">
-              </label>
-              <p class="pl-1">or drag and drop</p>
-            </div>
-            <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            <ng-container *ngIf="!frontNRCUrl; else frontNRCPreview">
+              <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+              </svg>
+              <div class="mt-4 flex text-sm/6 text-gray-600">
+                <label for="frontNRC-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
+                  <span>Upload a file</span>
+                  <input id="frontNRC-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'frontNRC')" accept="image/*">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            </ng-container>
+            <ng-template #frontNRCPreview>
+              <img [src]="frontNRCUrl" alt="Front NRC Photo" class="mx-auto rounded-lg border border-gray-300" style="max-width: 200px; height: auto;" />
+              <div class="mt-2">
+                <button (click)="removeFile('frontNRC')" class="mt-2 text-sm text-red-600 hover:underline">Remove Photo</button>
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -156,41 +164,58 @@ class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative 
 
     <div>
       <div class="col-span-full">
-        <label for="backNRC" class="block text-sm/6 font-medium text-gray-900">Back NRC photo</label>
+        <label for="backNRC" class="block text-sm/6 font-medium text-gray-900">Back NRC Photo</label>
         <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
           <div class="text-center">
-            <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-            </svg>
-            <div class="mt-4 flex text-sm/6 text-gray-600">
-              <label for="backNRC-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
-                <span>Upload a file</span>
-                <input id="backNRC-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'backNRC')">
-              </label>
-              <p class="pl-1">or drag and drop</p>
-            </div>
-            <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            <ng-container *ngIf="!backNRCUrl; else backNRCPreview">
+              <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+              </svg>
+              <div class="mt-4 flex text-sm/6 text-gray-600">
+                <label for="backNRC-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
+                  <span>Upload a file</span>
+                  <input id="backNRC-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'backNRC')" accept="image/*">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            </ng-container>
+            <ng-template #backNRCPreview>
+              <img [src]="backNRCUrl" alt="Back NRC Photo" class="mx-auto rounded-lg border border-gray-300" style="max-width: 200px; height: auto;" />
+              <div class="mt-2">
+                <button (click)="removeFile('backNRC')" class="mt-2 text-sm text-red-600 hover:underline">Remove Photo</button>
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <div class="mt-4">
     <div class="col-span-full">
       <label for="userPhoto" class="block text-sm/6 font-medium text-gray-900">User Photo</label>
       <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
         <div class="text-center">
-          <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-          </svg>
-          <div class="mt-4 flex text-sm/6 text-gray-600">
-            <label for="userPhoto-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
-              <span>Upload a file</span>
-              <input id="userPhoto-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'userPhoto')">
-            </label>
-            <p class="pl-1">or drag and drop</p>
-          </div>
-          <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+          <ng-container *ngIf="!userPhotoUrl; else imagePreview">
+            <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+            </svg>
+            <div class="mt-4 flex text-sm/6 text-gray-600">
+              <label for="userPhoto-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
+                <span>Upload a file</span>
+                <input id="userPhoto-upload" type="file" class="sr-only" (change)="onFileSelected($event, 'userPhoto')" accept="image/*">
+              </label>
+              <p class="pl-1">or drag and drop</p>
+            </div>
+            <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+          </ng-container>
+          <ng-template #imagePreview>
+            <img [src]="userPhotoUrl" alt="User Photo" class="mx-auto rounded-lg border border-gray-300" style="max-width: 200px; height: auto;" />
+            <div class="mt-2">
+              <button (click)="removeFile('userPhoto')" class="mt-2 text-sm text-red-600 hover:underline">Remove Photo</button>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>

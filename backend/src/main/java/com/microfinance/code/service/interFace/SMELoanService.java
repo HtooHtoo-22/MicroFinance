@@ -1,5 +1,6 @@
 package com.microfinance.code.service.interFace;
 
+import com.microfinance.code.dto.MonthlySMELoanCountDTO;
 import com.microfinance.code.dto.SMELateFeeSummaryDTO;
 import com.microfinance.code.dto.SMELoanDTO;
 
@@ -19,4 +20,7 @@ public interface SMELoanService {
     public SMELoanDTO getLoanByLoanId(String id);
 
     public SMELateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId);
+    List<SMELoanDTO> getAllSMELoans(); // Add this line
+
+    List<MonthlySMELoanCountDTO> getApprovedLoansByBranchMonthly(Integer branchId);
 }

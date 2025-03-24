@@ -21,8 +21,6 @@ import { CreateBranchComponent } from './Components/branch/create-branch/create-
 import { BranchListComponent } from './Components/branch/branch-list/branch-list.component';
 import { UpdateBranchComponent } from './Components/branch/update-branch/update-branch.component';
 import { UpdateUserComponent } from './Components/user/update-user/update-user.component';
-import { CreateRoleComponent } from './Components/Role/create-role/create-role.component';
-import { EditRoleComponent } from './Components/Role/edit-role/edit-role.component';
 import { ListRoleComponent } from './Components/Role/role-list/role-list.component';
 import { CreateRateComponent } from './Components/Rate/create-rate/create-rate.component';
 import { RateListComponent } from './Components/Rate/rate-list/rate-list.component';
@@ -68,7 +66,11 @@ import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loa
 import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
-
+import { MonthlySMELoancountComponent } from './Components/counting/monthly-smeloancount/monthly-smeloancount.component';
+import { MonthlyHploancountComponent } from './Components/counting/monthly-hploancount/monthly-hploancount.component';
+import { CreateRoleComponent } from './Components/Role/create-role/create-role.component';
+import { EditRoleComponent } from './Components/Role/edit-role/edit-role.component';
+import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
 
 @NgModule({
   declarations: [
@@ -85,9 +87,7 @@ import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list
     CreateBranchComponent,
     BranchListComponent,
     UpdateBranchComponent,
-    UpdateUserComponent,
-    CreateRoleComponent,
-    EditRoleComponent,
+    UpdateUserComponent,    
     ListRoleComponent,
     CreateRateComponent,
     RateListComponent,
@@ -127,7 +127,12 @@ import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list
     SmeRepayTrackComponent,
     SmeOdLatefeeComponent,
     CreateDealerComponent,
-    DealerListComponent
+    DealerListComponent,
+    MonthlySMELoancountComponent,
+    MonthlyHploancountComponent,
+    CreateRoleComponent,
+    EditRoleComponent,
+    DealerDetailviewComponent
   ],
   imports: [
     BrowserModule,
@@ -146,7 +151,7 @@ import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list
     MatButtonModule,
     MatFormFieldModule
   ],
-  providers: [ AuthService,
+  providers: [ AuthService, 
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

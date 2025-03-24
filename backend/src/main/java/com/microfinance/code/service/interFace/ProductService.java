@@ -17,4 +17,6 @@ public interface ProductService {
 
     ApiResponse<String> deleteProduct(Integer id);
     List<ProductDTO> getAllProducts();
+
+    List<ProductDTO> getProductByBranchId(Integer branchId);
 }

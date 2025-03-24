@@ -20,7 +20,7 @@ export class RoleService {
   }
   
   createRole(role: Role): Observable<Role> {
-    return this.http.post<any>(this.apiUrl, role).pipe(
+    return this.http.post<any>(`${this.apiUrl}/create`, role).pipe(
       map(response => response.data)
     );
   }

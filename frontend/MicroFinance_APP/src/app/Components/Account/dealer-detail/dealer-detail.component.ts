@@ -4,6 +4,7 @@ import { DealerService } from '../../../service/dealer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dealer } from '../../../model/Dealer';
 import { CifService } from '../../../service/cif.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dealer-detail',
@@ -23,7 +24,9 @@ export class DealerDetailComponent implements OnInit {
   constructor(
     private dealerService: DealerService,
     private cifService: CifService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -61,6 +64,11 @@ export class DealerDetailComponent implements OnInit {
           this.snackBar.open(`Error loading photo for dealer ${dealer.businessName}`, 'Close', { duration: 3000 });
         }
       });
+    });
+  }
+  viewDetails(dealerId: number) {
+    this.router.navigate(['/manager-dashboard/dealer-detail', dealerId], { 
+      relativeTo: this.route.parent 
     });
   }
 

@@ -34,13 +34,16 @@ public class SecurityConfig {
     };
 
     private static final String[] SME_LIST_URL = {
-            "/api/sme-loans/**"
+            "/api/sme-loans/**",
+            "/api/sme-loans/monthly-approved",
+            "/api/sme-loans/loans/{branchId}" // Add this temporarily
     };
 
     private  static final String[] HP_LIST_URL = {
             "/api/hp-loans/**",
             "/api/hp-loans/list",
-            "/api/hp-loans-schedule/**"
+            "/api/hp-loans-schedule/**",
+            "/api/hp-loans/monthly-approved"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -54,28 +57,33 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL).permitAll()
-                                .requestMatchers("/api/cif/**").hasAnyAuthority( "ENTRY", "MANAGER")
-                                .requestMatchers("/api/cif").hasAnyAuthority( "ENTRY")
-                                .requestMatchers("/api/users/**").hasAnyAuthority( "ADMIN", "ENTRY", "MANAGER", "OPERATION")
-                                .requestMatchers("/api/users").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/rates/**").hasAnyAuthority( "ADMIN", "ENTRY", "OPERATION")
-                                .requestMatchers("/rates").hasAnyAuthority( "ADMIN")
-                                .requestMatchers("/api/branches/**").hasAnyAuthority( "ADMIN","MANAGER", "ENTRY", "OPERATION")
-                                .requestMatchers("/api/roles/**").hasAnyAuthority( "ADMIN")
-                                .requestMatchers("/api/roles").hasAnyAuthority( "ADMIN")
-                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("ADMIN", "ENTRY")
-                                .requestMatchers("/accounts/**").hasAnyAuthority("ENTRY", "OPERATION")
-                                .requestMatchers("/accounts").hasAnyAuthority("ENTRY", "ADMIN")
-                                .requestMatchers("/api/dealers/create").hasAnyAuthority("ENTRY")
-                                .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY")
-                                .requestMatchers("/transactions/**").hasAnyAuthority("ENTRY")
-                                .requestMatchers("/api/collaterals/**").hasAnyAuthority("ENTRY", "OPERATION" )
-                                .requestMatchers("/api/products").hasAnyAuthority("DEALER")
-                                .requestMatchers("/api/products/**").hasAnyAuthority("DEALER", "ENTRY", "OPERATION")
-                                .requestMatchers("/api/hp-loans/register").hasAnyAuthority("OPERATION")
-                                .requestMatchers(HP_LIST_URL).hasAnyAuthority("MANAGER", "ENTRY", "OPERATION")
-                                .requestMatchers(SME_LIST_URL).hasAnyAuthority("ENTRY", "OPERATION", "MANAGER")
-
+                                .requestMatchers("/topic/hp-loans/**").permitAll()
+                                .requestMatchers("/topic/hp-loan-status/**").permitAll()
+                                .requestMatchers("/topic/sme-loans/**").permitAll()
+                                .requestMatchers("/topic/sme-loan-status/**").permitAll()
+                                .requestMatchers("/ws/**").permitAll() // Allow WebSocket
+                                .requestMatchers("/api/cif/**").hasAnyAuthority( "CIF_READ")
+                                .requestMatchers("/api/cif").hasAnyAuthority( "CIF_WRITE")
+                                .requestMatchers("/api/users/**").hasAnyAuthority( "USER_WRITE")
+                                .requestMatchers("/api/users").hasAnyAuthority("USER_CREATE")
+                                .requestMatchers("/rates/**").hasAnyAuthority( "RATE_READ")
+                                .requestMatchers("/rates").hasAnyAuthority( "RATE_CREATE")
+                                .requestMatchers("/api/branches/**").hasAnyAuthority( "BRANCH_READ", "BRANCH_WRITE")
+                                .requestMatchers("/api/roles/**").hasAnyAuthority( "ROLE_READ")
+                                .requestMatchers("/api/roles").hasAnyAuthority( "ROLE_WRITE", "ADMIN")
+                                .requestMatchers("/api/collateral-types/**").hasAnyAuthority("COLLATERAL_TYPE_READ", "COLLATERAL_TYPE_WRITE")
+                                .requestMatchers("/accounts/**").hasAnyAuthority("ACCOUNT_READ")
+                                .requestMatchers("/accounts").hasAnyAuthority("ACCOUNT_WRITE")
+                                .requestMatchers("/api/dealers/create").hasAnyAuthority("DEALER_WRITE")
+                                .requestMatchers(DEALER_LIST_URL).hasAnyAuthority("DEALER_READ")
+                                .requestMatchers("/transactions/**").hasAnyAuthority("TRANSACTION_READ", "TRANSACTION_WRITE")
+                                .requestMatchers("/api/collaterals/**").hasAnyAuthority("COLLATERAL_WRITE", "COLLATERAL_READ")
+                                .requestMatchers("/api/products").hasAnyAuthority("PRODUCT_READ")
+                                .requestMatchers("/api/products/**").hasAnyAuthority("PRODUCT_WRITE")
+                                .requestMatchers("/api/hp-loans/register").hasAnyAuthority("HP_LOAN_WRITE")
+                                .requestMatchers(HP_LIST_URL).hasAnyAuthority("HP_LOAN_READ")
+                                .requestMatchers(SME_LIST_URL).hasAnyAuthority("SME_LOAN_WRITE", "SME_LOAN_READ")
+                                .requestMatchers("/api/permission/**").hasAnyAuthority("PERMISSION_READ")
 
                                 .anyRequest().authenticated()
                 )

@@ -1,0 +1,8 @@
+.active-link {
+    background-color: #4db9f7 !important; /* Ensures the background color is applied */
+    color: white !important; /* Forces text color to white */
+}
+
+.active-link a {
+    color: white !important; /* Ensures text inside anchor tag is white */
+}

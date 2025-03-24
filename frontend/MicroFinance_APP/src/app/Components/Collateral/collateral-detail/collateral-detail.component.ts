@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CollateralService } from '../../../service/collateral.service';
-import { ApiResponse } from '../../../model/Apirespon';
 import { CollateralDTO } from '../../../model/CollateralDTO';
 import { SmeLoanService } from '../../../service/sme-loan.service';
+import { ApiResponse } from '../../../model/ApiResponse';
 
 @Component({
   selector: 'app-collateral-detail',
@@ -54,7 +54,7 @@ export class CollateralDetailComponent {
   viewLoanDetail(loanId:string){
       console.log(loanId);
       if (loanId) {
-        this.router.navigate(['/dashboard/sme-loan-detail', loanId]);
+        this.router.navigate(['/entry-dashboard/sme-loan-detail', loanId]);
         console.log(loanId);
         
       } else {

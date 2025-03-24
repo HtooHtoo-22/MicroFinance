@@ -31,8 +31,4 @@ public class Product {
 
     @Column(name="status", nullable = false)
     private boolean status;
-
-
-
-
 }

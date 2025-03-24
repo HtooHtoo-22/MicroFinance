@@ -12,6 +12,7 @@ import com.microfinance.code.service.interFace.DealerService;
 import com.microfinance.code.service.interFace.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,9 +34,16 @@ public class DealerController {
     @Autowired
     private DealerMapper dealerMapper;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @PostMapping("/create")
     public ApiResponse<DealerDTO> createDealer(@RequestBody DealerDTO dealerDTO) {
         DealerDTO savedDealer = dealerService.createDealer(dealerDTO);
+
+        // Send WebSocket notification
+        messagingTemplate.convertAndSend("/topic/dealer-notifications", savedDealer);
+
         return ApiResponse.success(HttpStatus.CREATED, 201, "Dealer created successfully", savedDealer);
     }
 
@@ -81,5 +89,11 @@ public class DealerController {
         Dealer dealer = dealerService.findByEmail(email);
         DealerDTO dto = dealerMapper.toDTO(dealer);
         return ApiResponse.success(HttpStatus.OK, 200, "Dealer retrieved", dto);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<DealerDTO> getDealerByID(@PathVariable Integer id) {
+        DealerDTO dealerDTO = dealerService.getDealerById(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "Dealer retrieved successfully", dealerDTO);
     }
 }

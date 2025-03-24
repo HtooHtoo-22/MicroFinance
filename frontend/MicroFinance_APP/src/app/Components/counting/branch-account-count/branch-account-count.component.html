@@ -1,23 +1,40 @@
-
-
-<app-branch-user-count></app-branch-user-count>
-
-<div class="container">
-  <div class="card">
-    <label for="branch">Select a Branch:</label>
-    <select id="branch" [(ngModel)]="selectedBranchId" (change)="loadCurrentAccountCount()">
-      <option *ngFor="let branch of branches || []" [value]="branch.id">
-        {{ branch.name }}
-      </option>
-    </select>
+<div class="container mx-auto ">
+  <!-- Parent Container -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+    <div class="bg-white shadow-xl rounded-2xl  min-h-[100px] w-full">
+      <app-monthly-smeloancount></app-monthly-smeloancount>
+    </div>
+    <div class="bg-white shadow-xl rounded-2xl min-h-[100px] w-full">
+      <app-monthly-hploancount></app-monthly-hploancount>
+    </div>
   </div>
 
-  <div *ngIf="accountCount !== null" class="card result-card">
-    <p>Total Current Accounts:</p>
-    <h2>{{ accountCount }}</h2>
-  </div>
+  <!-- Branch User Count -->
+  <app-branch-user-count></app-branch-user-count>
 
-  <div *ngIf="accountCount === null && selectedBranchId" class="card loading-card">
-    <p>Loading current account count...</p>
+  <!-- Branch Selection and Account Count -->
+  <div class="mt-6">
+    <div class="bg-white shadow-md rounded-lg p-4">
+      <label for="branch" class="block text-gray-700 font-medium mb-2">Select a Branch:</label>
+      <select 
+        id="branch" 
+        [(ngModel)]="selectedBranchId" 
+        (change)="loadCurrentAccountCount()" 
+        class="w-full border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option *ngFor="let branch of branches || []" [value]="branch.id">
+          {{ branch.name }}
+        </option>
+      </select>
+    </div>
+
+    <div *ngIf="accountCount !== null" class="bg-white shadow-md rounded-lg p-4 mt-4">
+      <p class="text-gray-600">Total Current Accounts:</p>
+      <h2 class="text-2xl font-bold text-gray-800">{{ accountCount }}</h2>
+    </div>
+
+    <div *ngIf="accountCount === null && selectedBranchId" class="bg-white shadow-md rounded-lg p-4 mt-4">
+      <p class="text-gray-600">Loading current account count...</p>
+    </div>
   </div>
 </div>

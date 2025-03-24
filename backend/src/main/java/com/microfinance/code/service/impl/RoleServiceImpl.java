@@ -2,8 +2,12 @@ package com.microfinance.code.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.microfinance.code.model.Permission;
+import com.microfinance.code.repository.PermissionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +27,9 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;  // Now correctly using an instance
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+
     @Override
     public List<RoleDTO> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
@@ -38,23 +45,23 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional
     public RoleDTO createRole(RoleDTO roleDTO) {
         Role role = roleMapper.toEntity(roleDTO);
-        role = roleRepository.save(role);
-        return roleMapper.toDTO(role);
+        setPermissionsFromNames(role, roleDTO.getPermissions());
+        return roleMapper.toDTO(roleRepository.save(role));
     }
 
     @Override
+    @Transactional
     public RoleDTO updateRole(Integer id, RoleDTO roleDTO) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Role not found with ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Role not found"));
 
-        role.setRoleName(roleDTO.getRoleName());
-        role.setRoleDescription(roleDTO.getRoleDescription());
-        role.setActive(roleDTO.isActive());
+        roleMapper.updateEntity(roleDTO, role);
+        setPermissionsFromNames(role, roleDTO.getPermissions());
 
-        role = roleRepository.save(role);
-        return roleMapper.toDTO(role);
+        return roleMapper.toDTO(roleRepository.save(role));
     }
 
     @Override
@@ -63,5 +70,13 @@ public class RoleServiceImpl implements RoleService {
             throw new NotFoundException("Role not found with ID: " + id);
         }
         roleRepository.deleteById(id);
+    }
+
+    private void setPermissionsFromNames(Role role, Set<String> permissionNames) {
+        Set<Permission> permissions = permissionNames.stream()
+                .map(name -> permissionRepository.findByPermissionName(name)
+                        .orElseThrow(() -> new NotFoundException("Permission not found: " + name)))
+                .collect(Collectors.toSet());
+        role.setPermissions(permissions);
     }
 }

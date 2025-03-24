@@ -2,11 +2,15 @@ package com.microfinance.code.controller;
 
 import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.model.User;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -67,5 +71,28 @@ public class SMELoanController {
     public ApiResponse<SMELateFeeSummaryDTO> getLateFeeSummaryByLoanId(@PathVariable("loanId")Integer loanId){
         SMELateFeeSummaryDTO lateFeeSummaryDTO = smeLoanService.getLateFeeAndODByLoanId(loanId);
         return ApiResponse.success(HttpStatus.OK, 200, "SME OD and Late Fee Summary retrieved successfully", lateFeeSummaryDTO);
+    }
+    @GetMapping("/pending")
+    public ResponseEntity<ApiResponse<List<SMELoanDTO>>> getAllPendingSMELoans() {
+        List<SMELoanDTO> smeLoanDTOList = smeLoanService.getAllSMELoans();
+        return ResponseEntity.ok(ApiResponse.success(
+                HttpStatus.OK,
+                200,
+                "Pending SME Loans retrieved successfully",
+                smeLoanDTOList
+        ));
+    }
+
+    @GetMapping("/monthly-approved")
+    public List<MonthlySMELoanCountDTO> getMonthlyApprovedLoans() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Integer branchId = getBranchIdFromAuthentication(auth);
+        return smeLoanService.getApprovedLoansByBranchMonthly(branchId);
+    }
+
+    private Integer getBranchIdFromAuthentication(Authentication auth) {
+        // Since your User implements UserDetails
+        User user = (User) auth.getPrincipal();
+        return user.getBranch().getId();
     }
 }

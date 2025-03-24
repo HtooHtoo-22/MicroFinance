@@ -19,4 +19,6 @@ public interface DealerService {
     List<DealerDTO> getApprovedDealers(); // Add this method
 
     Dealer findByEmail(String email);
+
+    DealerDTO getDealerById(Integer id);
 }

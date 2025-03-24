@@ -1,18 +1,17 @@
 package com.microfinance.code.service.impl;
 
-import com.microfinance.code.dto.SMELateFeeSummaryDTO;
-import com.microfinance.code.dto.SMELoanDTO;
-import com.microfinance.code.dto.SMEScheduleDTO;
-import com.microfinance.code.dto.TransactionDTO;
+import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.EmailSender;
 import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.exception.ValidationException;
+import com.microfinance.code.mapper.HPLoanMapper;
 import com.microfinance.code.mapper.SMELoanMapper;
 import com.microfinance.code.mapper.SMEScheduleMapper;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
+import com.microfinance.code.service.WebSocketNotificationService;
 import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
@@ -21,11 +20,15 @@ import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +63,9 @@ public class SMELoanServiceImpl implements SMELoanService {
     private SMELateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private SMELateFeeHoldingRepo lateFeeHoldingRepo;
+
+    @Autowired
+    private WebSocketNotificationService notificationService;
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
         // Fetch entry user
@@ -105,7 +111,11 @@ public class SMELoanServiceImpl implements SMELoanService {
             throw new NotFoundException("Current account is missing in SME Loan");
         }
 
-        return loanMapper.toDTO(smeLoan);
+        SMELoan savedLoan = smeLoanRepository.save(smeLoan);
+        SMELoanDTO savedLoanDTO = loanMapper.toDTO(savedLoan);
+        notificationService.notifyNewSMELoan(savedLoanDTO); // Add this line
+        return savedLoanDTO;
+
     }
 
 
@@ -114,13 +124,27 @@ public class SMELoanServiceImpl implements SMELoanService {
     public void approveSMELoan(Integer smeLoanId) {
         SMELoan smeLoan = smeLoanRepository.findById(smeLoanId)
                 .orElseThrow(() -> new NotFoundException("SME Loan with ID " + smeLoanId + " not found."));
-        if (smeLoan.getCurrentAccount() == null) {
+
+// Get the authenticated user from the security context
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            throw new NotFoundException("No authenticated user found to approve the loan.");
+        }
+        User approveUser = (User) auth.getPrincipal(); // Assuming User implements UserDetails
+
+        if (smeLoan.getCurrentAccount() == null || smeLoan.getCurrentAccount().getAccountId() == null) {
             throw new NotFoundException("Current Account not found for SME Loan ID " + smeLoanId);
         }
-        smeLoan.setStatus(LoanStatus.APPROVE); // Change status to "Approved"
+
+        smeLoan.setStatus(LoanStatus.APPROVE);
         smeLoan.setPrincipal(smeLoan.getLoanAmount());
-        smeLoan.setApprovedDate(LocalDateTime.now()); // Set approved date to current date
-        smeLoanRepository.save(smeLoan); // Save the updated loan
+        smeLoan.setApprovedDate(LocalDateTime.now());
+        smeLoan.setApprovedUser(approveUser); // Set the authenticated user
+        smeLoanRepository.save(smeLoan);
+        // Save the updated loan
+        SMELoanDTO loanDTO = loanMapper.toDTO(smeLoan);
+        notificationService.notifySMELoanStatusChange(loanDTO);
+
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setType(transactionType.CR);
         BigDecimal totalCharges = smeLoan.getDocumentFee().add(smeLoan.getServiceCharge());
@@ -151,8 +175,9 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Delete all collaterals
         smeLoanHasCollateralRepo.deleteAll(smeLoanHasCollaterals);
 
-        // Save the SME Loan status update
         smeLoanRepository.save(smeLoan);
+        SMELoanDTO loanDTO = loanMapper.toDTO(smeLoan);
+        notificationService.notifySMELoanStatusChange(loanDTO);
     }
     @Override
     public void repayPrincipal(Integer smeLoanId, BigDecimal repaidPrincipal) {
@@ -194,6 +219,16 @@ public class SMELoanServiceImpl implements SMELoanService {
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    public List<SMELoanDTO> getAllSMELoans() {
+        List<SMELoan> loans = smeLoanRepository.findByStatus(LoanStatus.PENDING);
+        return loans.stream()
+                .map(loanMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
 
     private BigDecimal calculateTotalRemainingCollateralValue(List<Integer> collateralIds) {
         BigDecimal totalRemainingCollateralValue = BigDecimal.ZERO;
@@ -378,5 +413,21 @@ public class SMELoanServiceImpl implements SMELoanService {
         System.out.println("Total Remaining Interest Amount: " + totalInterest);
 
         return outstandingAmount;
+    }
+
+    @Override
+    public List<MonthlySMELoanCountDTO> getApprovedLoansByBranchMonthly(Integer branchId) {
+        List<SMELoan> loans = smeLoanRepository.findByEntryUser_Branch_Id(branchId);
+
+        return loans.stream()
+                .filter(loan -> loan.getStatus() == LoanStatus.APPROVE && loan.getApprovedDate() != null)
+                .collect(Collectors.groupingBy(
+                        loan -> loan.getApprovedDate().format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(entry -> new MonthlySMELoanCountDTO(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(MonthlySMELoanCountDTO::getMonth))
+                .collect(Collectors.toList());
     }
 }

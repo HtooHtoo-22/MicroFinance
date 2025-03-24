@@ -71,6 +71,10 @@ export class ProductService {
     );
   }
 
+  getProductsByBranchId(branchId: number): Observable<ApiResponse<Product[]>> {
+    return this.http.get<ApiResponse<Product[]>>(`${this.apiUrl}/branch/${branchId}`);
+  }
+
   private handleError(error: any): Observable<never> {
     console.error('Error in ProductService:', error);
     let errorMessage = 'An error occurred while fetching products';

@@ -9,10 +9,12 @@ import { Rate } from '../../model/Rate';
 import { CollateralService } from '../../service/collateral.service';
 import { CollateralDTO } from '../../model/CollateralDTO';
 import { ApiResponse } from '../../model/ApiResponse';
+import { MatDialog } from '@angular/material/dialog';
+import { ModelComponent } from '../model/model.component';
 
 @Component({
   selector: 'app-sme-loan-register',
-  standalone:false,
+  standalone: false,
   templateUrl: './sme-loan-register.component.html',
   styleUrls: ['./sme-loan-register.component.css']
 })
@@ -22,69 +24,70 @@ export class SmeLoanRegisterComponent implements OnInit {
   accountList: any[] = [];
   filteredAccounts: any[] = [];
   rateValue: number = 0;
-  serviceChargeValue : number = 0;
+  serviceChargeValue: number = 0;
   collaterals: any[] = [];
   loanAmount: number = 0;
   requiredCollateral: number = 1; // Add this line
-  message:string = '';
-  error:boolean = false;
+  message: string = '';
+  error: boolean = false;
+  isSubmitted = false;
+
   constructor(
     private fb: FormBuilder,
     private smeLoanService: SmeLoanService,
     private router: Router,
     private authService: AuthService,
     private currentAccService: CurrentAccService,
-    private rateService : RateService,
-    private collateralService: CollateralService
+    private rateService: RateService,
+    private collateralService: CollateralService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.smeLoanForm = this.fb.group({
       loanAmount: ['', [Validators.required, Validators.min(1)]],
-      interestRate: ['', ],
+      interestRate: ['',],
       gracePeriod: [''],  // ✅ Changed from `null` to `''`
       loanPurpose: ['', [Validators.required, Validators.maxLength(200)]],
       documentFee: ['', [Validators.required, Validators.min(0)]],
       serviceCharge: [''],
-
       duration: ['', [Validators.required, Validators.min(1)]],
-      currentAccountaccId: ['', [Validators.required, Validators.min(1)]],  
+      currentAccountaccId: ['', [Validators.required, Validators.min(1)]],
       entryUserId: [this.authService.getCurrentUserId() || '', [Validators.required, Validators.min(1)]],  // ✅ Added
     });
     this.loadCurrentAccounts();
     this.loadSMERate('SME Loan Interest Rate');
     this.loadServiceChargeRate("Service Charges Rate");
     this.onChanges();
-    
-
   }
 
   onSubmit(): void {
     console.log('Form Value:', this.smeLoanForm.value);
     console.log('Form Valid:', this.smeLoanForm.valid);
-    
-    
+
     if (this.smeLoanForm.valid) {
       const loanData = {
         ...this.smeLoanForm.value,
         collateralIds: this.selectedCollateralIds
       };
-  
+
       this.smeLoanService.createLoan(loanData).subscribe({
         next: (response: any) => {
           console.log('Loan Created Successfully:', response);
-          this.message = response.message;
-        
-          // Navigate after a short delay (optional like teacherService)
-          
+          this.showModal('Loan registered successfully!', true);
+          this.isSubmitted = true;
+          this.smeLoanForm.reset();
         },
         error: (error: any) => {
-          this.message = error.error.message; // or error.message depending on backend structure
-          this.error = true;
           console.error('Error while creating loan:', error);
+          let errorMessage = 'Failed to register loan';
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          }
+          this.showModal(errorMessage, false);
         }
       });
-      
+
     } else {
       alert('Please fill in the required fields.');
     }
@@ -107,9 +110,9 @@ export class SmeLoanRegisterComponent implements OnInit {
     this.rateService.getRateByType(rateType).subscribe({
       next: (rate: Rate) => {
         this.serviceChargeValue = rate.value;
-  
+
         console.log('Service Rate Value:', this.serviceChargeValue);
-  
+
         // 🔁 Recalculate serviceCharge if loanAmount was already filled
         const amount = this.smeLoanForm.get('loanAmount')?.value || 0;
         const charge = amount * (this.serviceChargeValue / 100);
@@ -120,7 +123,6 @@ export class SmeLoanRegisterComponent implements OnInit {
       }
     });
   }
-  
 
   private loadCurrentAccounts(): void {
     this.currentAccService.listCurrentAcc().subscribe({
@@ -139,7 +141,7 @@ export class SmeLoanRegisterComponent implements OnInit {
     this.smeLoanForm.get('currentAccountaccId')?.valueChanges.subscribe(value => {
       this.filterAccounts(value);
     });
-  
+
     // 💡 Add this: Calculate serviceCharge when loanAmount changes
     this.smeLoanForm.get('loanAmount')?.valueChanges.subscribe((amount: number) => {
       if (amount && this.serviceChargeValue) {
@@ -150,7 +152,6 @@ export class SmeLoanRegisterComponent implements OnInit {
       }
     });
   }
-  
 
   private filterAccounts(searchTerm: string): void {
     if (!searchTerm) {
@@ -159,7 +160,7 @@ export class SmeLoanRegisterComponent implements OnInit {
     }
 
     const lowerCaseTerm = searchTerm.toLowerCase();
-    this.filteredAccounts = this.accountList.filter(account => 
+    this.filteredAccounts = this.accountList.filter(account =>
       account.accountId.toLowerCase().includes(lowerCaseTerm)
     );
   }
@@ -168,68 +169,78 @@ export class SmeLoanRegisterComponent implements OnInit {
     this.smeLoanForm.get('currentAccountaccId')?.setValue(account.accountId);
     this.filteredAccounts = []; // Clear the suggestions
   }
+
   isStepOne: boolean = true;
 
-goToNextStep() {
-  console.log("Hi");
-  
-  const accountId = this.smeLoanForm.value.currentAccountaccId;
-  this.isStepOne = false;
-  this.fetchCollateral(accountId);
-}
+  goToNextStep() {
+    console.log("Hi");
 
-goToPreviousStep() {
-  this.selectedCollaterals.clear();
-  this.isStepOne = true;
-}
-fetchCollateral(accountId: string) {
-  this.collateralService.getCollateralByCurrentAccountId(accountId).subscribe(
-    (response: ApiResponse<CollateralDTO>) => {
-      if (response && response.data) {
-        this.collaterals = Array.isArray(response.data) ? response.data : [];
-      } else {
-        console.error('No collateral data received.');
+    const accountId = this.smeLoanForm.value.currentAccountaccId;
+    this.isStepOne = false;
+    this.fetchCollateral(accountId);
+  }
+
+  goToPreviousStep() {
+    this.selectedCollaterals.clear();
+    this.isStepOne = true;
+  }
+
+  fetchCollateral(accountId: string) {
+    this.collateralService.getCollateralByCurrentAccountId(accountId).subscribe(
+      (response: ApiResponse<CollateralDTO>) => {
+        if (response && response.data) {
+          this.collaterals = Array.isArray(response.data) ? response.data : [];
+        } else {
+          console.error('No collateral data received.');
+        }
+      },
+      (error) => {
+        console.error('Error fetching collateral:', error);
       }
-    },
-    (error) => {
-      console.error('Error fetching collateral:', error);
+    );
+  }
+
+  selectedCollaterals = new Set<any>();
+  selectedCollateralIds: number[] = [];
+
+  get totalSelectedCollateral(): number {
+    return Array.from(this.selectedCollaterals).reduce(
+      (sum, item) => sum + item.remainingValue, 0
+    );
+  }
+
+  isSelected(item: any): boolean {
+    return this.selectedCollaterals.has(item);
+  }
+
+  toggleSelection(item: any): void {
+    if (item.remainingValue <= 0) return;
+
+    if (this.selectedCollaterals.has(item)) {
+      this.selectedCollaterals.delete(item);
+    } else {
+      this.selectedCollaterals.add(item);
     }
-  );
-}
-// Component class
-selectedCollaterals = new Set<any>();
-selectedCollateralIds:number[]=[];
-get totalSelectedCollateral(): number {
-  return Array.from(this.selectedCollaterals).reduce(
-    (sum, item) => sum + item.remainingValue, 0
-  );
-}
-
-isSelected(item: any): boolean {
-  return this.selectedCollaterals.has(item);
-}
-
-toggleSelection(item: any): void {
-  if (item.remainingValue <= 0) return;
-  
-  if (this.selectedCollaterals.has(item)) {
-    this.selectedCollaterals.delete(item);
-  } else {
-    this.selectedCollaterals.add(item);
+    if (this.selectedCollateralIds.includes(item.id)) {
+      this.selectedCollateralIds = this.selectedCollateralIds.filter(id => id !== item.id); // Deselect
+    } else {
+      this.selectedCollateralIds.push(item.id); // Select
+    }
   }
-  if (this.selectedCollateralIds.includes(item.id)) {
-    this.selectedCollateralIds = this.selectedCollateralIds.filter(id => id !== item.id); // Deselect
-  } else {
-    this.selectedCollateralIds.push(item.id); // Select
-  }
-}
-logFormValue(): void {
-  this.smeLoanForm.get('serviceCharge')?.setValue(this.serviceChargeValue);
-  console.log("Selected Collateral Ids : "+this.selectedCollateralIds);
-  
-  console.log("Selected Collateral : "+this.selectedCollaterals);
-  console.log('Form Value:', this.smeLoanForm.value);
-  console.log('Form Valid:', this.smeLoanForm.valid);
-}
 
+  logFormValue(): void {
+    this.smeLoanForm.get('serviceCharge')?.setValue(this.serviceChargeValue);
+    console.log("Selected Collateral Ids : " + this.selectedCollateralIds);
+
+    console.log("Selected Collateral : " + this.selectedCollaterals);
+    console.log('Form Value:', this.smeLoanForm.value);
+    console.log('Form Valid:', this.smeLoanForm.valid);
+  }
+
+  showModal(message: string, success: boolean): void {
+    this.dialog.open(ModelComponent, {
+      width: '300px',
+      data: { message, success }
+    });
+  }
 }

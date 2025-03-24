@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HPLoan, HpLoanService } from '../../../service/hp-loan.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ModelComponent } from '../../model/model.component';
 import { Router } from '@angular/router';
+import { WebSocketService } from '../../../service/websocket.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-hp-loan-list',
@@ -25,7 +27,10 @@ export class HpLoanListComponent implements OnInit {
   constructor(
     private hpLoanService: HpLoanService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private webSocketService: WebSocketService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -48,6 +53,28 @@ export class HpLoanListComponent implements OnInit {
       }
     });
   }
+
+  // Add to component
+private setupWebSocketListeners() {
+  this.webSocketService.getNewHPLoans().subscribe(loan => {
+    if (loan && loan.status === 'PENDING') {
+      if (!this.loans.some(l => l.id === loan.id)) {
+        this.loans = [loan, ...this.loans];
+        this.snackBar.open('New HP Loan created: ' + loan.loanId, 'Close', { duration: 3000 });
+        this.cd.detectChanges();
+      }
+    }
+  });
+
+  this.webSocketService.getHPLoanStatusUpdates().subscribe(updatedLoan => {
+    if (updatedLoan) {
+      this.loans = this.loans.filter(l => l.id !== updatedLoan.id);
+      this.snackBar.open(`HP Loan ${updatedLoan.loanId} status updated to ${updatedLoan.status}`, 
+        'Close', { duration: 3000 });
+      this.cd.detectChanges();
+    }
+  });
+}
 
   openApprovalModal(loanId: number): void {
     this.hpLoanService.getHPLoanById(loanId).subscribe({
@@ -94,7 +121,7 @@ export class HpLoanListComponent implements OnInit {
 
   viewDetails(loanId: number | undefined): void {
     if (loanId) {
-      this.router.navigate(['/dashboard/hp-loan-detail', loanId]);
+      this.router.navigate(['/manager-dashboard/hp-loan-detail', loanId]);
     } else {
       console.warn('Loan ID is missing');
     }

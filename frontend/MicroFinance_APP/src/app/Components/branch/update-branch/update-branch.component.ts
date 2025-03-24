@@ -8,13 +8,17 @@ import { Branch } from '../../../model/Branch';
   selector: 'app-update-branch',
   standalone: false,
   templateUrl: './update-branch.component.html',
-  styleUrl: './update-branch.component.css'
+  styleUrls: ['./update-branch.component.css']
 })
 export class UpdateBranchComponent implements OnInit {
   branchForm!: FormGroup;
   branchId!: number;
   loading = false;
   errorMessage: string | null = null;
+  showSuccessModal = false;
+  showAlert = false;
+  alertType = '';
+  alertMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -78,15 +82,25 @@ export class UpdateBranchComponent implements OnInit {
   
       this.branchService.updateBranch(this.branchId, updatedBranch).subscribe({
         next: () => {
-          alert('Branch updated successfully');
-          this.router.navigate(['/admin-dashboard/branch-list']);
+          this.showSuccessModal = true;
+          setTimeout(() => {
+            this.closeModal();
+          }, 3000);
         },
         error: (error) => {
           console.error('Error updating branch:', error);
-          this.errorMessage = 'Failed to update branch';
+          this.alertType = 'error';
+          this.alertMessage = 'Failed to update branch';
+          this.showAlert = true;
           this.loading = false;
+          setTimeout(() => this.showAlert = false, 3000);
         }
       });
     }
+  }
+
+  closeModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/admin-dashboard/branch-list']);
   }
 }

@@ -85,7 +85,7 @@ export class UpdateComponent implements OnInit {
       this.currentAccService.updateCurrentAccount(this.accountId, accountData).subscribe({
         next: (response) => {
           this.showModal('Account updated successfully!',true);
-          this.router.navigate(['/dashboard/current-acc-list']);
+          this.router.navigate(['/entry-dashboard/current-acc-list']);
         },
         error: (error) => {
           console.error('Error updating account:', error);

@@ -10,54 +10,30 @@
 
 <div class="min-h-screen flex">
   <!-- Sidebar -->
-  <aside class="w-64 bg-white border-r border-gray-200 fixed h-full top-0 left-0 z-20">
-    <div class="p-4 border-b border-gray-200 flex items-center justify-center">
-      <img [src]="imagePath" class="h-12 w-auto " alt="Logo" >
-    </div>
-    
-    <nav class="p-4 space-y-1">
-      <!-- Navigation Items -->
-      <div class="space-y-4">
-        <!-- Repeat this block for each menu item -->
-        <div class="group">
-          <a href="#" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg 
-                          text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-            <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            Dashboard
-          </a>
-        </div>
-        <a [routerLink]="['/dealer-dashboard/dealer-transaction']" 
-            class="flex items-center px-3 py-2 text-sm font-medium rounded-lg 
-                  text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-          Transactions
-        </a>
-        <a [routerLink]="['/dealer-dashboard/create-product']" 
-            class="flex items-center px-3 py-2 text-sm font-medium rounded-lg 
-                  text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-          Products
-        </a>
-        <a [routerLink]="['/dealer-dashboard/product-list']"
-        class="flex items-center px-3 py-2 text-sm font-medium rounded-lg 
-               text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-       <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7m-9-4v4m0 0H7m5 0h5"/>
-       </svg>
-       Products List
-     </a>
-     <a [routerLink]="['/dealer-dashboard/all-list']"
-     class="flex items-center px-3 py-2 text-sm font-medium rounded-lg 
-            text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-    <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7m-9-4v4m0 0H7m5 0h5"/>
-    </svg>
-     List
-  </a>
-        <!-- Add other menu items here -->
-      </div>
-    </nav>
-  </aside>
+  <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
+    <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
+    <ul class="space-y-4 text-gray-900 text-sm font-semibold">
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
+        <a [routerLink]="['/dealer-dashboard/home']" routerLinkActive="text-[#00A1FF]">Dashboard</a>
+      </li>
+
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-4-1/1024/user4-512.png" class="w-5 h-5">
+        <a [routerLink]="['/dealer-dashboard/dealer-transaction']" routerLinkActive="text-[#00A1FF]">Transactions</a>
+      </li>
+
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn4.iconfinder.com/data/icons/top-search-6/128/_work-_working_computer_user_freelancer_internet_user_office_work_online_employee-1024.png" class="w-5 h-5">
+        <a [routerLink]="['/dealer-dashboard/create-product']" routerLinkActive="text-[#00A1FF]">Products</a>
+      </li>
+
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
+        <a [routerLink]="['/dealer-dashboard/all-list']" routerLinkActive="text-[#00A1FF]">Product List</a>
+      </li>
+    </ul>
+  </div>
 
   <!-- Main Content -->
   <div class="flex-1 ml-64">
@@ -84,7 +60,6 @@
     <main class="pt-16 min-h-screen">
       <div class="p-6">
         <router-outlet></router-outlet>
-       
       </div>
     </main>
   </div>

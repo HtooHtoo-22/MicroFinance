@@ -19,7 +19,8 @@
         <div class="space-y-2">
           <label for="username" class="block text-sm font-medium text-gray-700">Email address or User ID</label>
           <div class="relative">
-            <input id="username" type="username" formControlName="username" 
+            <input id="username" type="text" formControlName="username" 
+              autocomplete="username" 
               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
               [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"/>
           </div>
@@ -33,6 +34,7 @@
           <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
           <div class="relative">
             <input id="password" type="password" formControlName="password" 
+              autocomplete="current-password" 
               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 placeholder:text-gray-400"
               [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"/>
           </div>
@@ -64,4 +66,3 @@
     </div>
   </div>
 </div>
-  

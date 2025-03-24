@@ -17,6 +17,7 @@ public class DealerMapper {
         dealer.setEmail(dto.getEmail());
         dealer.setCompanyValue(dto.getCompanyValue());
         dealer.setRegisterDate(dto.getRegisterDate());
+        dealer.setInformation(dto.getInformation());
 
 //        CurrentAccount account = new CurrentAccount();
 //        account.setId(Integer.valueOf(dto.getCurrentAccountId()));
@@ -38,6 +39,7 @@ public class DealerMapper {
         dto.setEmail(dealer.getEmail());
         dto.setCompanyValue(dealer.getCompanyValue());
         dto.setRegisterDate(dealer.getRegisterDate());
+        dto.setInformation(dealer.getInformation());
 
         if (dealer.getStatusforDelar() != null) {
             dto.setStatus(dealer.getStatusforDelar().toString()); // Map enum to string

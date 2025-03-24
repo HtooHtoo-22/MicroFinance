@@ -9,6 +9,7 @@ import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.repository.DealerRepo;
 import com.microfinance.code.repository.RoleRepository;
 import com.microfinance.code.repository.UserRepo;
+import com.microfinance.code.service.WebSocketNotificationService;
 import com.microfinance.code.service.interFace.DealerService;
 import com.microfinance.code.status.DEALER;
 import jakarta.transaction.Transactional;
@@ -42,13 +43,15 @@ public class DealerServiceImpl implements DealerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private WebSocketNotificationService notificationService;
+
     @Override
     public DealerDTO createDealer(DealerDTO dealerDTO) {
         // Check if email exists
         if (dealerRepo.findByEmail(dealerDTO.getEmail()).isPresent()) {
             throw new AlreadyExistException("Dealer email already exists");
         }
-
         // Get current account by accountId string
         CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccountId())
                 .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccountId()));
@@ -61,7 +64,6 @@ public class DealerServiceImpl implements DealerService {
          if (branch == null) {
                  throw new IllegalStateException("CIF is not associated with any branch");
          }
-
 
         Dealer dealer = dealerMapper.toEntity(dealerDTO);
         dealer.setCurrentAccount(currentAccount);
@@ -89,10 +91,11 @@ public class DealerServiceImpl implements DealerService {
         user.setCreateDate(LocalDateTime.now());
         user.setBranch(branch);
         user.setDealer(dealer);
-
         userRepo.save(user);
 
-        return dealerMapper.toDTO(savedDealer);
+        DealerDTO savedDealerDTO = dealerMapper.toDTO(savedDealer); // Corrected variable name
+        notificationService.notifyNewDealer(savedDealerDTO);
+        return savedDealerDTO;
     }
 
     private String generateUserId(String accountId) {
@@ -120,7 +123,9 @@ public class DealerServiceImpl implements DealerService {
                     userRepo.save(user);
                 });
 
-        return dealerMapper.toDTO(updatedDealer);
+        DealerDTO dto = dealerMapper.toDTO(updatedDealer);
+        notificationService.notifyDealerStatusChange(dto);
+        return dto;
     }
 
     @Override
@@ -138,11 +143,13 @@ public class DealerServiceImpl implements DealerService {
         // Deactivate user using the correct email
         userRepo.findByEmail(userEmail)
                 .ifPresent(user -> {
-                    user.setActive(false);
+                    user.setActive(true);
                     userRepo.save(user);
                 });
 
-        return dealerMapper.toDTO(updatedDealer);
+        DealerDTO dto = dealerMapper.toDTO(updatedDealer);
+        notificationService.notifyDealerStatusChange(dto);
+        return dto;
     }
 
     // Helper method to generate user email (same as in createDealer)
@@ -160,6 +167,12 @@ public class DealerServiceImpl implements DealerService {
         return pendingDealers.stream()
                 .map(dealerMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    @Override
+    public DealerDTO getDealerById(Integer id) {
+        Dealer dealer = dealerRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Dealer not found with ID: " + id));
+        return dealerMapper.toDTO(dealer);
     }
 
     @Override

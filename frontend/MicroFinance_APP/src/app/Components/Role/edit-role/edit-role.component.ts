@@ -1,7 +1,8 @@
+// edit-role.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoleService } from '../../../service/role.service';
-import { Role } from '../../../model/Role';
+import { PermissionService } from '../../../service/permission-service.service';
 
 @Component({
   selector: 'app-edit-role',
@@ -11,61 +12,64 @@ import { Role } from '../../../model/Role';
 })
 export class EditRoleComponent implements OnInit {
   roleId!: number;
-  role: Role = {
-    roleName: '',
-    roleDescription: '',
-    active: false,
-    id: 0
-  };
+  role: any = {};
+  allPermissions: string[] = [];
+  selectedPermissions: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit(): void {
-    // Retrieve the role id from route parameters
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
       if (idParam) {
         this.roleId = +idParam;
         this.loadRole(this.roleId);
-      } else {
-        alert('No role id provided.');
-        // Optionally navigate back to list
-        this.router.navigate(['/list-role']);
+        this.loadPermissions();
       }
     });
   }
 
   loadRole(id: number) {
     this.roleService.getRoleById(id).subscribe({
-      next: (data: Role) => {
-        if (data) {
-          this.role = data;
-        } else {
-          alert('Role not found.');
-          this.router.navigate(['/list-role']);
-        }
-      },
-      error: (error) => {
-        console.error('Error retrieving role:', error);
-        alert('Error retrieving role.');
+      next: (data: any) => {
+        this.role = data;
+        this.selectedPermissions = data.permissions;
       }
     });
   }
 
+  loadPermissions() {
+    this.permissionService.getAllPermissions().subscribe({
+      next: (permissions) => {
+        this.allPermissions = permissions;
+      }
+    });
+  }
+
+  togglePermission(permission: string) {
+    const index = this.selectedPermissions.indexOf(permission);
+    if (index === -1) {
+      this.selectedPermissions.push(permission);
+    } else {
+      this.selectedPermissions.splice(index, 1);
+    }
+  }
+
   updateRole() {
-    this.roleService.updateRole(this.roleId, this.role).subscribe({
-      next: (updatedRole: Role) => {
-        alert('Role updated successfully.');
-        // Optionally, navigate to the list page:
-        // this.router.navigate(['/list-role']);
-      },
-      error: (error) => {
-        console.error('Error updating role:', error);
-        alert('Error updating role. Please try again.');
+    const roleData = {
+      ...this.role,
+      permissions: this.selectedPermissions
+    };
+    
+    this.roleService.updateRole(this.roleId, roleData).subscribe({
+      next: () => {
+        alert('Role updated successfully!');
+        this.router.navigate(['/list-role']);
       }
     });
   }

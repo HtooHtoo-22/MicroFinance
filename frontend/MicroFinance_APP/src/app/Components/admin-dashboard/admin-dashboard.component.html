@@ -3,7 +3,7 @@
     <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
       <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
       <ul class="space-y-4 text-gray-900 text-sm font-semibold">
-        <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+        <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
           <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
           <a [routerLink]="['/admin-dashboard/home']" routerLinkActive="text-[#00A1FF]">Home</a>
         </li>
@@ -16,19 +16,19 @@
             <img [class.rotate-180]="isCustomerDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
           </div>
           <ul *ngIf="isCustomerDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/users-android-l-lollipop-icon-pack/24/user-512.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/current-account-register']" routerLinkActive="text-[#00A1FF]">Account Register</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/current-acc-list']" routerLinkActive="text-[#00A1FF]">Account List</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin() || isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/marketplace-3/32/Marketplace-20-512.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/transaction']" routerLinkActive="text-[#00A1FF]">Transaction</a>
             </li>
-            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin() || isEntry() || isManager() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/transaction-history']" routerLinkActive="text-[#00A1FF]">Transaction History</a>
             </li>
@@ -39,39 +39,15 @@
         <li *ngIf="isAdmin() || isEntry() || isManager()">
           <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleLoanDropdown()">
             <img src="https://cdn3.iconfinder.com/data/icons/loan-and-investment-1/85/loan_percent_interest_rates_money_finance-1024.png" class="w-5 h-5">
-            <span>Loan Management</span>
+            <span>Collateral Management</span>
             <img [class.rotate-180]="isLoanDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
           </div>
           <ul *ngIf="isLoanDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn1.iconfinder.com/data/icons/insurance-20/64/finance_money_cash_bussiness_sme_coin_-512.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/sme-loan-register']" routerLinkActive="text-[#00A1FF]">SME Loan Register</a>
-            </li>
-            <li *ngIf="isEntry() || isManager()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/sme-loan-list']" routerLinkActive="text-[#00A1FF]">SME Loan List</a>
-            </li>
-            <li *ngIf="isEntry() || isManager()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/hp-register']" routerLinkActive="text-[#00A1FF]">HP Loan Register</a>
-            </li>
-            <li *ngIf="isEntry() || isManager()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/hp-loan-list']" routerLinkActive="text-[#00A1FF]">HP Loan Approval List</a>
-            </li>
-            <li *ngIf="isEntry() || isManager()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/hp-loan-list-finished']" routerLinkActive="text-[#00A1FF]">HP Loan Approval List</a>
-            </li>
-            <li *ngIf="isEntry()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/174-1024.png" class="w-5 h-5">
-              <a [routerLink]="['/admin-dashboard/create-collateral']" routerLinkActive="text-[#00A1FF]">Collateral</a>
-            </li>
-            <li *ngIf="isAdmin()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/162-512.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/create-collateral-type']" routerLinkActive="text-[#00A1FF]">Create Collateral Type</a>
             </li>
-            <li *ngIf="isAdmin()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li *ngIf="isAdmin()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/162-512.png" class="w-5 h-5">
               <a [routerLink]="['/admin-dashboard/collateral-type-list']" routerLinkActive="text-[#00A1FF]">Collateral Type List</a>
             </li>
@@ -79,7 +55,7 @@
         </li>
   
         <!-- Role Management -->
-        <li *ngIf="isAdmin()">
+        <li>
           <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleRoleDropdown()">
             <img src="https://cdn1.iconfinder.com/data/icons/strategy-building/64/98_multi_tasking_multiple_task_multi_duties_multi_mission_multi_role-1024.png" class="w-5 h-5">
             <span>Role Management</span>
@@ -95,7 +71,7 @@
               <a [routerLink]="['/admin-dashboard/list-role']" routerLinkActive="text-[#00A1FF]">List Roles</a>
             </li>
           </ul>
-        </li>
+        </li> 
   
         <!-- User Management -->
         <li *ngIf="isAdmin()">
@@ -105,11 +81,11 @@
             <img [class.rotate-180]="isUserDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
           </div>
           <ul *ngIf="isUserDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/create-user']" routerLinkActive="text-[#00A1FF]">Create User</a>
             </li>
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/list-users']" routerLinkActive="text-[#00A1FF]">List Users</a>
             </li>
@@ -124,11 +100,11 @@
             <img [class.rotate-180]="isBranchDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
           </div>
           <ul *ngIf="isBranchDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/create-branch']" routerLinkActive="text-[#00A1FF]">Create Branch</a>
             </li>
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/branch-list']" routerLinkActive="text-[#00A1FF]">Branch List</a>
             </li>
@@ -143,11 +119,11 @@
             <img [class.rotate-180]="isRateDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
           </div>
           <ul *ngIf="isRateDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn3.iconfinder.com/data/icons/social-productivity-black-line-3/1/27-1024.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/create-rate']" routerLinkActive="text-[#00A1FF]">Create Rate</a>
             </li>
-            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
+            <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="text-[#00A1FF]">
               <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-4 h-4">
               <a [routerLink]="['/admin-dashboard/list-rate']" routerLinkActive="text-[#00A1FF]">Rate List</a>
             </li>

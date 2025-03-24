@@ -44,4 +44,10 @@ getApprovedDealers(): Observable<Dealer[]> {
   );
 }
 
+getDealerById(dealerId: number): Observable<Dealer> {
+  return this.http.get<ApiResponse<Dealer>>(`${this.apiUrl}/${dealerId}`).pipe(
+    map(response => response.data)
+  );
+}
+
 }

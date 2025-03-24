@@ -24,4 +24,6 @@ public interface HPLoanRepo extends JpaRepository<HPLoan,Integer> {
     List<HPLoan> findAll();
 
     List<HPLoan> findByStatus(LoanStatus loanStatus);
+    List<HPLoan> findByEntryUser_Branch_Id(Integer branchId);
+
 }

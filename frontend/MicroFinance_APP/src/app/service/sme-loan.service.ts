@@ -6,6 +6,7 @@ import { map } from 'rxjs';
 import { SMERepaymentTrack } from '../model/SMERepaymentTrack';
 import { SMELateFeeSummary } from '../model/SMELateFeeSummary';
 import { ApiResponse } from '../model/ApiResponse';
+import { MonthlySMELoanCount } from '../model/MonthlySMELoanCount';
 
 
 @Injectable({
@@ -38,6 +39,9 @@ export class SmeLoanService {
   getLoanByLoanId(id: string): Observable<ApiResponse<Smeloan>> {
       return this.http.get<ApiResponse<Smeloan>>(`${this.apiUrl}/getByLoanID/${id}`);
   }
+  getloanbyStatus(status: string): Observable<ApiResponse<Smeloan[]>> {
+    return this.http.get<ApiResponse<Smeloan[]>>(`${this.apiUrl}/pending`);
+  }
   rejectLoan(loanId: number): Observable<ApiResponse<Smeloan>> {
     return this.http.post<ApiResponse<Smeloan>>(`${this.apiUrl}/reject/${loanId}`, {});
   }
@@ -54,6 +58,8 @@ export class SmeLoanService {
       `${this.apiUrl}/getLateFeeSummary/${loanId}`
     );
   }
-  
+  getMonthlyApprovedLoans(): Observable<MonthlySMELoanCount[]> {
+    return this.http.get<MonthlySMELoanCount[]>(`${this.apiUrl}/monthly-approved`);
+  }
   
 }

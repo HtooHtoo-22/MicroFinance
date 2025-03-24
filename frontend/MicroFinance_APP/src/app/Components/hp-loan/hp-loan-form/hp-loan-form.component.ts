@@ -22,6 +22,8 @@ export class HpLoanFormComponent {
   isSubmitted = false;
   interestRate: number = 0;
   currentAccounts: CurrentAccount[] = [];
+  products: any[] = []; // Add this line
+
 
   constructor(
     private fb: FormBuilder,
@@ -82,12 +84,22 @@ export class HpLoanFormComponent {
       });
       this.productService.clearSelectedProduct();
     }
+    const branchId = this.authService.getCurrentUserBranchId();
+    if (branchId) {
+      this.productService.getProductsByBranchId(+branchId).subscribe({
+        next: (res) => this.products = res.data,
+        error: (err) => console.error(err)
+      });
+    }
   }
 
   goToProductList() {
-    this.router.navigate(['/operation-dashboard/all-list']);
+    const branchId = this.authService.getCurrentUserBranchId();
+    if (branchId) {
+      this.router.navigate(['/operation-dashboard/all-list', { branchId }]);
+    }
   }
-
+  
   submitLoan() {
     const entryUserId = this.authService.getCurrentUserId();
 

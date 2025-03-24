@@ -8,23 +8,24 @@ import { CollateralDTO } from '../../../model/CollateralDTO';
   selector: 'app-create-collateral',
   standalone: false,
   templateUrl: './create-collateral.component.html',
-  styleUrl: './create-collateral.component.css'
+  styleUrls: ['./create-collateral.component.css']
 })
 export class CreateCollateralComponent implements OnInit {
   collateralForm!: FormGroup;
   collateralTypes: any[] = []; // This should be populated from your backend
   accountList: any[] = [];
   selectedFile: File | null = null; 
+  imageUrl: string | ArrayBuffer | null = null; // For image preview
   collateralDTO !: CollateralDTO ;
   message :string = '';
   error : boolean = false;
+  showSuccessModal = false;
+  showErrorModal = false;
+
   constructor(
     private collateralService: CollateralService,
     private currentAccService: CurrentAccService,
-    private fb: FormBuilder,
-    
-    
-    // Add your service here: private collateralService: CollateralService
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -40,10 +41,8 @@ export class CreateCollateralComponent implements OnInit {
       description: ['', [Validators.required, Validators.maxLength(500)]],
       status: [true, Validators.required],
       address: ['', [Validators.required, Validators.maxLength(200)]],
-      //image: ['', [Validators.required, Validators.maxLength(255)]],
       collateralTypeId: [null, Validators.required],
       name: ['', [Validators.required, Validators.maxLength(30)]]
-
     });
   }
 
@@ -52,31 +51,41 @@ export class CreateCollateralComponent implements OnInit {
       next: (types) => {
         this.collateralTypes = types;
         console.log('Collateral Types:', this.collateralTypes);
-        
       },
       error: (err) => {
         console.error('Error fetching collateral types:', err);
       }
     });
   }
+
   private loadCurrentAccounts(): void {
     this.currentAccService.listCurrentAcc().subscribe({
       next: (accounts) => {
         this.accountList = accounts.data;
         console.log('Current Accounts:', this.accountList);
-        
       },
       error: (err) => {
         console.error('Error fetching Current Account types:', err);
       }
     });
   }
-  
 
-  onFileChange(event: any): void {
-    if (event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0]; // Store selected file
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imageUrl = e.target?.result ?? null; // Set the preview URL
+      };
+      reader.readAsDataURL(file);
     }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imageUrl = null;
   }
 
   onSubmit(): void {
@@ -95,20 +104,23 @@ export class CreateCollateralComponent implements OnInit {
           if (response && response.message) {  // Assuming `success` is a boolean in ApiResponse
             console.log("Collateral created successfully:", response.message);
             this.message = response.message;
+            this.showSuccessModal = true;
             this.collateralForm.reset(); // Reset form after success
+            setTimeout(() => this.closeModal(), 3000);
           } else {
             console.error("Error:", response.message);
-           
+            this.message = response.message;
+            this.showErrorModal = true;
+            setTimeout(() => this.showErrorModal = false, 3000);
           }
         },
         error: (error) => {
           console.error("API Error:", error);
           this.message = error.message;
-          error = true;
+          this.showErrorModal = true;
+          setTimeout(() => this.showErrorModal = false, 3000);
         }
       });
-      
-        
     } else {
       // Print errors to the console
       Object.keys(this.collateralForm.controls).forEach(control => {
@@ -122,8 +134,6 @@ export class CreateCollateralComponent implements OnInit {
       console.log("Form is invalid");
     }
   }
-  
-  
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach(control => {
@@ -132,5 +142,10 @@ export class CreateCollateralComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  closeModal(): void {
+    this.showSuccessModal = false;
+    this.showErrorModal = false;
   }
 }

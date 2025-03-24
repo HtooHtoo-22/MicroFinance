@@ -1,0 +1,58 @@
+<div class="container mx-auto px-4 py-8" *ngIf="dealer">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Profile Header -->
+      <div class="bg-[#00A1FF] p-6 flex items-center">
+        <div class="flex-shrink-0">
+          <img [src]="dealer.userPhotoURL || 'https://via.placeholder.com/150'" 
+               class="h-16 w-16 rounded-full border-4 border-white"
+               alt="Dealer photo">
+        </div>
+        <div class="ml-6 text-white">
+          <h1 class="text-2xl font-bold">{{ dealer.businessName }}</h1>
+        </div>
+      </div>
+  
+      <!-- Main Content -->
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Contact Information -->
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Contact Information</h2>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Email</label>
+            <p class="mt-1">{{ dealer.email }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Phone</label>
+            <p class="mt-1">{{ dealer.phone }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Registration Date</label>
+            <p class="mt-1">{{ dealer.registerDate | date }}</p>
+          </div>
+        </div>
+  
+        <!-- Business Details -->
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold text-[#00A1FF] mb-4">Business Details</h2>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Address</label>
+            <p class="mt-1">{{ dealer.address }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-600">Company Value</label>
+            <p class="mt-1">{{ dealer.companyValue | currency }}</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Action Buttons -->
+      <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
+        <div class="flex space-x-4">
+          <button (click)="goBack()" 
+                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">
+            Back to List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

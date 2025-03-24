@@ -1,6 +1,8 @@
 package com.microfinance.code.controller;
 
 import com.microfinance.code.dto.HPLoanDTO;
+import com.microfinance.code.dto.MonthlyHPLoanCountDTO;
+import com.microfinance.code.dto.MonthlySMELoanCountDTO;
 import com.microfinance.code.dto.SMELoanDTO;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.exception.NotFoundException;
@@ -71,5 +73,18 @@ public class HPLoanController {
             return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "HP loan not found for this id " + id);
         }
         return ApiResponse.success(HttpStatus.OK, HttpStatus.OK.value(), "Successfully fetched HP loan with ID: " + id, loan);
+    }
+
+    @GetMapping("/monthly-approved")
+    public List<MonthlyHPLoanCountDTO> getMonthlyApprovedLoans() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Integer branchId = getBranchIdFromAuthentication(auth);
+        return hpLoanService.getApprovedLoansByBranchMonthly(branchId);
+    }
+
+    private Integer getBranchIdFromAuthentication(Authentication auth) {
+        // Since your User implements UserDetails
+        User user = (User) auth.getPrincipal();
+        return user.getBranch().getId();
     }
 }

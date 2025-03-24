@@ -12,6 +12,20 @@
       <input id="roleDescription" formControlName="roleDescription" type="text"  class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" required>
     </div>
 
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
+      <div class="grid grid-cols-2 gap-4">
+        <div *ngFor="let perm of allPermissions" class="flex items-center">
+          <input type="checkbox" 
+                 [id]="perm" 
+                 [value]="perm" 
+                 (change)="togglePermission(perm)"
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+          <label [for]="perm" class="ml-2 text-sm text-gray-700">{{ perm}}</label>
+        </div>
+      </div>
+    </div>
+
     <div class="flex justify-end">
       <button type="submit" class="btn btn-primary bg-[#00A1FF] text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" [disabled]="roleForm.invalid">Create Role</button>
     </div>

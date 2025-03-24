@@ -12,5 +12,6 @@ export interface Dealer {
   };
   companyValue: number;
   userPhotoURL?: string; // Add this line
+  information: string
 
 }

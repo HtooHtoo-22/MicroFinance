@@ -11,8 +11,6 @@ export interface CollateralDTO {
     cifId:string;
     ownerName: string;
 
-
-    
     imageFile?: File;
     collateralTypeId?: number;
     currentAccountId?: number;

@@ -30,7 +30,7 @@ public class HPLoan {
     @Column(name = "grace_period", nullable = true) // Added nullable
     private int gracePeriod;
 
-    @Column(name = "tenor", nullable = true) // Added nullable
+    @Column(name = "tenor", nullable = false) // Added nullable
     private int tenor;
 
     @Column(name = "registered_date", nullable = false) // Added nullable

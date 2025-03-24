@@ -75,7 +75,7 @@ public class HPLoanMapper {
         hpLoan.setEndDate(dto.getEndDate() != null ? LocalDate.parse(dto.getEndDate(), DATE_FORMATTER) : null);
         hpLoan.setStatus(dto.getStatus());
         hpLoan.setDuration(dto.getDuration());
-
+        hpLoan.setTenor(dto.getTenor());
         if (dto.getEntryUserId() != null) {
             User entryUser = new User();
             entryUser.setId(dto.getEntryUserId());

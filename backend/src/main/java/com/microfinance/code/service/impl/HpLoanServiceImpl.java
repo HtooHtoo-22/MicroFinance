@@ -1,8 +1,6 @@
 package com.microfinance.code.service.impl;
 
-import com.microfinance.code.dto.HPLoanDTO;
-import com.microfinance.code.dto.SMELoanDTO;
-import com.microfinance.code.dto.TransactionDTO;
+import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.generator.HPLoanIDGenerator;
 import com.microfinance.code.etc.generator.SMELoanIDGenerator;
 import com.microfinance.code.exception.NotFoundException;
@@ -11,6 +9,7 @@ import com.microfinance.code.mapper.HPLoanMapper;
 import com.microfinance.code.mapper.SMELoanMapper;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
+import com.microfinance.code.service.WebSocketNotificationService;
 import com.microfinance.code.service.interFace.HPLoanService;
 import com.microfinance.code.service.interFace.HPScheduleService;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
@@ -23,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import static com.microfinance.code.mapper.HPLoanMapper.toDTO;
 @Service
 public class HpLoanServiceImpl implements HPLoanService {
 
+    // Existing autowired dependencies remain the same
     @Autowired
     private HPLoanRepo hpLoanRepo;
     @Autowired
@@ -54,179 +56,178 @@ public class HpLoanServiceImpl implements HPLoanService {
     private ProductRepo productRepo;
     @Autowired
     private HPScheduleService hpScheduleService;
+    @Autowired
+    private WebSocketNotificationService notificationService;
 
     @Override
+    @Transactional
     public HPLoanDTO createSMELoan(HPLoanDTO dto) {
-       User entryUser = userRepository.findById(dto.getEntryUserId())
-                .orElseThrow(() -> new NotFoundException("Entry user not found"));
+        System.out.println("DTO : "+dto);
+        // Validate input DTO
+        if (dto == null) {
+            throw new ValidationException("Loan DTO cannot be null");
+        }
+
+        User entryUser = userRepository.findById(dto.getEntryUserId())
+                .orElseThrow(() -> new NotFoundException("Entry user not found with ID: " + dto.getEntryUserId()));
 
         CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountId())
-                .orElseThrow(() -> new NotFoundException("Current account not found"));
+                .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dto.getCurrentAccountId()));
 
-        if (!currentAcc.isFreezeStatus()) {
+        // Correct the freeze status check logic (assuming true means frozen)
+        if (currentAcc.isFreezeStatus()) {
             throw new ValidationException("Cannot create HP loan: The associated current account (ID: " + currentAcc.getAccountId() + ") is frozen.");
         }
+
+        Product product = productRepo.findById(dto.getProductId())
+                .orElseThrow(() -> new NotFoundException("Product not found with ID: " + dto.getProductId()));
 
         HPLoan hpLoan = HPLoanMapper.toEntity(dto);
         hpLoan.setLoanId(HPLoanIDGenerator.generateLoanId());
         hpLoan.setEntryUser(entryUser);
         hpLoan.setCurrentAccount(currentAcc);
-        BigDecimal interestRate  = rateRepo.findValueByRateType("HP Loan Interest Rate");
+        hpLoan.setProduct(product);
+
+
+        // Set interest rate
+        BigDecimal interestRate = rateRepo.findValueByRateType("HP Loan Interest Rate");
+        if (interestRate == null) {
+            throw new ValidationException("HP Loan Interest Rate not found in rate repository");
+        }
         hpLoan.setInterestRate(interestRate);
 
+        // Validate and set tenor
         if (dto.getTenor() <= 0) {
             throw new ValidationException("Tenor must be greater than 0");
         }
-        hpLoan.setTenor(dto.getTenor()); // Ensure tenor is set
-        hpLoan.setDuration(hpLoan.getTenor() * 12);
-        // Initialize loan amount
-        BigDecimal loanAmount = BigDecimal.ZERO;
+        System.out.println("HPLoan Tenor Before Set : "+hpLoan.getTenor());
 
-        // Fetch product and ensure it's not null
-        Product product = productRepo.findById(dto.getProductId())
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        hpLoan.setTenor(dto.getTenor());
+        hpLoan.setDuration(dto.getTenor() * 12);
 
-        // Ensure product value is not null before using it
-        if (product.getValue() == null) {
-            throw new NotFoundException("Product value is null");
-        } else {
-            System.out.println(product.getValue());
-            loanAmount = product.getValue(); // Initialize loan amount
+        // Calculate loan amount
+        BigDecimal loanAmount = product.getValue() != null ? product.getValue() : BigDecimal.ZERO;
+
+        if (dto.getDownPaymentRate() != null && dto.getDownPaymentRate().compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal downPayment = loanAmount.multiply(dto.getDownPaymentRate()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+            loanAmount = loanAmount.subtract(downPayment);
         }
 
-        // Apply Down Payment Rate if exists
-        if (hpLoan.getDownPaymentRate() != null) {
-            // Ensure that the downPaymentRate is not null and calculate accordingly
-            loanAmount = loanAmount.subtract(loanAmount.multiply(hpLoan.getDownPaymentRate()).divide(BigDecimal.valueOf(100)));
+        if (dto.getDealerCommissionRate() != null && dto.getDealerCommissionRate().compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal commission = loanAmount.multiply(dto.getDealerCommissionRate()).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP);
+            loanAmount = loanAmount.add(commission);
         }
 
-        // Apply Dealer Commission Rate if exists
-        if (hpLoan.getDealerCommissionRate() != null) {
-            // Ensure that the dealerCommissionRate is not null and calculate accordingly
-            loanAmount = loanAmount.add(loanAmount.multiply(hpLoan.getDealerCommissionRate()).divide(BigDecimal.valueOf(100)));
-        }
-
-        // Set the calculated loan amount
         hpLoan.setLoanAmount(loanAmount);
-
-        // Save the loan in the repository
-        hpLoan = hpLoanRepo.save(hpLoan);
-
-        // Return DTO with the saved loan data
-        return toDTO(hpLoan);
+        hpLoan.setStatus(LoanStatus.PENDING);
+        hpLoan.setRegisteredDate(LocalDateTime.now());
+        System.out.println("Lee Tenor : "+hpLoan.getTenor());
+        HPLoan savedLoan = hpLoanRepo.save(hpLoan);
+        System.out.println("Saved Loan : "+savedLoan);
+        HPLoanDTO savedLoanDTO = HPLoanMapper.toDTO(savedLoan);
+        notificationService.notifyNewHPLoan(savedLoanDTO);
+        return savedLoanDTO;
     }
 
     @Override
+    @Transactional
     public void rejectHPLoan(Integer loanId) {
         HPLoan hpLoan = hpLoanRepo.findById(loanId)
-                .orElseThrow(() -> new NotFoundException("HP Loan with ID " + loanId + " not found."));
+                .orElseThrow(() -> new NotFoundException("HP Loan with ID " + loanId + " not found"));
+
+        if (hpLoan.getStatus() != LoanStatus.PENDING) {
+            throw new ValidationException("Only pending loans can be rejected");
+        }
+
         hpLoan.setStatus(LoanStatus.REJECT);
-        // Save the SME Loan status update
         hpLoanRepo.save(hpLoan);
+
+        HPLoanDTO dto = HPLoanMapper.toDTO(hpLoan);
+        notificationService.notifyHPLoanStatusChange(dto);
     }
 
     @Override
-    public void approveHPLoan(Integer loanId,Integer approveUserId) {
+    @Transactional
+    public void approveHPLoan(Integer loanId, Integer approveUserId) {
+        System.out.println("Start");
         HPLoan hpLoan = hpLoanRepo.findById(loanId)
-                .orElseThrow(() -> new NotFoundException("HP Loan with ID " + loanId + " not found."));
-        if (hpLoan.getCurrentAccount().getAccountId() == null) {
+                .orElseThrow(() -> new NotFoundException("HP Loan with ID " + loanId + " not found"));
+
+        if (hpLoan.getStatus() != LoanStatus.PENDING) {
+            throw new ValidationException("Only pending loans can be approved");
+        }
+
+        User approveUser = userRepository.findById(approveUserId)
+                .orElseThrow(() -> new NotFoundException("Approve user not found with ID: " + approveUserId));
+
+        if (hpLoan.getCurrentAccount() == null || hpLoan.getCurrentAccount().getAccountId() == null) {
             throw new NotFoundException("Current Account not found for HP Loan ID " + loanId);
         }
-        hpLoan.setStatus(LoanStatus.APPROVE); // Change status to "Approved"
-        //hpLoan.setPrincipal(hpLoan.getLoanAmount());
-        hpLoan.setApprovedDate(LocalDateTime.now()); // Set approved date to current date
-        User approveUser = userRepository.findById(approveUserId)
-                .orElseThrow(() -> new NotFoundException("Approve user not found"));
+
+        if (hpLoan.getProduct() == null || hpLoan.getProduct().getDealer() == null) {
+            throw new NotFoundException("Product or Dealer information not found for HP Loan ID " + loanId);
+        }
+
+        hpLoan.setStatus(LoanStatus.APPROVE);
+        hpLoan.setApprovedDate(LocalDateTime.now());
         hpLoan.setApprovedUser(approveUser);
-        hpLoanRepo.save(hpLoan); // Save the updated loan
+        System.out.println("Before saving HP Loan");
+        hpLoanRepo.save(hpLoan);
+        System.out.println("After saving HP Loan");
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setType(transactionType.CR);
         transactionDTO.setAmount(hpLoan.getLoanAmount());
         transactionDTO.setCurrentAccountId(hpLoan.getProduct().getDealer().getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
+        System.out.println("Transaction complete and before schedule");
         hpScheduleService.createSchedule(hpLoan);
-       // scheduleService.createSchedule(smeLoan);
+        System.out.println("After schedule");
+        HPLoanDTO dto = HPLoanMapper.toDTO(hpLoan);
+        notificationService.notifyHPLoanStatusChange(dto);
     }
-
 
     @Override
     public List<HPLoanDTO> getAllHPLoans() {
         List<HPLoan> loans = hpLoanRepo.findByStatus(LoanStatus.PENDING);
-        List<HPLoanDTO> loanDTOs = new ArrayList<>();
-
-        for (HPLoan loan : loans) {
-            HPLoanDTO loanDTO = new HPLoanDTO();
-            loanDTO.setId(loan.getId());
-            loanDTO.setLoanId(loan.getLoanId());
-            loanDTO.setLoanAmount(loan.getLoanAmount());
-            loanDTO.setInterestRate(loan.getInterestRate());
-            loanDTO.setGracePeriod(loan.getGracePeriod());
-            loanDTO.setRegisteredDate(loan.getRegisteredDate().toString());
-            loanDTO.setApprovedDate(loan.getApprovedDate() != null ? loan.getApprovedDate().toString() : null);
-            loanDTO.setStatus(loan.getStatus());
-            loanDTO.setEndDate(loan.getEndDate() != null ? loan.getEndDate().toString() : null);
-            loanDTO.setDuration(loan.getDuration());
-            loanDTO.setEntryUserId(loan.getEntryUser() != null ? loan.getEntryUser().getId() : null);
-            loanDTO.setApprovedUserId(loan.getApprovedUser() != null ? loan.getApprovedUser().getId() : null);
-            loanDTO.setCurrentAccountId(loan.getCurrentAccount().getAccountId() != null ? loan.getCurrentAccount().getAccountId() : null);
-            loanDTO.setProductId(loan.getProduct() != null ? loan.getProduct().getId() : null);
-
-            loanDTO.setCurrentCode(loan.getCurrentAccount().getAccountId());
-            loanDTO.setProductName(loan.getProduct().getProductName()); // NEW
-            loanDTO.setProductValue(loan.getProduct().getValue()); // NEW
-
-
-            loanDTO.setDownPaymentRate(loan.getDownPaymentRate());
-            loanDTO.setDealerCommissionRate(loan.getDealerCommissionRate());
-
-            loanDTOs.add(loanDTO);
-        }
-
-        return loanDTOs;
+        return loans.stream()
+                .map(HPLoanMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public HPLoanDTO getHPLoanById(Integer id) {
         HPLoan hpLoan = hpLoanRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("HP Loan not found with ID: " + id));
-        return toDTO(hpLoan); // Use the mapper to convert to DTO
+        return HPLoanMapper.toDTO(hpLoan);
     }
 
     @Override
     public List<HPLoanDTO> getApprovedHPLoans() {
         List<HPLoan> approvedLoans = hpLoanRepo.findByStatus(LoanStatus.APPROVE);
-        List<HPLoanDTO> loanDTOs = new ArrayList<>();
+        return approvedLoans.stream()
+                .map(HPLoanMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
-        for (HPLoan loan : approvedLoans) {
-            HPLoanDTO loanDTO = new HPLoanDTO();
-            loanDTO.setId(loan.getId());
-            loanDTO.setLoanId(loan.getLoanId());
-            loanDTO.setLoanAmount(loan.getLoanAmount());
-            loanDTO.setInterestRate(loan.getInterestRate());
-            loanDTO.setGracePeriod(loan.getGracePeriod());
-            loanDTO.setRegisteredDate(loan.getRegisteredDate() != null ? loan.getRegisteredDate().toString() : null);
-            loanDTO.setApprovedDate(loan.getApprovedDate() != null ? loan.getApprovedDate().toString() : null);
-            loanDTO.setStatus(loan.getStatus());
-            loanDTO.setEndDate(loan.getEndDate() != null ? loan.getEndDate().toString() : null);
-            loanDTO.setDuration(loan.getDuration());
-            loanDTO.setEntryUserId(loan.getEntryUser() != null ? loan.getEntryUser().getId() : null);
-            loanDTO.setApprovedUserId(loan.getApprovedUser() != null ? loan.getApprovedUser().getId() : null);
-            loanDTO.setCurrentAccountId(loan.getCurrentAccount() != null ? loan.getCurrentAccount().getAccountId() : null);
-            loanDTO.setProductId(loan.getProduct() != null ? loan.getProduct().getId() : null);
-            loanDTO.setDownPaymentRate(loan.getDownPaymentRate());
-            loanDTO.setDealerCommissionRate(loan.getDealerCommissionRate());
-            loanDTO.setCurrentCode(loan.getCurrentAccount() != null ? loan.getCurrentAccount().getAccountId() : null);
-            loanDTO.setProductName(loan.getProduct() != null ? loan.getProduct().getProductName() : null);
-            loanDTO.setProductValue(loan.getProduct() != null ? loan.getProduct().getValue() : null);
-            loanDTO.setTenor(loan.getTenor());
-            loanDTO.setEntryUserName(loan.getEntryUser() != null ? loan.getEntryUser().getName() : null); // Assuming User has a getName() method
-            loanDTO.setApprovedUserName(loan.getApprovedUser() != null ? loan.getApprovedUser().getName() : null); // Assuming User has a getName() method
-            loanDTO.setProductPhoto(loan.getProduct() != null ? loan.getProduct().getPhoto() : null); // Assuming Product has a getProductPhoto() method
+    // Helper method (if needed elsewhere, could be moved to mapper)
+    private HPLoanDTO convertToDTO(HPLoan hpLoan) {
+        return HPLoanMapper.toDTO(hpLoan);
+    }
 
-            loanDTOs.add(loanDTO);
-        }
+    @Override
+    public List<MonthlyHPLoanCountDTO> getApprovedLoansByBranchMonthly(Integer branchId) {
+        List<HPLoan> loans = hpLoanRepo.findByEntryUser_Branch_Id(branchId);
 
-        return loanDTOs;
+        return loans.stream()
+                .filter(loan -> loan.getStatus() == LoanStatus.APPROVE && loan.getApprovedDate() != null)
+                .collect(Collectors.groupingBy(
+                        loan -> loan.getApprovedDate().format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(entry -> new MonthlyHPLoanCountDTO(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(MonthlyHPLoanCountDTO::getMonth))
+                .collect(Collectors.toList());
     }
 
 }

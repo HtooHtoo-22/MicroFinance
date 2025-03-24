@@ -1,56 +1,53 @@
 <div class="flex">
-    <!-- Sidebar -->
-    <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
-      <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
-      <ul class="space-y-4 text-gray-900 text-sm font-semibold">
-        <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-          <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
-          <a [routerLink]="['/operation-dashboard/home']" routerLinkActive="text-[#00A1FF]">Home</a>
-        </li>
-  
-        <!-- Customer Management -->
-        <li *ngIf="isEntry() || isOperation()">
-          <div class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200 cursor-pointer" (click)="toggleCustomerDropdown()">
-            <img src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-4-1/1024/user4-512.png" class="w-5 h-5">
-            <span>Customer Management</span>
-            <img [class.rotate-180]="isCustomerDropdownOpen" src="https://cdn1.iconfinder.com/data/icons/basic-ui-icon-rounded-colored/512/icon-32-1024.png" class="w-4 h-4 ml-auto transition-transform duration-200">
-          </div>
-          <ul *ngIf="isCustomerDropdownOpen" class="ml-7 mt-2 space-y-2">
-            <li *ngIf="isEntry() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-                <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
-                <a [routerLink]="['/operation-dashboard/hp-register']" routerLinkActive="text-[#00A1FF]">HP Loan Register</a>
-              </li>
-            <li *ngIf="isEntry() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">          
-              <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5">
-              <a [routerLink]="['/operation-dashboard/sme-loan-register']" routerLinkActive="text-[#00A1FF]">Account List</a>
-            </li>
-            <li *ngIf="isEntry() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-              <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
-              <a [routerLink]="['/operation-dashboard/hp-loan-list-finished']" routerLinkActive="text-[#00A1FF]">Transaction History</a>
-            </li>
-            <li *ngIf="isEntry() || isOperation()" class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200">
-                <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
-                <a [routerLink]="['/operation-dashboard/sme-loan-list']" routerLinkActive="text-[#00A1FF]">Transaction History</a>
-              </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  
-    <!-- Main content wrapper with fixed header -->
-    <div class="flex-1 ml-64">
-      <div class="fixed right-0 left-64 bg-white z-10 p-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8">
-          </div>
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8">
-          </div>
+  <!-- Sidebar -->
+  <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
+    <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
+    <ul class="space-y-4 text-gray-900 text-sm font-semibold">
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
+        <a [routerLink]="['/operation-dashboard/home']" routerLinkActive="text-[#00A1FF]">Home</a>
+      </li>
+
+      <!-- HP Loan Register -->
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200"  routerLinkActive="active-link">
+        <img src="https://cdn0.iconfinder.com/data/icons/phosphor-bold-vol-3-1/256/list-bullets-duotone-512.png" class="w-5 h-5">
+        <a [routerLink]="['/operation-dashboard/hp-register']" routerLinkActive="text-[#00A1FF]">HP Loan Register</a>
+      </li>
+
+      <!-- Account List -->
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">          
+        <img src="https://cdn1.iconfinder.com/data/icons/social-productivity-line-art-6/128/profile-menu-ol-1024.png" class="w-5 h-5">
+        <a [routerLink]="['/operation-dashboard/sme-loan-register']" routerLinkActive="text-[#00A1FF]">SME Loan Register</a>
+      </li>
+
+      <!-- HP Loan List Finished -->
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
+        <a [routerLink]="['/operation-dashboard/hp-loan-list-finished']" routerLinkActive="text-[#00A1FF]">HP Loan List</a>
+      </li>
+
+      <!-- SME Loan List -->
+      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+        <img src="https://cdn3.iconfinder.com/data/icons/fluent-regular-24px-vol-4/24/ic_fluent_history_24_regular-1024.png" class="w-5 h-5">
+        <a [routerLink]="['/operation-dashboard/sme-loan-list']" routerLinkActive="text-[#00A1FF]">SME Loan List</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main content wrapper with fixed header -->
+  <div class="flex-1 ml-64">
+    <div class="fixed right-0 left-64 bg-white z-10 p-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8">
+        </div>
+        <div class="flex items-center space-x-2">
+          <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8">
         </div>
       </div>
-      <div class="pt-24 p-7 bg-gray-100 min-h-screen">
-        <router-outlet></router-outlet>
-      </div>
+    </div>
+    <div class="pt-24 p-7 bg-gray-100 min-h-screen">
+      <router-outlet></router-outlet>
     </div>
   </div>
+</div>

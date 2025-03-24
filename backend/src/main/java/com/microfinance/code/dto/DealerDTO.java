@@ -16,4 +16,5 @@ public class DealerDTO {
     private String status;
     private String currentAccountId;
     private Double companyValue;
+    private String information;
 }

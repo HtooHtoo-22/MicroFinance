@@ -14,4 +14,5 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY) // Client cannot set this
     private Integer dealerId;
     private Boolean status; // Changed from Byte to Boolean
+
 }

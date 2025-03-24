@@ -36,7 +36,9 @@ public class HPScheduleServiceImpl implements HPScheduleService {
 
     @Override
     public void createSchedule(HPLoan hpLoan) {
+        System.out.println("Schedule start");
         BigDecimal totalInstallmentAmount = calculateEMI(hpLoan);
+        System.out.println("Total Installment Amount : "+totalInstallmentAmount);
         BigDecimal bmfRate = getBMFRate(hpLoan, totalInstallmentAmount).divide(BigDecimal.valueOf(100));
         BigDecimal remainingAmount = hpLoan.getLoanAmount();
         int totalTerms = hpLoan.getTenor() * 12;
@@ -84,6 +86,7 @@ public class HPScheduleServiceImpl implements HPScheduleService {
     }
 
     private BigDecimal getBMFRate(HPLoan hpLoan, BigDecimal installmentAmount) {
+        System.out.println("BMF Rate");
         BigDecimal loanAmount = hpLoan.getLoanAmount();
         BigDecimal totalMonths = BigDecimal.valueOf(hpLoan.getTenor() * 12);
         BigDecimal low = BigDecimal.ZERO, high = BigDecimal.ONE, mid;
@@ -101,13 +104,18 @@ public class HPScheduleServiceImpl implements HPScheduleService {
     }
 
     private BigDecimal calculateEMI(HPLoan hpLoan) {
+        System.out.println("Calculate EMI");
         BigDecimal principal = hpLoan.getLoanAmount();
+        System.out.println("Principal : "+principal);
         BigDecimal annualInterestRate = hpLoan.getInterestRate().divide(BigDecimal.valueOf(100));
+        System.out.println("Annual Rate : "+annualInterestRate);
         BigDecimal totalInterest = principal.multiply(annualInterestRate).multiply(BigDecimal.valueOf(hpLoan.getTenor()));
+        System.out.println("Interest : "+totalInterest);
         return principal.add(totalInterest).divide(BigDecimal.valueOf(hpLoan.getTenor() * 12), 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateExtraInterest(HPLoan hpLoan, BigDecimal remainingAmount, LocalDate dueDate) {
+        System.out.println("Calculate Extra Interest");
         long extraDays = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
         return remainingAmount.multiply(hpLoan.getInterestRate().divide(BigDecimal.valueOf(100)))
                 .divide(BigDecimal.valueOf(365), 10, RoundingMode.HALF_UP)

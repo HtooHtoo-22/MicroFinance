@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CurrentAccService } from '../../../service/current-acc.service'; // Adjust the path as necessary
+import { CurrentAccService } from '../../../service/current-acc.service';
 import { CurrentAccount } from '../../../model/CurrentAcc';
+import { Cif } from '../../../model/CIF';
+import { CifService } from '../../../service/cif.service';
 
 @Component({
   selector: 'app-current-account-register',
@@ -12,25 +14,37 @@ import { CurrentAccount } from '../../../model/CurrentAcc';
 })
 export class CreateComponent implements OnInit {
   currentAccountForm!: FormGroup;
+  cifs: Cif[] = [];
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private currentAccService: CurrentAccService // Inject the service
+    private currentAccService: CurrentAccService,
+    private cifService: CifService
   ) {}
 
   ngOnInit(): void {
-    this.currentAccountForm = this.fb.group({
-      cifId: ['', Validators.required], // CIF ID is required
-      maxAmount: ['', [Validators.required, Validators.min(0)]], // Max amount is required
-      minAmount: ['', [Validators.required, Validators.min(0)]], // Min amount is required
-      totalBalance: [0], // Default value for total balance
-      freezeStatus: [false], // Default value for freeze status
-      accountId: [''] // Optional, can be generated on the backend
+    this.cifService.listCif().subscribe({
+      next: (response) => {
+        console.log('CIFs loaded:', response); // Add logging
+        this.cifs = response.data || [];
+      },
+      error: (error) => {
+        console.error('Error fetching CIFs:', error);
+        alert('Failed to load CIFs');
+      }
     });
 
-    // Get the CIF ID from the route parameters
+    this.currentAccountForm = this.fb.group({
+      cifId: [null, Validators.required],
+      maxAmount: ['', [Validators.required, Validators.min(0)]],
+      minAmount: ['', [Validators.required, Validators.min(0)]],
+      totalBalance: [0],
+      freezeStatus: [false],
+      accountId: ['']
+    });
+
     this.route.params.subscribe(params => {
       const cifId = params['cifId'];
       if (cifId) {
@@ -42,39 +56,36 @@ export class CreateComponent implements OnInit {
   onSubmit() {
     if (this.currentAccountForm.valid) {
       const formValue = this.currentAccountForm.value;
-      
-      // Convert cifId to a number and ensure it's valid
       const cifId = Number(formValue.cifId);
       if (isNaN(cifId)) {
-          console.error('CIF ID is not a valid number');
-          alert('Invalid CIF ID');
-          return;
+        console.error('CIF ID is not a valid number');
+        alert('Invalid CIF ID');
+        return;
       }
 
       const accountData: CurrentAccount = {
-          accountId: '',
-          maxAmount: Number(formValue.maxAmount),
-          minAmount: Number(formValue.minAmount),
-          cifId: cifId,
-          totalBalance: 0,
-          freezeStatus: false,
-          createDate: '',
-          userName: ''
+        accountId: '',
+        maxAmount: Number(formValue.maxAmount),
+        minAmount: Number(formValue.minAmount),
+        cifId: cifId,
+        totalBalance: 0,
+        freezeStatus: false,
+        createDate: '',
+        userName: ''
       };
 
-
-        this.currentAccService.createCurrentAccount(accountData).subscribe({
-            next: (response) => {
-                console.log('Current Account created successfully:', response);
-                this.router.navigate(['/dashboard/current-acc-list']); // Navigate to the list after creation
-            },
-            error: (error) => {
-                console.error('Error creating Current Account:', error);
-                alert('Error creating current account. Please try again.');
-            }
-        });
+      this.currentAccService.createCurrentAccount(accountData).subscribe({
+        next: (response) => {
+          console.log('Current Account created successfully:', response);
+          this.router.navigate(['/entry-dashboard/current-acc-list']);
+        },
+        error: (error) => {
+          console.error('Error creating Current Account:', error);
+          alert('Error creating current account. Please try again.');
+        }
+      });
     } else {
-        console.log('Form is invalid');
+      console.log('Form is invalid');
     }
-}
+  }
 }

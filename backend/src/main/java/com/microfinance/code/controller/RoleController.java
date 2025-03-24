@@ -54,4 +54,5 @@ public class RoleController {
         roleService.deleteRole(id);
         return ApiResponse.success(HttpStatus.NO_CONTENT, 204, "Role deleted successfully");
     }
+
 }

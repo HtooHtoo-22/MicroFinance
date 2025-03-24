@@ -83,6 +83,11 @@ export class CreateEditProductComponent implements OnInit {
     }
   }
 
+  removeFile(): void {
+    this.selectedFile = null;
+    this.previewImage = null;
+  }
+
   onSubmit(): void {
     if (this.productForm.invalid) {
       this.markFormAsTouched();

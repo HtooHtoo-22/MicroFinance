@@ -47,48 +47,51 @@
     </div>
   </div>
 
-  <!-- Add this confirmation modal after the error modal and before the form -->
-  <div id="confirmModal" 
-       *ngIf="showConfirmModal"
-       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-      <div class="mt-3 text-center">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">Confirm Transaction</h3>
-        <div class="mt-4 px-7">
-          <p class="text-sm text-gray-500 mb-4">Please confirm the following transaction details:</p>
-          
-          <div class="text-left space-y-2">
-            <div>
-              <span class="font-semibold">Account ID:</span>
-              <span class="ml-2">{{ transactionForm.get('currentAccountId')?.value }}</span>
-            </div>
-            <div>
-              <span class="font-semibold">Transaction Type:</span>
-              <span class="ml-2">{{ transactionForm.get('type')?.value }}</span>
-            </div>
-            <div>
-              <span class="font-semibold">Amount:</span>
-              <span class="ml-2">${{ transactionForm.get('amount')?.value }}</span>
-            </div>
+ <!-- Confirmation Modal -->
+<div *ngIf="showConfirmModal" class="fixed inset-0 bg-white/70 backdrop-blur-[1.5px] flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full mx-4">
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-4">
+          <div>
+              <h3 class="text-xl font-semibold text-gray-900">Confirm Transaction</h3>
+              <p class="text-xs text-gray-500 mt-1">Account ID: {{ transactionForm.get('currentAccountId')?.value }}</p>
           </div>
-        </div>
-        
-        <div class="flex justify-center gap-4 mt-6">
-          <button 
-            (click)="confirmTransaction()"
-            class="px-4 py-2 bg-[#00A1FF] text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Confirm
-          </button>
           <button 
             (click)="closeModal()"
-            class="px-4 py-2 bg-gray-100 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
-            Cancel
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
           </button>
-        </div>
       </div>
-    </div>
-  </div>
 
+      <!-- Transaction Details -->
+      <div class="space-y-4 text-sm">
+          <div class="flex justify-between items-center py-2 border-b">
+              <span class="text-gray-500">Transaction Type:</span>
+              <span class="font-medium">{{ transactionForm.get('type')?.value }}</span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b">
+              <span class="text-gray-500">Amount:</span>
+              <span class="font-medium">${{ transactionForm.get('amount')?.value }}</span>
+          </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex justify-end gap-2">
+          <button 
+            (click)="closeModal()"
+            class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+              Cancel
+          </button>
+          <button 
+            (click)="confirmTransaction()"
+            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+              Confirm Transaction
+          </button>
+      </div>
+  </div>
+</div>
   <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-4 " >
 
     <!-- Current Account ID -->
