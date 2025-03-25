@@ -1,5 +1,7 @@
 package com.microfinance.code.service;
 
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.status.RepaymentStatus;
@@ -58,10 +60,16 @@ public class SMEODRepayService {
         for (SMERepaymentSchedule schedule : overdueSchedules) {
             if (remainingAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 applyLateFeeIfApplicable(schedule);
+                sendRepaymentNotification(schedule, false);
                 continue;
             }
 
+            BigDecimal beforeRepayment = schedule.getInterestODAmount(); // Capture the amount before repayment
             remainingAmount = repaySchedule(schedule, remainingAmount);
+            BigDecimal afterRepayment = schedule.getInterestODAmount(); // Capture the amount after repayment
+
+            boolean isFullyPaid = afterRepayment.compareTo(BigDecimal.ZERO) == 0;
+            sendRepaymentNotification(schedule, isFullyPaid);
         }
         return remainingAmount;
     }
@@ -76,7 +84,28 @@ public class SMEODRepayService {
 
         return remainingAmount;
     }
+    private void sendRepaymentNotification(SMERepaymentSchedule schedule, boolean isFullyPaid) {
+        String email = schedule.getSmeLoan().getCurrentAccount().getCif().getEmail();
+        String phoneNumber = schedule.getSmeLoan().getCurrentAccount().getCif().getPhone();
+        String subject;
+        String message;
 
+        if (isFullyPaid) {
+            subject = "Overdue Payment Cleared";
+            message = "Dear Customer,\n\nYour overdue payment for term "+schedule.getTermNumber()+" of Loan ID " + schedule.getSmeLoan().getLoanId() +
+                    " has been successfully cleared. This term is now fully paid.\n\nThank you.";
+        } else {
+
+            BigDecimal lateFee = schedule.getInterestODAmount();
+            subject = "Still Overdue Payment - Action Required";
+            message = "Dear Customer,\n\nAlthough your previous late fee has been successfully repaid, " +
+                    "your current overdue term "+schedule.getTermNumber()+" remains unpaid. As a result, late fees will restart. \n\n" +
+                    "Please make the necessary payment as soon as possible to avoid additional charges.";
+        }
+
+        EmailSender.sendEmail(email, subject, message);
+        SmsSender.sendSms(phoneNumber, message);
+    }
     private BigDecimal calculateAmountToRepay(SMERepaymentSchedule schedule, BigDecimal remainingAmount) {
         return remainingAmount.min(schedule.getInterestODAmount());
     }

@@ -116,7 +116,6 @@ public class SMERepaymentService {
 
             // Check if this is the FINAL TERM (principal is due)
             if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
-                System.out.println("Hello");
                 // Final term: Interest is paid, now check principal
                 BigDecimal principalDue = schedule.getSmeLoan().getPrincipal();
                 if (availableBalance.compareTo(principalDue) >= 0) {
@@ -127,6 +126,19 @@ public class SMERepaymentService {
                     List<SMELoanHasCollateral> toDelete = loanHasCollateralRepo.findBySmeLoan(schedule.getSmeLoan());
                     // 2. Delete in batch (efficient)
                     loanHasCollateralRepo.deleteAll(toDelete); // Single DB operation
+                    String message = "RichCoin: Congratulations! Your SME loan Term: " + schedule.getTermNumber() +
+                            " has been fully repaid, including the principal amount of MMK " + principalDue +
+                            ". Your collateral has now been released. Thank you for your trust in us.";
+                    SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+                    String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Loan Fully Repaid";
+                    String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "Congratulations! You have successfully repaid the final term of your SME loan, including the principal amount of MMK " + principalDue + ".\n" +
+                            "As a result, your collateral for this loan has now been released. We appreciate your commitment to timely repayments.\n\n" +
+                            "Thank you for choosing RichCoin Financial Services.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
                 } else {
                     System.out.println("Principal Not Enough");
                     // Principal unpaid → DEFAULT
@@ -143,6 +155,18 @@ public class SMERepaymentService {
 
                     // Batch save (1 transaction)
                     collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                    String message = "RichCoin: Your loan's principal amount of MMK " + principalDue +
+                            " has not been repaid. Your collateral will remain with us until full payment is made.";
+                    SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+                    String emailSubject = "Outstanding Principal Payment";
+                    String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "Your loan's principal amount of MMK " + principalDue + " has not been repaid.\n" +
+                            "As a result, your collateral will remain with us until the full payment is made.\n\n" +
+                            "Please arrange the payment as soon as possible. If you need assistance, feel free to contact us.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
                 }
             } else {
                 // Regular term (only interest)
@@ -228,6 +252,20 @@ public class SMERepaymentService {
 
                 // Batch save (1 transaction)
                 collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You repaid MMK " + dueAmount + ". " +
+                        "Your current balance is MMK " + currentAccount.getTotalBalence() + ". " +
+                        "Thank you for your timely repayment.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Repayment Successful";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We are pleased to inform you that your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You have repaid MMK " + dueAmount + " today. Your current balance is MMK " + currentAccount.getTotalBalence() + ".\n\n" +
+                        "Thank you for your timely repayment.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
         } else {
             // No available balance, full overdue
@@ -281,6 +319,20 @@ public class SMERepaymentService {
 
                 // Batch save (1 transaction)
                 collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You repaid MMK " + dueAmount + ". " +
+                        "Your current balance is MMK " + currentAccount.getTotalBalence() + ". " +
+                        "Thank you for your timely repayment.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Repayment Successful";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We are pleased to inform you that your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You have repaid MMK " + dueAmount + " today. Your current balance is MMK " + currentAccount.getTotalBalence() + ".\n\n" +
+                        "Thank you for your timely repayment.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
         }
 
