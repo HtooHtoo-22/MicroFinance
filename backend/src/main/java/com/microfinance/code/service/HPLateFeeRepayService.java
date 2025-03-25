@@ -1,5 +1,7 @@
 package com.microfinance.code.service;
 
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
@@ -97,6 +99,30 @@ public class HPLateFeeRepayService {
         if (lateFeeHolding != null) {
             lateFeeHoldingRepo.delete(lateFeeHolding);
         }
+        String phone = account.getCif().getPhone();
+        String email = account.getCif().getEmail();
+        String userName = account.getCif().getUserName();
+        HPLoan hpLoan = hpLoanRepo.findById(hpLoanId)
+                .orElseThrow(()->new NotFoundException("SME Loan Not Found"));
+        String loanId = hpLoan.getLoanId();
+        // ==== SMS Message ====
+        String smsMessage = "RichCoin: Thank you! Your HP loan (ID: " + loanId + ") late fee of " + totalLateFees +
+                " Ks has been fully paid. We appreciate your prompt repayment.";
+        SmsSender.sendSms(phone, smsMessage);
+
+// ==== Email Notification ====
+        String emailSubject = "HP Loan Late Fee Payment Confirmation";
+        String emailBody = "Dear " + userName + ",\n\n" +
+                "We are pleased to confirm that your HP loan late fee has been fully paid.\n\n" +
+                "HP Loan ID: " + loanId + "\n" +
+                "Total Late Fees: " + totalLateFees + " Ks\n\n" +
+                "Thank you for settling your late fees back. If you have any questions or need further assistance, " +
+                "please feel free to contact us.\n\n" +
+                "Best regards,\n" +
+                "RichCoin Financial Services";
+
+        EmailSender.sendEmail(email, emailSubject, emailBody);
+
 
         odService.processODRepayment(totalAvailableAmount, hpLoanId);
     }
@@ -126,6 +152,47 @@ public class HPLateFeeRepayService {
         }
         lateFeeHolding.setHoldAmount(holdAmount);
         lateFeeHoldingRepo.save(lateFeeHolding);
+
+        String loanId = hpLoan.getLoanId();
+
+        String phone = account.getCif().getPhone();
+        String email = account.getCif().getEmail();
+        String userName = account.getCif().getUserName();
+        BigDecimal totalLateFee = lateFees.stream()
+                .map(HPLateFeeCalculation::getTotalLateFee)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        int totalLateDays = lateFees.stream()
+                .mapToInt(HPLateFeeCalculation::getLateDays)
+                .max()
+                .orElse(0);
+        String calculationNote = "";
+        List<HPSchedule> schedules = repaymentScheduleRepo.findByHPLoanIdAndStatusIn(hpLoanId,List.of(RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD,RepaymentStatus.INTEREST_OD_PRINCIPAL_OD));
+        BigDecimal dailyIncrease;
+        if (maxLateDays < 90) {
+            // Before 90 days — based on total overdue interest
+            BigDecimal totalOverdueInterest = schedules.stream()
+                    .map(HPSchedule::getInterestODAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalPrincipalInterest = schedules.stream()
+                    .map(HPSchedule::getPrincipalODAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal lateFeeBefore90Rate  = rateRepo.findValueByRateType("HP Late Fee Before 90 Days");
+            dailyIncrease = totalOverdueInterest.add(totalPrincipalInterest).multiply(lateFeeBefore90Rate).divide(BigDecimal.valueOf(100));
+            calculationNote =
+                    "Currently, your daily late fee is increasing by " + dailyIncrease + " Ks, based on total overdue interest and overdue principal.\n" +
+                            "Calculation: Total Overdue Amount (" + totalOverdueInterest + ") × Rate (" + lateFeeBefore90Rate + "%) = " + dailyIncrease;
+        } else {
+
+            // After 90 days — based on outstanding amount
+            BigDecimal outstandingAmount = calculateOutstandingAmount(hpLoan); // assuming you have this field
+            BigDecimal lateFeeAfter90Rate  = rateRepo.findValueByRateType("HP Late Fee After 90 Days");
+            dailyIncrease = outstandingAmount.multiply(lateFeeAfter90Rate).divide(BigDecimal.valueOf(100));
+            calculationNote =
+                    "As your late days exceed 90, daily late fee is now calculated based on outstanding amount.\n" +
+                            "Currently increasing by " + dailyIncrease + " Ks per day.\n" +
+                            "Calculation: Outstanding Amount (" + outstandingAmount + ") × Rate (" + lateFeeAfter90Rate + "%) = " + dailyIncrease;
+
+        }
     }
     @Transactional
     public void incrementLateDaysAndFees(List<HPLateFeeCalculation> lateFees, HPLoan hpLoan) {

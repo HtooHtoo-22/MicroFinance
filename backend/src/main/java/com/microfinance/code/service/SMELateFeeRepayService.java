@@ -191,12 +191,15 @@ public class SMELateFeeRepayService {
                             "Calculation: Outstanding Amount (" + outstandingAmount + ") × Rate (" + lateFeeAfter90Rate + "%) = " + dailyIncrease;
 
         }
-        String smsMessage = "RichCoin: Your SME Loan (ID: " + loanId + ") has " + totalLateDays + " late days. " +
+        // ==== SMS Message ====
+        String smsMessage = "RichCoin: Your HP Loan (ID: " + loanId + ") has " + totalLateDays + " late days. " +
                 "Total late fee so far is " + totalLateFee + " Ks. " + calculationNote;
         SmsSender.sendSms(phone, smsMessage);
-        String emailSubject = "SME Loan Late Fee & Daily Increase Notification";
+
+// ==== Email Notification ====
+        String emailSubject = "HP Loan Late Fee & Daily Increase Notification";
         String emailBody = "Dear " + userName + ",\n\n" +
-                "We would like to inform you regarding your SME Loan (ID: " + loanId + "):\n\n" +
+                "We would like to inform you regarding your HP Loan (ID: " + loanId + "):\n\n" +
                 "- Total Late Days: " + totalLateDays + "\n" +
                 "- Total Late Fee: " + totalLateFee + " Ks\n\n" +
                 calculationNote + "\n\n" +
@@ -205,6 +208,7 @@ public class SMELateFeeRepayService {
                 "RichCoin Financial Services";
 
         EmailSender.sendEmail(email, emailSubject, emailBody);
+
 
     }
     private BigDecimal calculateOutstandingAmount(SMELoan smeLoan) {

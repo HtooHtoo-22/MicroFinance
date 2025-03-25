@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPLateFeeRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPLateFeeRepayService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/HPODRepayService2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMELateFeeRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMELateFeeRepayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMEODRepayService2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMERepaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/SMERepaymentService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
