@@ -3,6 +3,10 @@
   <!-- Header Section -->
   <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
     <h3 class="text-lg font-semibold text-gray-700">Repayment History</h3>
+    <button (click)="generateReport()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      Download Report
+    </button>
+    
     <div class="flex flex-col items-end gap-2 bg-gray-50 p-4 rounded-lg shadow-md">
       <div class="flex items-center gap-2">
         <label for="filter" class="text-sm font-medium text-gray-700">Filter:</label>

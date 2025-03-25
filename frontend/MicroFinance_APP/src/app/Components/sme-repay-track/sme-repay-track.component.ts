@@ -2,6 +2,8 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { SMERepaymentTrack } from '../../model/SMERepaymentTrack';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-sme-repay-track',
@@ -158,5 +160,65 @@ toDate: string = '';
     }
     return `${base} bg-gray-100 text-gray-700`;
   }
+
+
+  generateReport(): void {
+    const doc = new jsPDF();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('Loan Repayment Report', 14, 15);
+  
+    doc.setFontSize(10);
+    doc.text(`Generated Date: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`, 14, 32);
+  
+
+    const formattedFromDate = this.fromDate ? new Date(this.fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+  const formattedToDate = this.toDate ? new Date(this.toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+    // Include date range in the report title if filters are set
+    if (this.fromDate && this.toDate) {
+      doc.text(`Date Range: ${formattedFromDate} to ${formattedToDate}`, 14, 39);
+    }
+  
+    // Prepare table headers based on the selected filter
+    let tableHeaders = ['Payment Date', 'Amount', 'Purpose', 'Status'];
+    if (this.selectedFilter === 'lateFee') {
+      tableHeaders.push('Late Days', 'Late Fees');
+    } else {
+      tableHeaders.push('Term');
+    }
+  
+    // Prepare table data
+    const tableData = this.filteredRepaymentTracks.map(track => {
+      let row = [
+        new Date(track.paymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        `${track.paymentAmount.toLocaleString()} Ks`,
+        track.paymentPurpose,
+        track.status
+      ];
+  
+      if (this.selectedFilter === 'lateFee') {
+        row.push(track.lateDays?.toString() || '-');
+        row.push(track.lateFees ? `${track.lateFees.toLocaleString()} Ks` : '-');
+      } else {
+        row.push(track.term ? `Term ${track.term}` : '-');
+      }
+  
+      return row;
+    });
+  
+    // Generate table
+    autoTable(doc, {
+      startY: 45,
+      head: [tableHeaders],
+      body: tableData,
+      theme: 'striped',
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [22, 160, 133] }
+    });
+  
+    // Save PDF
+    doc.save(`Loan_Repayment_Report_${this.loanId}.pdf`);
+  }
+  
   
 }
