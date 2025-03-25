@@ -450,8 +450,7 @@ public class SMELoanServiceImpl implements SMELoanService {
             return "Healthy Loan"; // No overdue schedules
         } else {
             if (lateFees == null || lateFees.isEmpty()) {
-                // Log an error or return a default loan status if no late fee calculations exist
-                return "No Late Fees";
+                return "Watchlist Loan";
             }
             int maxLateDays = lateFees.stream()
                     .mapToInt(SMELateFeeCalculation::getLateDays)

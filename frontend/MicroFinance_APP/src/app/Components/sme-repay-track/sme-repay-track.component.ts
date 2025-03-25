@@ -17,6 +17,10 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   selectedFilter: 'all' | 'od' | 'lateFee' = 'all';
   isRefreshing = false;
   isLoading = false;
+  fromDate: string = '';
+toDate: string = '';
+
+
   constructor(private smeLoanService: SmeLoanService) {}
 
   ngOnInit(): void {
@@ -94,20 +98,35 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   }
   get filteredRepaymentTracks(): SMERepaymentTrack[] {
     if (!this.repaymentTracks) return [];
-    
+  
+    // Step 1: Filter by selected filter (od, lateFee, all)
+    let tracks = this.repaymentTracks;
+  
     switch (this.selectedFilter) {
       case 'od':
-        return this.repaymentTracks.filter(t => 
-          t.paymentPurpose.toLowerCase() === 'od repayment'
-        );
+        tracks = tracks.filter(t => t.paymentPurpose.toLowerCase() === 'od repayment');
+        break;
       case 'lateFee':
-        return this.repaymentTracks.filter(t => 
-          t.paymentPurpose.toLowerCase() === 'late fee repayment'
-        );
-      default:
-        return this.repaymentTracks;
+        tracks = tracks.filter(t => t.paymentPurpose.toLowerCase() === 'late fee repayment');
+        break;
+      // case 'all' → no need to change anything
     }
+  
+    // Step 2: Filter by fromDate
+    if (this.fromDate) {
+      const from = new Date(this.fromDate);
+      tracks = tracks.filter(t => new Date(t.paymentDate) >= from);
+    }
+  
+    // Step 3: Filter by toDate
+    if (this.toDate) {
+      const to = new Date(this.toDate);
+      tracks = tracks.filter(t => new Date(t.paymentDate) <= to);
+    }
+  
+    return tracks;
   }
+  
   refreshData(): void {
     this.isRefreshing = true;
     this.smeLoanService.getRepaymentTracksByLoanId(this.loanId!).subscribe({
@@ -139,4 +158,5 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
     }
     return `${base} bg-gray-100 text-gray-700`;
   }
+  
 }

@@ -28,45 +28,71 @@ export class SmeApproveLoansComponent {
   }
   fetchLoans(): void {
     this.loading = true;
-    this.smeLoanService.getApprovedLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
-      (data) => {
-        if (Array.isArray(data)) {
-          this.loans = data;
-          console.log("This Loans", this.loans);
-          
-          this.filterLoans(); // Apply initial filter here
-        }
-      },
-      (error) => {
-        this.errorMessage = error.message || 'Failed to load loan data.';
-      }
-    ).add(() => this.loading = false);
+    this.smeLoanService.getApprovedLoans(Number(this.authService.getCurrentUserBranchId()))
+      .subscribe({
+        next: (data) => {
+          this.loans = Array.isArray(data) ? data : [];
+          this.filterLoans(); // Apply initial filter
+        },
+        error: (error) => {
+          this.errorMessage = error.message || 'Failed to load loans';
+        },
+        complete: () => this.loading = false
+      });
   }
-  filterLoans(): void {
-    
-    this.filteredLoans = this.loans.filter(loan =>
-      loan.loanStatus.toUpperCase() === this.selectedStatus.toUpperCase()
-    );
   
-  this.currentPage = 1;
-  this.updatePagination();
+  filterLoans(): void {
+    if (this.selectedStatus === 'ALL') {
+      this.filteredLoans = [...this.loans];
+    } else {
+      this.filteredLoans = this.loans.filter(loan => 
+        loan.loanStatus.toUpperCase() === this.selectedStatus
+      );
+    }
+  }
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+setStatus(status: string) {
+  this.selectedStatus = status;
 }
+
 private updatePagination(): void {
   this.totalPages = Math.ceil(this.filteredLoans.length / this.itemsPerPage) || 1;
 }
 getStatusClass(status: string): string {
   const statusClasses = {
-    'ACTIVE': 'bg-green-100 text-green-800',
-    'PENDING': 'bg-yellow-100 text-yellow-800',
-    'CLOSED': 'bg-gray-100 text-gray-800',
-    'DEFAULTED': 'bg-red-100 text-red-800',
-    'COMPLETED': 'bg-blue-100 text-blue-800'
+    'PAID LOAN': 'bg-green-100 text-green-800',
+    'HEALTHY LOAN': 'bg-teal-100 text-teal-800',
+    'WATCHLIST LOAN': 'bg-yellow-100 text-yellow-800',
+    'NPL LOAN': 'bg-red-100 text-red-800'
   };
   return statusClasses[status.toUpperCase() as keyof typeof statusClasses] || 'bg-gray-100 text-gray-800';
 }
-viewDetails(loanId: Smeloan): void {
-}
-downloadReport(loan:Smeloan): void {
+viewDetails(loanId: number | undefined): void {
+  if (loanId) {
+    this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
+    console.log(loanId);
+    
+  } else {
+    console.warn('Loan ID is missing');
+  }
+
 }
   // Add filter function
  

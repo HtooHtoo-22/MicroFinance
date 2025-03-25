@@ -31,6 +31,7 @@ export interface HPLoan {
   productPhoto: string | null;
   productValue: number | null;
   tenor: number;
+  loanStatus: string;
 }
 
 @Injectable({

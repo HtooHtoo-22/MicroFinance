@@ -64,6 +64,8 @@ public class HpLoanServiceImpl implements HPLoanService {
     private HPLateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private HPLateFeeHoldingRepo lateFeeHoldingRepo;
+
+    private HPLoanMapper hpLoanMapper = new HPLoanMapper();
     @Override
     public HPLoanDTO createSMELoan(HPLoanDTO dto) {
        User entryUser = userRepository.findById(dto.getEntryUserId())
@@ -204,38 +206,69 @@ public class HpLoanServiceImpl implements HPLoanService {
     @Override
     public List<HPLoanDTO> getApprovedHPLoans() {
         List<HPLoan> approvedLoans = hpLoanRepo.findByStatus(LoanStatus.APPROVE);
-        List<HPLoanDTO> loanDTOs = new ArrayList<>();
+        return approvedLoans.stream()
+                .map(loan -> {
+                    // Check the loan status for each loan
+                    String loanStatus = getLoanStatus(loan); // Get the loan status based on repayment schedules
+                    HPLoanDTO loanDTO = hpLoanMapper.toDTO(loan); // Map to DTO
+                    loanDTO.setLoanStatus(loanStatus); // Set the loan status in the DTO
+                    return loanDTO;
+                })
+                .collect(Collectors.toList( ));
+    }
 
-        for (HPLoan loan : approvedLoans) {
-            HPLoanDTO loanDTO = new HPLoanDTO();
-            loanDTO.setId(loan.getId());
-            loanDTO.setLoanId(loan.getLoanId());
-            loanDTO.setLoanAmount(loan.getLoanAmount());
-            loanDTO.setInterestRate(loan.getInterestRate());
-            loanDTO.setGracePeriod(loan.getGracePeriod());
-            loanDTO.setRegisteredDate(loan.getRegisteredDate() != null ? loan.getRegisteredDate().toString() : null);
-            loanDTO.setApprovedDate(loan.getApprovedDate() != null ? loan.getApprovedDate().toString() : null);
-            loanDTO.setStatus(loan.getStatus());
-            loanDTO.setEndDate(loan.getEndDate() != null ? loan.getEndDate().toString() : null);
-            loanDTO.setDuration(loan.getDuration());
-            loanDTO.setEntryUserId(loan.getEntryUser() != null ? loan.getEntryUser().getId() : null);
-            loanDTO.setApprovedUserId(loan.getApprovedUser() != null ? loan.getApprovedUser().getId() : null);
-            loanDTO.setCurrentAccountId(loan.getCurrentAccount() != null ? loan.getCurrentAccount().getAccountId() : null);
-            loanDTO.setProductId(loan.getProduct() != null ? loan.getProduct().getId() : null);
-            loanDTO.setDownPaymentRate(loan.getDownPaymentRate());
-            loanDTO.setDealerCommissionRate(loan.getDealerCommissionRate());
-            loanDTO.setCurrentCode(loan.getCurrentAccount() != null ? loan.getCurrentAccount().getAccountId() : null);
-            loanDTO.setProductName(loan.getProduct() != null ? loan.getProduct().getProductName() : null);
-            loanDTO.setProductValue(loan.getProduct() != null ? loan.getProduct().getValue() : null);
-            loanDTO.setTenor(loan.getTenor());
-            loanDTO.setEntryUserName(loan.getEntryUser() != null ? loan.getEntryUser().getName() : null); // Assuming User has a getName() method
-            loanDTO.setApprovedUserName(loan.getApprovedUser() != null ? loan.getApprovedUser().getName() : null); // Assuming User has a getName() method
-            loanDTO.setProductPhoto(loan.getProduct() != null ? loan.getProduct().getPhoto() : null); // Assuming Product has a getProductPhoto() method
-
-            loanDTOs.add(loanDTO);
+    private String getLoanStatus(HPLoan loan) {
+        // Fetch all repayment schedules for the loan
+        List<HPSchedule> repaymentSchedules = scheduleRepo.findByHpLoanId(loan.getId());
+        // Handle case where there are no repayment schedules
+        if (repaymentSchedules == null || repaymentSchedules.isEmpty()) {
+            // Log an error or return a default loan status if no repayment schedules exist
+            return "No Repayment Schedules";
         }
 
-        return loanDTOs;
+        // Fetch all late fee calculations for the loan
+        List<HPLateFeeCalculation> lateFees = lateFeeRepo.findByHpLoanId(loan.getId());
+
+
+        // Additional loan status checks
+        boolean isPaid = true;
+        boolean isHealthy = true;
+
+        // Check the repayment schedule statuses
+        for (HPSchedule schedule : repaymentSchedules) {
+            if (schedule.getStatus() == RepaymentStatus.ALL_PAID) {
+                continue; // Skip PAID schedules for Paid Loan check
+            } else if (schedule.getStatus() == RepaymentStatus.INTEREST_OD_PRINCIPAL_OD || schedule.getStatus() == RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD) {
+                isHealthy = false;
+                isPaid = false;// If any schedule is overdue, the loan is not healthy
+            } else  {
+                isPaid = false; // If any schedule is not PAID, the loan is not fully paid
+            }
+        }
+
+        // Determine the loan status
+        if (isPaid) {
+            return "Paid Loan"; // All schedules are PAID
+        } else if (isHealthy) {
+            return "Healthy Loan"; // No overdue schedules
+        } else {
+            if (lateFees == null || lateFees.isEmpty()) {
+                return "Watchlist Loan";
+            }
+            int maxLateDays = lateFees.stream()
+                    .mapToInt(HPLateFeeCalculation::getLateDays)
+                    .max()
+                    .orElse(0); // Default to 0 if there are no late fees
+
+            // Check for Watchlist or NPL status based on maxLateDays
+            if (maxLateDays >= 90) {
+                return "NPL Loan"; // If max late days are 90 or more, it's an NPL loan
+            } else if (maxLateDays > 0) {
+                return "Watchlist Loan"; // If max late days are less than 90 but greater than 0, it's a Watchlist loan
+            }else{
+                return "gg";
+            }
+        }
     }
     @Override
     public HPLateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId) {

@@ -37,6 +37,7 @@ export class HpLoanListComponent implements OnInit {
       next: (response) => {
         if (response.statusCode === 200) {
           this.loans = response.data || [];
+          console.log(this.loans);
           this.totalLoans = this.loans.length;
           this.totalPages = Math.ceil(this.totalLoans / this.itemsPerPage);
         } else {

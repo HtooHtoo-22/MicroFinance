@@ -30,6 +30,7 @@ public class HPLoanDTO {
     private Integer approvedUserId;
     private String currentAccountId;
     private String cifId;
+    private Integer realCifId;
     private String borrowerName;
     private Integer productId;
     private BigDecimal downPaymentRate;
@@ -43,4 +44,5 @@ public class HPLoanDTO {
     private String entryUserName;
     private String approvedUserName;
     private String productPhoto;
+    private String loanStatus;
 }
