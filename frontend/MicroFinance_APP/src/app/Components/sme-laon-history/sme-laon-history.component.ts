@@ -29,14 +29,18 @@ export class SmeLaonHistoryComponent {
 ) {}
 
   ngOnInit(): void {
+    console.log("Hi");
+    
     this.fetchLoans();
   }
   fetchLoans(): void {
     this.loading = true;
-    this.smeLoanService.getLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
+    this.smeLoanService.getPendingLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
       (data) => {
         if (Array.isArray(data)) {
           this.loans = data;
+          console.log("This loans : "+this.loans);
+          
           this.filterLoans(); // Apply initial filter here
         }
       },

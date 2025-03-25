@@ -31,8 +31,14 @@ public class SMERepaymentService {
     private  SMELateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private SMERepaymentTrackRepo repaymentTrackRepo;
+    @Autowired
+    private SMELoanHasCollateralRepo loanHasCollateralRepo;
+    @Autowired
+    private CollateralRepo collateralRepo;
+    @Autowired
+    private SMELoanRepo loanRepo;
     @Transactional
-   // @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
 
@@ -103,17 +109,51 @@ public class SMERepaymentService {
             EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
 
         } else if (availableBalance.compareTo(dueAmount) >= 0) {
-            // Enough balance to repay without touching the minimum balance
-            currentAccount.setTotalBalence(totalBalance.subtract(dueAmount).doubleValue()); // Convert back to double if needed
+            // Enough balance to repay
+            currentAccount.setTotalBalence(totalBalance.subtract(dueAmount).doubleValue());
             schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(dueAmount));
-            schedule.setStatus(RepaymentStatus.PAID); // Mark as fully paid
             schedule.setFullyPaidDate(today);
-            schedule.setInterestAmount(new BigDecimal(0.0));
+
+            // Check if this is the FINAL TERM (principal is due)
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                System.out.println("Hello");
+                // Final term: Interest is paid, now check principal
+                BigDecimal principalDue = schedule.getSmeLoan().getPrincipal();
+                if (availableBalance.compareTo(principalDue) >= 0) {
+                    // Principal is paid → Close loan
+                    currentAccount.setTotalBalence(totalBalance.subtract(principalDue).doubleValue());
+                    schedule.setStatus(RepaymentStatus.PAID);
+                    System.out.println("Principal Enough");
+                    List<SMELoanHasCollateral> toDelete = loanHasCollateralRepo.findBySmeLoan(schedule.getSmeLoan());
+                    // 2. Delete in batch (efficient)
+                    loanHasCollateralRepo.deleteAll(toDelete); // Single DB operation
+                } else {
+                    System.out.println("Principal Not Enough");
+                    // Principal unpaid → DEFAULT
+                    schedule.setStatus(RepaymentStatus.PAID); // Interest is paid
+                    SMELoan loan = schedule.getSmeLoan();
+                    loan.setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                    loanRepo.save(loan);
+                 //   schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                    // Fetch all collaterals in one query
+                    List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                    // Update all collaterals in memory (no DB hits yet)
+                    collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                    // Batch save (1 transaction)
+                    collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                }
+            } else {
+                // Regular term (only interest)
+                schedule.setStatus(RepaymentStatus.PAID);
+            }
             SMERepaymentTrack repaymentTrack = new SMERepaymentTrack();
             repaymentTrack.setSmeRepaymentSchedule(schedule);
             repaymentTrack.setDate(today);
             repaymentTrack.setPaidAmount(dueAmount);
             repaymentTrackRepo.save(repaymentTrack);
+
 
             String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
                     "You repaid MMK " + dueAmount + ". " +
@@ -178,6 +218,17 @@ public class SMERepaymentService {
             repaymentTrack.setPaidAmount(availableBalance);
             repaymentTrack.setOdStatus(true);
             repaymentTrackRepo.save(repaymentTrack);
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                // Fetch all collaterals in one query
+                List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                // Update all collaterals in memory (no DB hits yet)
+                collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                // Batch save (1 transaction)
+                collateralRepo.saveAll(collaterals); // More efficient than individual saves
+            }
         } else {
             // No available balance, full overdue
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount)); // All remaining amount is OD interest
@@ -220,6 +271,17 @@ public class SMERepaymentService {
                 EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
             schedule.setInterestAmount(new BigDecimal(0.0));
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                // Fetch all collaterals in one query
+                List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                // Update all collaterals in memory (no DB hits yet)
+                collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                // Batch save (1 transaction)
+                collateralRepo.saveAll(collaterals); // More efficient than individual saves
+            }
         }
 
         // Save updated data to the database

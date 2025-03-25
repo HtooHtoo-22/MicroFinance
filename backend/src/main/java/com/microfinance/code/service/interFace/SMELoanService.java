@@ -21,4 +21,6 @@ public interface SMELoanService {
     public SMELateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId);
 
     public List<SMELoanDTO> getApprovedLoansByBranchId(Integer branchId);
+
+    public List<SMELoanDTO> getPendingLoansByBranchId(Integer branchId);
 }

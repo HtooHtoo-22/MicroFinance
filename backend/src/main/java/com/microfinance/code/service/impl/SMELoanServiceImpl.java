@@ -467,4 +467,21 @@ public class SMELoanServiceImpl implements SMELoanService {
             }
         }
     }
+    @Override
+    public List<SMELoanDTO> getPendingLoansByBranchId(Integer branchId){
+        List<SMELoan> loans =
+                smeLoanRepository.findByEntryUser_Branch_IdAndStatus(branchId,LoanStatus.PENDING);
+        if(loans == null){
+            throw new NotFoundException("Pending Loan List Not Found");
+        }
+        return loans.stream()
+                .map(loan -> {
+                    // Check the loan status for each loan
+                    String loanStatus = getLoanStatus(loan); // Get the loan status based on repayment schedules
+                    SMELoanDTO loanDTO = loanMapper.toDTO(loan); // Map to DTO
+                    loanDTO.setLoanStatus(loanStatus); // Set the loan status in the DTO
+                    return loanDTO;
+                })
+                .collect(Collectors.toList());
+    }
 }

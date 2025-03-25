@@ -73,4 +73,9 @@ public class SMELoanController {
         List<SMELoanDTO> smeLoanDTOList = smeLoanService.getApprovedLoansByBranchId(branchId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "SME Approve loan list retrieved. ", smeLoanDTOList));
     }
+    @GetMapping("/pending-loans/{branchId}")
+    public ResponseEntity<ApiResponse<List<SMELoanDTO>>> getPendingLoans(@PathVariable("branchId")Integer branchId) {
+        List<SMELoanDTO> smeLoanDTOList = smeLoanService.getPendingLoansByBranchId(branchId);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "SME Pending loan list retrieved. ", smeLoanDTOList));
+    }
 }

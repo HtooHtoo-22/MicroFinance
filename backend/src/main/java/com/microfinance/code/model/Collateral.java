@@ -43,4 +43,7 @@ public class Collateral {
     @ManyToOne
     @JoinColumn(name = "current_account_id", nullable = false) // Added nullable
     private CurrentAccount currentAccount;
+
+    @Column(name = "is_held_by_company")
+    private boolean isHeldByCompany; // True = Lender possesses collateral
 }
