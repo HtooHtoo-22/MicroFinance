@@ -17,5 +17,11 @@ export class SmeScheduleService {
       `${this.apiUrl}/scheduleListByLoanId/${loanId}`
     );
   }
+
+  downloadLoanReport(smeLoanId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/loan/${smeLoanId}`, {
+      responseType: 'blob',
+    });
+  }
   
 }

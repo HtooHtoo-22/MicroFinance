@@ -1,111 +1,92 @@
 <!-- Overdue Terms Section -->
-<div class="border border-gray-200 rounded-lg overflow-hidden shadow-lg mt-4">
-    <div *ngIf="lateFeeSummary?.odSchedules?.length; else noOdTerms" class="p-4">
-        <h3 class="text-lg font-semibold mb-4">Overdue Terms</h3>
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                    <th *ngIf="hasGracePeriod" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grace End</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Days</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">OD Interest</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Repaid</th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <tr *ngFor="let schedule of lateFeeSummary?.odSchedules" 
-                    [ngClass]="getOverdueRowClass(schedule.status)"
-                    class="transition-colors duration-200">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.termNumber }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ schedule.dueDate | date:'MMM d,y' }}
-                    </td>
-                    <td *ngIf="schedule.gracePeriodEndDate" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ schedule.gracePeriodEndDate | date:'MMM d,y' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.totalDays }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.principal | number:'1.0-0' }} MMK</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.interestODAmount | number:'1.0-0' }} MMK</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ schedule.totalRepaidAmount | number:'1.0-0' }} MMK</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                        <span [ngClass]="getOverdueStatusClasses(schedule.status)" 
-                              class="px-2.5 py-1.5 rounded-full text-xs font-medium">
-                            {{ schedule.status }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="border border-gray-200 rounded-lg overflow-hidden shadow-lg mt-4">
+        <div *ngIf="lateFeeSummary?.odSchedules?.length; else noOdTerms" class="p-4">
+            <h3 class="text-lg font-semibold mb-4">Overdue Terms
+                
+    
+                <button (click)="downloadLateFeeReport()" class="px-4 py-2 bg-blue-500 text-white rounded">Download Report</button>
+    
+            </h3>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                        <th *ngIf="hasGracePeriod" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grace End</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Days</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">OD Interest</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Repaid</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let schedule of lateFeeSummary?.odSchedules" 
+                        [ngClass]="getOverdueRowClass(schedule.status)"
+                        class="transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.termNumber }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ schedule.dueDate | date:'MMM d,y' }}
+                        </td>
+                        <td *ngIf="schedule.gracePeriodEndDate" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ schedule.gracePeriodEndDate | date:'MMM d,y' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.totalDays }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.principal | number:'1.0-0' }} MMK</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{{ schedule.interestODAmount | number:'1.0-0' }} MMK</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">{{ schedule.totalRepaidAmount | number:'1.0-0' }} MMK</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span [ngClass]="getOverdueStatusClasses(schedule.status)" 
+                                  class="px-2.5 py-1.5 rounded-full text-xs font-medium">
+                                {{ schedule.status }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ng-template #noOdTerms>
+            <div class="p-4 text-gray-500">No overdue terms currently.</div>
+        </ng-template>
     </div>
-    <ng-template #noOdTerms>
-        <div class="p-4 text-gray-500">No overdue terms currently.</div>
-    </ng-template>
-</div>
-
-<!-- Late Fee Details Section -->
-<div class="mt-6 space-y-4" *ngIf="lateFeeSummary">
-    <!-- Late Days & Fees -->
-    <div *ngIf="lateFeeSummary.lateDays > 0 && lateFeeSummary.lateFees > 0; else noLateFees">
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded shadow">
-                <h4 class="text-sm font-medium text-gray-500">Late Days</h4>
-                <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.lateDays }}</p>
-            </div>
-            <div class="bg-white p-4 rounded shadow">
-                <h4 class="text-sm font-medium text-gray-500">Late Fees</h4>
-                <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.lateFees | number:'1.0-0' }} MMK</p>
-            </div>
-        </div>
-
-        <!-- Hold Amount -->
-        <div class="bg-white p-4 rounded shadow mt-4" *ngIf="lateFeeSummary.holdAmount > 0">
-            <h4 class="text-sm font-medium text-gray-500">Hold Amount</h4>
-            <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.holdAmount | number:'1.0-0' }} MMK</p>
-        </div>
-
-        <!-- Daily Late Fee Rate -->
-        <div class="bg-white p-4 rounded shadow mt-4">
-            <h4 class="text-sm font-semibold text-gray-600 mb-3">Daily Late Fee Calculation</h4>
-            
-            <!-- Before 90 Days Case -->
-            <div *ngIf="lateFeeSummary.lateDays <= 90; else after90" class="space-y-2">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Total OD Interest</p>
-                        <p class="font-medium">{{ getTotalODInterest() | number:'1.0-0' }} MMK</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1">Daily Calculation</p>
-                        <p class="font-medium">
-                            {{ lateFeeSummary.lateFeeRateBf90 }}% × 
-                            <span class="text-blue-600">{{ getTotalODInterest() | number:'1.0-0' }} MMK</span>
-                        </p>
-                    </div>
+    
+    <!-- Late Fee Details Section -->
+    <div class="mt-6 space-y-4" *ngIf="lateFeeSummary">
+        <!-- Late Days & Fees -->
+        <div *ngIf="lateFeeSummary.lateDays > 0 && lateFeeSummary.lateFees > 0; else noLateFees">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded shadow">
+                    <h4 class="text-sm font-medium text-gray-500">Late Days</h4>
+                    <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.lateDays }}</p>
                 </div>
-                <p class="text-sm text-green-600 font-bold flex justify-end">
-                    ↑ Fee {{ calculateDailyFee() | number:'1.0-0' }} MMK daily increase
-                </p>
+                <div class="bg-white p-4 rounded shadow">
+                    <h4 class="text-sm font-medium text-gray-500">Late Fees</h4>
+                    <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.lateFees | number:'1.0-0' }} MMK</p>
+                </div>
             </div>
-        
-            <!-- After 90 Days Case -->
-            <ng-template #after90>
-                <div class="space-y-2">
+    
+            <!-- Hold Amount -->
+            <div class="bg-white p-4 rounded shadow mt-4" *ngIf="lateFeeSummary.holdAmount > 0">
+                <h4 class="text-sm font-medium text-gray-500">Hold Amount</h4>
+                <p class="text-2xl font-semibold mt-1">{{ lateFeeSummary.holdAmount | number:'1.0-0' }} MMK</p>
+            </div>
+    
+            <!-- Daily Late Fee Rate -->
+            <div class="bg-white p-4 rounded shadow mt-4">
+                <h4 class="text-sm font-semibold text-gray-600 mb-3">Daily Late Fee Calculation</h4>
+                
+                <!-- Before 90 Days Case -->
+                <div *ngIf="lateFeeSummary.lateDays <= 90; else after90" class="space-y-2">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500 mb-1">Outstanding Amount</p>
-                            <p class="font-medium">{{ lateFeeSummary.outStandingAmount | number:'1.0-0' }} MMK</p>
-                            <p class="text-xs text-gray-400 mt-1">
-                                (Principal + OD Amount + Remaining Interest Amount)
-                            </p>
+                            <p class="text-sm text-gray-500 mb-1">Total OD Interest</p>
+                            <p class="font-medium">{{ getTotalODInterest() | number:'1.0-0' }} MMK</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 mb-1">Daily Calculation</p>
                             <p class="font-medium">
-                                {{ lateFeeSummary.lateFeeRateAf90 }}% × 
-                                <span class="text-blue-600">{{ lateFeeSummary.outStandingAmount | number:'1.0-0' }} MMK</span>
+                                {{ lateFeeSummary.lateFeeRateBf90 }}% × 
+                                <span class="text-blue-600">{{ getTotalODInterest() | number:'1.0-0' }} MMK</span>
                             </p>
                         </div>
                     </div>
@@ -113,13 +94,38 @@
                         ↑ Fee {{ calculateDailyFee() | number:'1.0-0' }} MMK daily increase
                     </p>
                 </div>
-            </ng-template>
+            
+                <!-- After 90 Days Case -->
+                <ng-template #after90>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Outstanding Amount</p>
+                                <p class="font-medium">{{ lateFeeSummary.outStandingAmount | number:'1.0-0' }} MMK</p>
+                                <p class="text-xs text-gray-400 mt-1">
+                                    (Principal + OD Amount + Remaining Interest Amount)
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Daily Calculation</p>
+                                <p class="font-medium">
+                                    {{ lateFeeSummary.lateFeeRateAf90 }}% × 
+                                    <span class="text-blue-600">{{ lateFeeSummary.outStandingAmount | number:'1.0-0' }} MMK</span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 font-bold flex justify-end">
+                            ↑ Fee {{ calculateDailyFee() | number:'1.0-0' }} MMK daily increase
+                        </p>
+                    </div>
+                </ng-template>
+            </div>
         </div>
+    
+        <ng-template #noLateFees>
+            <div class="bg-white p-4 rounded shadow text-gray-500">
+                No late fees accrued currently.
+            </div>
+        </ng-template>
     </div>
-
-    <ng-template #noLateFees>
-        <div class="bg-white p-4 rounded shadow text-gray-500">
-            No late fees accrued currently.
-        </div>
-    </ng-template>
-</div>
+    

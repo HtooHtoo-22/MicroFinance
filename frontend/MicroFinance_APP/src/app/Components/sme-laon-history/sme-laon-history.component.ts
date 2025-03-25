@@ -122,9 +122,9 @@ approveLoan(loanId: number): void {
           
           // Automatically trigger the report download
           
-          // this.downloadSmeReport();
-          // Navigate to loan details page
           this.downloadSmeReport();
+          // Navigate to loan details page
+          
           this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
         },
         error: (err) => console.error('Error fetching updated loan details:', err)
@@ -196,26 +196,6 @@ getTotalCollateral(): number {
   return total;
 }
 
-downloadSmeReport(): void {
-  if (!this.selectedLoan?.id) {
-    alert('Loan ID is missing.');
-    return;
-  }
-
-  // Assuming downloadLoanReport is a method in SmeLoanService to download the report
-  this.smeLoanService.downloadLoanReport(this.selectedLoan.id).subscribe(response => {
-    const blob = new Blob([response], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `LoanReport_${this.selectedLoan?.id}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }, error => {
-    console.error('Error generating report:', error);
-    alert('Failed to generate report. Please try again.');
-  });
-}
 
 
 
@@ -230,6 +210,113 @@ private addMonths(date: Date, months: number): Date {
   
   return result;
 }
+
+downloadSmeReport(): void {
+  if (!this.selectedLoan) {
+    console.error('No loan selected.');
+    return;
+  }
+
+  const doc = new jsPDF({
+    format: [148, 148], // Shorter page
+    orientation: 'portrait'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 8;
+  let yPos = 10; // Adjusted start position for better spacing
+
+  // Define Colors
+  const primaryColor: [number, number, number] = [0, 102, 204];  // Blue
+  const grayColor: [number, number, number] = [100, 100, 100];   // Dark Gray
+  const lightGray: [number, number, number] = [240, 240, 240];   // Light Gray
+
+  // Set Font
+  doc.setFont('helvetica', 'normal');
+
+  // Header Box (like Modal)
+  doc.setFillColor(...lightGray);
+  doc.rect(margin, yPos - 4, pageWidth - margin * 2, 10, 'F');
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...primaryColor);
+  doc.text('SME Loan Voucher', margin + 40, yPos + 2);
+
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  yPos += 12;
+  doc.text(`ID: ${this.selectedLoan.loanId}`, margin, yPos);
+  yPos += 8;
+
+  // Borrower Row - Closer Spacing
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text('Borrower:', margin, yPos);
+  const borrowerName = this.selectedLoan.borrowerName || '';
+  doc.text(borrowerName, margin + 25, yPos); // Name closer to label
+
+  // Line Below Borrower
+  yPos += 5;
+  doc.setDrawColor(180, 180, 180);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+  yPos += 6;
+
+  // Key Numbers Grid
+  const colWidth = (pageWidth - margin * 2) / 3;
+  const centerX = margin + colWidth + 8;
+  const rightX = margin + colWidth * 2+ 8;
+
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  doc.text('Amount', margin, yPos);
+  doc.text('Rate', centerX, yPos);
+  doc.text('Term', rightX, yPos);
+  doc.setTextColor(0);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${this.selectedLoan.loanAmount?.toLocaleString()} KS`, margin, yPos + 5);
+  doc.text(`${this.selectedLoan.interestRate}%`, centerX, yPos + 5);
+  doc.text(`${this.selectedLoan.duration} months`, rightX, yPos + 5);
+  yPos += 10;
+
+  // Collateral Summary (box)
+  doc.setFillColor(...lightGray);
+  doc.rect(margin, yPos, pageWidth - margin * 2, 8, 'F');
+  doc.setTextColor(0);
+  doc.text('Total Collateral:', margin + 2, yPos + 5);
+  const collateral = this.getTotalCollateral().toLocaleString() + ' KS';
+  doc.text(collateral, pageWidth - margin - doc.getTextWidth(collateral) , yPos + 5);
+  yPos += 12;
+
+  // Dates Section
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  doc.text('Start Date', margin, yPos);
+  doc.text('Maturity Date', pageWidth - margin - doc.getTextWidth('Maturity Date'), yPos);
+
+  doc.setTextColor(0);
+  const startDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+  const endDate = this.selectedLoan.expiredDate 
+    ? new Date(this.selectedLoan.expiredDate).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'N/A';
+
+  doc.text(startDate.toString(), margin, yPos + 5);
+  doc.text(endDate, pageWidth - margin - doc.getTextWidth(endDate), yPos + 5);
+
+  
+  // Save PDF
+  const fileName = `Loan_Approval_${this.selectedLoan.loanId}.pdf`;
+  doc.save(fileName);
+}
+
 
 
 

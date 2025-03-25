@@ -16,6 +16,11 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   currentDate = new Date();
   selectedFilter: 'all' | 'od' | 'lateFee' = 'all';
   isRefreshing = false;
+  isLoading = false;
+  fromDate: string = '';
+toDate: string = '';
+
+
   constructor(private smeLoanService: SmeLoanService) {}
 
   ngOnInit(): void {
@@ -93,20 +98,35 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   }
   get filteredRepaymentTracks(): SMERepaymentTrack[] {
     if (!this.repaymentTracks) return [];
-    
+  
+    // Step 1: Filter by selected filter (od, lateFee, all)
+    let tracks = this.repaymentTracks;
+  
     switch (this.selectedFilter) {
       case 'od':
-        return this.repaymentTracks.filter(t => 
-          t.paymentPurpose.toLowerCase() === 'od repayment'
-        );
+        tracks = tracks.filter(t => t.paymentPurpose.toLowerCase() === 'od repayment');
+        break;
       case 'lateFee':
-        return this.repaymentTracks.filter(t => 
-          t.paymentPurpose.toLowerCase() === 'late fee repayment'
-        );
-      default:
-        return this.repaymentTracks;
+        tracks = tracks.filter(t => t.paymentPurpose.toLowerCase() === 'late fee repayment');
+        break;
+      // case 'all' → no need to change anything
     }
+  
+    // Step 2: Filter by fromDate
+    if (this.fromDate) {
+      const from = new Date(this.fromDate);
+      tracks = tracks.filter(t => new Date(t.paymentDate) >= from);
+    }
+  
+    // Step 3: Filter by toDate
+    if (this.toDate) {
+      const to = new Date(this.toDate);
+      tracks = tracks.filter(t => new Date(t.paymentDate) <= to);
+    }
+  
+    return tracks;
   }
+  
   refreshData(): void {
     this.isRefreshing = true;
     this.smeLoanService.getRepaymentTracksByLoanId(this.loanId!).subscribe({
@@ -121,4 +141,22 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
       }
     });
   }
+  getStatusStyles(status: string): any {
+    const base = 'inline-flex items-center transition-colors';
+    
+    if (status.includes('Paid') || status.includes('All Paid')) {
+      return `${base} bg-emerald-100 text-emerald-700`;
+    }
+    if (status.includes('Partial')) {
+      return `${base} bg-amber-100 text-amber-700`;
+    }
+    if (status.includes('OD Balence') || status.includes('Neither')) {
+      return `${base} bg-rose-100 text-rose-700`;
+    }
+    if (status.includes('Late Fee')) {
+      return `${base} bg-indigo-100 text-indigo-700`;
+    }
+    return `${base} bg-gray-100 text-gray-700`;
+  }
+  
 }

@@ -82,4 +82,7 @@ public class SMELoanController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(report);
     }
+
+
+
 }

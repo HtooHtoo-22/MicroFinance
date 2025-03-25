@@ -45,7 +45,7 @@
     <title>
         <band height="60">
             <staticText>
-                <reportElement x="180" y="10" width="250" height="30" forecolor="#111827"/>
+                <reportElement x="10" y="90" width="250" height="30" forecolor="#111827"/>
                 <textElement textAlignment="Center">
                     <font size="16" isBold="true"/>
                 </textElement>
@@ -65,7 +65,7 @@
                 <text><![CDATA[Borrower:]]></text>
             </staticText>
             <textField>
-                <reportElement x="160" y="5" width="200" height="20"/>
+                <reportElement x="10" y="90" width="200" height="20"/>
                 <textFieldExpression><![CDATA[$F{borrowerName}]]></textFieldExpression>
             </textField>
 
@@ -78,7 +78,7 @@
                 <text><![CDATA[Amount:]]></text>
             </staticText>
             <textField>
-                <reportElement x="160" y="25" width="120" height="20"/>
+                <reportElement x="10" y="25" width="120" height="20"/>
                 <textFieldExpression><![CDATA[$F{loanAmount}.setScale(2, java.math.RoundingMode.HALF_UP)]]></textFieldExpression>
             </textField>
 
@@ -155,4 +155,3 @@
     </summary>
 
 </jasperReport>
-
