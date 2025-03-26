@@ -1,20 +1,7 @@
-<div class="container">
-    <div class="card">
-      <label for="branch">Select a Branch:</label>
-      <select id="branch" [(ngModel)]="selectedBranchId" (change)="loadActiveUserCount()">
-        <option *ngFor="let branch of branches" [value]="branch.id">
-          {{ branch.name }}
-        </option>
-      </select>
-    </div>
-  
-    <div *ngIf="activeUserCount !== null" class="card result-card">
-      <p>Active Users in Selected Branch:</p>
-      <h2>{{ activeUserCount }}</h2>
-    </div>
-  
-    <div *ngIf="activeUserCount === null && selectedBranchId" class="card loading-card">
-      <p>Loading active user count...</p>
-    </div>
+
+  <div *ngIf="isLoading" class="text-center py-4">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
   </div>
-  
+  <h2 *ngIf="!isLoading" class="text-4xl font-bold text-gray-800 text-center">
+    {{ activeUserCount !== null ? activeUserCount : 'N/A' }}
+  </h2>

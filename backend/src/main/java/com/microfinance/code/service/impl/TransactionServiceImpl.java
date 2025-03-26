@@ -8,6 +8,7 @@ import com.microfinance.code.mapper.TransactionMapper;
 import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.model.Transaction;
 import com.microfinance.code.repository.CurrentAccountRepository;
+import com.microfinance.code.repository.DealerRepo;
 import com.microfinance.code.repository.TransactionRepository;
 import com.microfinance.code.service.interFace.TransactionService;
 import com.microfinance.code.status.transactionType;
@@ -30,6 +31,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionMapper transactionMapper;
+
+    @Autowired
+    private DealerRepo dealerRepo;
 
     @Transactional
     @Override
@@ -93,6 +97,19 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> getTransactionsByCurrentAccountId(String currentAccountId) {
         List<Transaction> transactions = transactionRepository.findByCurrentAccountId(currentAccountId);
+        return transactions.stream()
+                .map(transactionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TransactionDTO> getTransactionsByDealerId(Integer dealerId) {
+        CurrentAccount currentAccount = dealerRepo.findCurrentAccountByDealerId(dealerId)
+                .orElseThrow(() -> new NotFoundException("Current account not found for dealer ID: " + dealerId));
+
+        List<Transaction> transactions = transactionRepository
+                .findByCurrentAccountId(currentAccount.getAccountId());
+
         return transactions.stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList());

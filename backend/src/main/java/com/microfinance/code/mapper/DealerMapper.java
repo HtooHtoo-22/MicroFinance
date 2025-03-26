@@ -19,12 +19,10 @@ public class DealerMapper {
         dealer.setRegisterDate(dto.getRegisterDate());
         dealer.setInformation(dto.getInformation());
 
-//        CurrentAccount account = new CurrentAccount();
-//        account.setId(Integer.valueOf(dto.getCurrentAccountId()));
-//        dealer.setCurrentAccount(account);
-        if (dto.getCurrentAccountId() != null) {
+        if (dto.getCurrentAccount() != null) {
             CurrentAccount account = new CurrentAccount();
-            account.setAccountId(dto.getCurrentAccountId()); // Use accountId string
+            account.setAccountId(dto.getCurrentAccount().getAccountId());
+            // Map other account fields if needed
             dealer.setCurrentAccount(account);
         }
         return dealer;
@@ -42,13 +40,15 @@ public class DealerMapper {
         dto.setInformation(dealer.getInformation());
 
         if (dealer.getStatusforDelar() != null) {
-            dto.setStatus(dealer.getStatusforDelar().toString()); // Map enum to string
+            dto.setStatus(dealer.getStatusforDelar().toString());
         }
 
         if (dealer.getCurrentAccount() != null) {
             CurrentAccountDTO accountDTO = new CurrentAccountDTO();
             accountDTO.setAccountId(dealer.getCurrentAccount().getAccountId());
-            dto.setCurrentAccountId(accountDTO.getAccountId());
+            accountDTO.setTotalBalance(dealer.getCurrentAccount().getTotalBalence());
+            // Map other account fields if needed
+            dto.setCurrentAccount(accountDTO);
         }
         return dto;
     }

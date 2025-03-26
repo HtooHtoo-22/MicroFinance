@@ -8,19 +8,19 @@ import { NavigationEnd, Router } from '@angular/router';
   selector: 'app-manager-dashboard',
   standalone: false,
   templateUrl: './manager-dashboard.component.html',
-  styleUrl: './manager-dashboard.component.css'
+  styleUrls: ['./manager-dashboard.component.css']
 })
 export class ManagerDashboardComponent implements OnDestroy {
   imagePath: string = "image/richcon-logo.png";
   hpLoanCount: number = 0;
   newDealerCount: number = 0;
   smeLoanCount: number = 0;
+  showLogoutModal: boolean = false;
 
   private dealerSubscription!: Subscription;
   private routerSubscription!: Subscription;
   private hpLoanSubscription!: Subscription;
   private smeLoanSubscription!: Subscription;
-
 
   constructor(
     private authService: AuthService,
@@ -89,5 +89,25 @@ export class ManagerDashboardComponent implements OnDestroy {
   isOperation(): boolean {
     return this.authService.isOperation();
   }
-  
+
+  openLogoutModal(): void {
+    this.showLogoutModal = true;
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
+  }
+
+  confirmLogout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logged out successfully');
+        this.showLogoutModal = false;
+      },
+      error: (err) => {
+        console.error('Logout failed:', err);
+        this.showLogoutModal = false;
+      }
+    });
+  }
 }

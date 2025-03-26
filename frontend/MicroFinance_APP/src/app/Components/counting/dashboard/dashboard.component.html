@@ -1,0 +1,21 @@
+<!-- Branch User Count -->
+    <div class="flex flex-col lg:flex-row justify-between items-center">
+      <div class="bg-blue-50 p-4 rounded-lg shadow-md flex-1 mr-2 mb-4 lg:mb-0">
+        <h3 class="text-lg font-semibold text-blue-800">User</h3>
+        <app-branch-user-count></app-branch-user-count>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg shadow-md flex-1 ml-2">
+        <h3 class="text-lg font-semibold text-green-800">Account</h3>
+        <app-branch-account-count></app-branch-account-count>
+      </div>
+    </div>
+  
+  <!-- Parent Container -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mt-6">
+    <div class="bg-white shadow-xl rounded-2xl min-h-[100px] w-full p-4 mb-4">
+      <app-monthly-smeloancount></app-monthly-smeloancount>
+    </div>
+    <div class="bg-white shadow-xl rounded-2xl min-h-[100px] w-full p-4 mb-4">
+      <app-monthly-hploancount></app-monthly-hploancount>
+    </div>
+  </div>

@@ -42,9 +42,47 @@
             <label class="text-sm font-medium text-gray-600">Company Value</label>
             <p class="mt-1">{{ dealer.companyValue | currency }}</p>
           </div>
+            <!-- Add this new section -->
+            <div *ngIf="dealer?.currentAccount">
+                <label class="text-sm font-medium text-gray-600">Account Balance</label>
+                <p class="mt-1 font-semibold">{{ dealer.currentAccount?.totalBalance| currency }}</p>
+              </div>
         </div>
+        
       </div>
-  
+
+
+
+      <div *ngIf="!isLoading && transactions.length > 0" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let transaction of transactions">
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                {{ transaction.date | date:'medium' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm" 
+                  [class.text-green-600]="transaction.type === 'CR'"
+                  [class.text-red-600]="transaction.type === 'DR'">
+                {{ transaction.type }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                  [class.text-green-600]="transaction.type === 'CR'"
+                  [class.text-red-600]="transaction.type === 'DR'">
+                {{ transaction.amount | currency }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      
       <!-- Action Buttons -->
       <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
         <div class="flex space-x-4">

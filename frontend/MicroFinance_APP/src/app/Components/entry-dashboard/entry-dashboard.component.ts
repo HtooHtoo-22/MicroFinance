@@ -14,6 +14,7 @@ export class EntryDashboardComponent {
   isDealerDropdownOpen: boolean = false;
   isACCDropdownOpen: boolean = false;
   imagePath: string = "image/richcon-logo.png";
+  showLogoutModal: boolean = false;
 
   constructor(private authService: AuthService) {}
 
@@ -51,5 +52,26 @@ export class EntryDashboardComponent {
 
   isOperation(): boolean {
     return this.authService.isOperation();
+  }
+
+  openLogoutModal(): void {
+    this.showLogoutModal = true;
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
+  }
+
+  confirmLogout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logged out successfully');
+        this.showLogoutModal = false;
+      },
+      error: (err) => {
+        console.error('Logout failed:', err);
+        this.showLogoutModal = false;
+      }
+    });
   }
 }

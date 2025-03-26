@@ -22,4 +22,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     List<Transaction> findByCurrentAccountIdIn(List<CurrentAccount> currentAccounts);
 
+
 }

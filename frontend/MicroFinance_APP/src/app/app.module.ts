@@ -71,6 +71,8 @@ import { MonthlyHploancountComponent } from './Components/counting/monthly-hploa
 import { CreateRoleComponent } from './Components/Role/create-role/create-role.component';
 import { EditRoleComponent } from './Components/Role/edit-role/edit-role.component';
 import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
+import { DashboardComponent } from './Components/counting/dashboard/dashboard.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -132,7 +134,8 @@ import { DealerDetailviewComponent } from './Components/Account/dealer-detailvie
     MonthlyHploancountComponent,
     CreateRoleComponent,
     EditRoleComponent,
-    DealerDetailviewComponent
+    DealerDetailviewComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -149,7 +152,9 @@ import { DealerDetailviewComponent } from './Components/Account/dealer-detailvie
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatDialogModule,
+
   ],
   providers: [ AuthService, 
     provideClientHydration(withEventReplay()),

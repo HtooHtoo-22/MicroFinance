@@ -59,16 +59,17 @@ public class HpLoanServiceImpl implements HPLoanService {
     @Autowired
     private WebSocketNotificationService notificationService;
 
+
     @Override
     @Transactional
     public HPLoanDTO createSMELoan(HPLoanDTO dto) {
-        System.out.println("DTO : "+dto);
+        System.out.println("DTO : " + dto);
         // Validate input DTO
         if (dto == null) {
             throw new ValidationException("Loan DTO cannot be null");
         }
 
-        User entryUser = userRepository.findById(dto.getEntryUserId())
+        User entryUser  = userRepository.findById(dto.getEntryUserId())
                 .orElseThrow(() -> new NotFoundException("Entry user not found with ID: " + dto.getEntryUserId()));
 
         CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountId())
@@ -84,10 +85,9 @@ public class HpLoanServiceImpl implements HPLoanService {
 
         HPLoan hpLoan = HPLoanMapper.toEntity(dto);
         hpLoan.setLoanId(HPLoanIDGenerator.generateLoanId());
-        hpLoan.setEntryUser(entryUser);
+        hpLoan.setEntryUser (entryUser );
         hpLoan.setCurrentAccount(currentAcc);
         hpLoan.setProduct(product);
-
 
         // Set interest rate
         BigDecimal interestRate = rateRepo.findValueByRateType("HP Loan Interest Rate");
@@ -100,9 +100,7 @@ public class HpLoanServiceImpl implements HPLoanService {
         if (dto.getTenor() <= 0) {
             throw new ValidationException("Tenor must be greater than 0");
         }
-        System.out.println("HPLoan Tenor Before Set : "+hpLoan.getTenor());
-
-        hpLoan.setTenor(dto.getTenor());
+        hpLoan.setTenor(dto.getTenor()); // Ensure this line is uncommented
         hpLoan.setDuration(dto.getTenor() * 12);
 
         // Calculate loan amount
@@ -121,9 +119,7 @@ public class HpLoanServiceImpl implements HPLoanService {
         hpLoan.setLoanAmount(loanAmount);
         hpLoan.setStatus(LoanStatus.PENDING);
         hpLoan.setRegisteredDate(LocalDateTime.now());
-        System.out.println("Lee Tenor : "+hpLoan.getTenor());
         HPLoan savedLoan = hpLoanRepo.save(hpLoan);
-        System.out.println("Saved Loan : "+savedLoan);
         HPLoanDTO savedLoanDTO = HPLoanMapper.toDTO(savedLoan);
         notificationService.notifyNewHPLoan(savedLoanDTO);
         return savedLoanDTO;
@@ -171,17 +167,13 @@ public class HpLoanServiceImpl implements HPLoanService {
         hpLoan.setStatus(LoanStatus.APPROVE);
         hpLoan.setApprovedDate(LocalDateTime.now());
         hpLoan.setApprovedUser(approveUser);
-        System.out.println("Before saving HP Loan");
         hpLoanRepo.save(hpLoan);
-        System.out.println("After saving HP Loan");
         TransactionDTO transactionDTO = new TransactionDTO();
         transactionDTO.setType(transactionType.CR);
         transactionDTO.setAmount(hpLoan.getLoanAmount());
         transactionDTO.setCurrentAccountId(hpLoan.getProduct().getDealer().getCurrentAccount().getAccountId());
         transactionService.createTransaction(transactionDTO);
-        System.out.println("Transaction complete and before schedule");
         hpScheduleService.createSchedule(hpLoan);
-        System.out.println("After schedule");
         HPLoanDTO dto = HPLoanMapper.toDTO(hpLoan);
         notificationService.notifyHPLoanStatusChange(dto);
     }

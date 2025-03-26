@@ -25,4 +25,5 @@ public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
     List<SMELoan> findByEntryUser_Branch_Id(Integer branchId);
 
     List<SMELoan> findByStatus(LoanStatus loanStatus);
+
 }

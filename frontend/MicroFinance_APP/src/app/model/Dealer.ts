@@ -1,3 +1,5 @@
+import { CurrentAccount } from "./CurrentAcc";
+
 // dealer.model.ts
 export interface Dealer {
   id: number;
@@ -7,9 +9,7 @@ export interface Dealer {
   email: string;
   registerDate: string;
   status: string;
-  currentAccount: {
-    accountId: string;
-  };
+  currentAccount?: CurrentAccount;
   companyValue: number;
   userPhotoURL?: string; // Add this line
   information: string

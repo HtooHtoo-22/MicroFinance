@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CurrentAccService } from '../../../service/current-acc.service';
-import { BranchService } from '../../../service/branch.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-branch-account-count',
@@ -9,49 +9,33 @@ import { BranchService } from '../../../service/branch.service';
   styleUrl: './branch-account-count.component.css'
 })
 export class BranchAccountCountComponent implements OnInit {
-  branches: any[] = [];
-  selectedBranchId: number | null = null;
   accountCount: number | null = null;
+  isLoading = false;
   
-  constructor(private currentAccService: CurrentAccService,private branchService: BranchService) {}
+  constructor(
+    private currentAccService: CurrentAccService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadBranches();
+    this.loadCurrentAccountCount();
   }
-
-  // Load all branches
-  loadBranches(): void {
-      
-      
-      this.branchService.getBranches()
-        
-        .subscribe({
-          next: (data) => {
-            this.branches = data;
-           
-          },
-          error: (error) => {
-            console.error('Error fetching branches:', error);
-            
-          }
-        });
-    }
-  
-  
 
   loadCurrentAccountCount(): void {
-    if (this.selectedBranchId) {
-      this.currentAccService.getCurrentAccountCount(this.selectedBranchId).subscribe(
-        (count) => {
+    this.isLoading = true;
+    const branchId = this.authService.getCurrentUserBranchId();
+    
+    if (branchId) {
+      this.currentAccService.getCurrentAccountCount(+branchId).subscribe({
+        next: (count) => {
           this.accountCount = count;
+          this.isLoading = false;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error fetching current account count:', error);
+          this.isLoading = false;
         }
-      );
-    } else {
-      this.accountCount = null;
+      });
     }
   }
-  
 }

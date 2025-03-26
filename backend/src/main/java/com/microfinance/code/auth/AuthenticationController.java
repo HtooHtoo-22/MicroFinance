@@ -3,12 +3,16 @@ package com.microfinance.code.auth;
 
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.Role;
+import com.microfinance.code.model.User;
 import com.microfinance.code.repository.RoleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -46,6 +50,14 @@ public class AuthenticationController {
             HttpServletResponse response
     )throws IOException {
         service.refreshToken(request, response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.logout(request, response, authentication);
+        SecurityContextHolder.clearContext(); // Ensure context is cleared
+        return ResponseEntity.ok("Logout successful");
     }
 
 }

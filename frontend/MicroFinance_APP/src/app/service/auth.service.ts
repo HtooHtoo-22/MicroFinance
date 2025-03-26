@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { StoreService } from './store.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +12,6 @@ export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   private emailSubject = new BehaviorSubject<string | null>(null);
   private apiUrl = 'http://localhost:8081/api/v1/auth';  // Base URL for auth endpoints
-
 
   constructor(
     private http: HttpClient,
@@ -20,11 +21,11 @@ export class AuthService {
     const token = this.getAccessToken();
     this.loggedIn.next(!!token);
 
-        // Initialize email from storage
-        const storedEmail = this.storageService.getItem('email');
-        if (storedEmail) {
-          this.emailSubject.next(storedEmail);
-        }
+    // Initialize email from storage
+    const storedEmail = this.storageService.getItem('email');
+    if (storedEmail) {
+      this.emailSubject.next(storedEmail);
+    }
   }
 
   login(username: string, password: string) {
@@ -51,13 +52,13 @@ export class AuthService {
         }
       })
     );
-}
+  }
 
-getCurrentDealerId(): string | null {
-  const dealerId = this.storageService.getItem('dealerId');
-  console.log('Retrieved dealerId:', dealerId); // Debug log
-  return dealerId;
-}
+  getCurrentDealerId(): string | null {
+    const dealerId = this.storageService.getItem('dealerId');
+    console.log('Retrieved dealerId:', dealerId); // Debug log
+    return dealerId;
+  }
 
   getCurrentUserId(): string | null {
     return this.storageService.getItem('userId');
@@ -69,7 +70,7 @@ getCurrentDealerId(): string | null {
 
   getCurrentUserRole(): string | null {
     return this.storageService.getItem('role'); // Ensure this matches the key used in setItem
-}
+  }
 
   // Email handling
   setCurrentUserEmail(email: string): void {
@@ -85,14 +86,6 @@ getCurrentDealerId(): string | null {
     return this.storageService.getItem('email');
   }
 
-  logout() {
-    this.storageService.removeItem('access_token');
-    this.storageService.removeItem('refresh_token');
-    this.storageService.removeItem('userId');
-    this.loggedIn.next(false);
-    this.router.navigate(['/login']);
-  }
-
   isLoggedIn() {
     return this.loggedIn.asObservable();
   }
@@ -103,6 +96,45 @@ getCurrentDealerId(): string | null {
     this.loggedIn.next(true);
   }
 
+  logout(): Observable<any> {
+    // First clear all local data for immediate UI response
+    this.clearAuthData();
+    
+    // Make API call to backend logout endpoint
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.getAccessToken()}`
+    });
+
+    return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
+      tap(() => {
+        // On successful logout
+        this.postLogoutCleanup();
+      }),
+      catchError(error => {
+        // Even if API call fails, ensure client is logged out
+        this.postLogoutCleanup();
+        return throwError(error);
+      })
+    );
+  }
+
+  private postLogoutCleanup(): void {
+    this.clearAuthData();
+    this.loggedIn.next(false);
+    this.emailSubject.next(null);
+    this.router.navigate(['/login']);
+  }
+
+  private clearAuthData(): void {
+    // Clear all stored authentication data
+    this.storageService.removeItem('access_token');
+    this.storageService.removeItem('refresh_token');
+    this.storageService.removeItem('userId');
+    this.storageService.removeItem('branchId');
+    this.storageService.removeItem('role');
+    this.storageService.removeItem('dealerId');
+    this.storageService.removeItem('email');
+  }
 
   getAccessToken() {
     return this.storageService.getItem('access_token');
@@ -131,5 +163,4 @@ getCurrentDealerId(): string | null {
   isDealer(): boolean {
     return this.getCurrentUserRole() === 'DEALER';
   }
-
 }

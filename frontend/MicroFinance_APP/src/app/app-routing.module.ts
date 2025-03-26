@@ -52,6 +52,7 @@ import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
 import { CollateralDetailComponent } from './Components/Collateral/collateral-detail/collateral-detail.component';
 import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
+import { DashboardComponent } from './Components/counting/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -62,7 +63,7 @@ const routes: Routes = [
     data: { role: 'ADMIN' },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: BranchAccountCountComponent },
+      { path: 'home', component: DashboardComponent },
       { path: 'create-user', component: CreateuserComponent },
       { path: 'list-users', component: ListuserComponent },
       { path: 'edit-user/:id', component: UpdateUserComponent },
@@ -89,7 +90,7 @@ const routes: Routes = [
     data: { role: 'ENTRY' },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: BranchAccountCountComponent },
+      { path: 'home', component: DashboardComponent },
       { path: 'current-account-register', component: CurrentAccountRegisterComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction/create/:currentAccountId', component: TransactionComponent },
@@ -119,7 +120,7 @@ const routes: Routes = [
     data: { role: 'MANAGER' },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: BranchAccountCountComponent },
+      { path: 'home', component: DashboardComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction-history', component: TransactionHistoryComponent },
       { path: 'dealer-list', component: DealerListComponent },
@@ -138,7 +139,7 @@ const routes: Routes = [
     data: { role: 'OPERATION' },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: BranchAccountCountComponent },
+      { path: 'home', component: DashboardComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction-history', component: TransactionHistoryComponent },
       { path: 'hp-register', component: HpLoanFormComponent },

@@ -32,7 +32,7 @@ public class Dealer {
     @Column(name = "register_date", nullable = false)
     private LocalDate registerDate;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "current_account_id", nullable = false)
     private CurrentAccount currentAccount;
 

@@ -96,7 +96,7 @@ export class MonthlySMELoancountComponent implements OnInit {
             datasets: [{
                 label: '', // No label here since we will draw it below
                 data: paginatedData.map(item => item.count),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgba(14, 103, 237, 0.94)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]

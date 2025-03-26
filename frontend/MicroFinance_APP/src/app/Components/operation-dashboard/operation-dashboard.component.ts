@@ -5,11 +5,12 @@ import { AuthService } from '../../service/auth.service';
   selector: 'app-operation-dashboard',
   standalone: false,
   templateUrl: './operation-dashboard.component.html',
-  styleUrl: './operation-dashboard.component.css'
+  styleUrls: ['./operation-dashboard.component.css']
 })
 export class OperationDashboardComponent {
   isCustomerDropdownOpen: boolean = false;
   imagePath: string = "image/richcon-logo.png";
+  showLogoutModal: boolean = false;
 
   constructor(private authService: AuthService) {}
 
@@ -31,5 +32,26 @@ export class OperationDashboardComponent {
 
   isOperation(): boolean {
     return this.authService.isOperation();
+  }
+
+  openLogoutModal(): void {
+    this.showLogoutModal = true;
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
+  }
+
+  confirmLogout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logged out successfully');
+        this.showLogoutModal = false;
+      },
+      error: (err) => {
+        console.error('Logout failed:', err);
+        this.showLogoutModal = false;
+      }
+    });
   }
 }

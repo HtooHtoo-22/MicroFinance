@@ -95,7 +95,7 @@ export class MonthlyHploancountComponent implements OnInit {
             datasets: [{
                 label: '', // No label here since we will draw it below
                 data: paginatedData.map(item => item.count),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgb(20, 122, 231)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]

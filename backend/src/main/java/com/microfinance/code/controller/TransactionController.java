@@ -52,9 +52,15 @@ public class TransactionController {
         return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved", transactions);
     }
 
-    @GetMapping("/transactions/{currentAccountId}")
+    @GetMapping("/by-account/{currentAccountId}")
     public ApiResponse<List<TransactionDTO>> getTransactionsByCurrentAccountId(@PathVariable String currentAccountId) {
         List<TransactionDTO> transactions = transactionService.getTransactionsByCurrentAccountId(currentAccountId);
+        return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved successfully", transactions);
+    }
+
+    @GetMapping("/by-dealer/{dealerId}")
+    public ApiResponse<List<TransactionDTO>> getTransactionsByDealerId(@PathVariable Integer dealerId) {
+        List<TransactionDTO> transactions = transactionService.getTransactionsByDealerId(dealerId);
         return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved successfully", transactions);
     }
 }

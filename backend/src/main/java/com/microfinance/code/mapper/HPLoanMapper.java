@@ -27,7 +27,7 @@ public class HPLoanMapper {
         dto.setLoanAmount(hpLoan.getLoanAmount());
         dto.setInterestRate(hpLoan.getInterestRate());
         dto.setGracePeriod(hpLoan.getGracePeriod());
-        hpLoan.setTenor(dto.getTenor()); // Add this line to map tenor
+        dto.setTenor(dto.getTenor()); // Add this line to map tenor
 
         // Convert dates to String
         dto.setRegisteredDate(hpLoan.getRegisteredDate() != null ? hpLoan.getRegisteredDate().format(DATE_TIME_FORMATTER) : null);

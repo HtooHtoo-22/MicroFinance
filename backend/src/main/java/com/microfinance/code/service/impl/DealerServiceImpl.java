@@ -53,8 +53,8 @@ public class DealerServiceImpl implements DealerService {
             throw new AlreadyExistException("Dealer email already exists");
         }
         // Get current account by accountId string
-        CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccountId())
-                .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccountId()));
+        CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccount().getAccountId())
+                .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccount().getAccountId()));
         CIF cif = currentAccount.getCif(); // Get CIF from CurrentAccount
         if (cif == null) {
                  throw new NotFoundException("CIF not found for current account");

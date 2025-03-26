@@ -57,4 +57,12 @@ export class ListRoleComponent implements OnInit {
       this.updatePagination();
     }
   }
+
+  get startIndex(): number {
+    return (this.currentPage - 1) * this.pageSize;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.totalRoles);
+  }
 }

@@ -132,20 +132,37 @@
       </ul>
     </div>
   
-    <!-- Main content wrapper with fixed header -->
-    <div class="flex-1 ml-64">
-      <div class="fixed right-0 left-64 bg-white z-10 p-4">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8">
-          </div>
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8">
-          </div>
-        </div>
-      </div>
-      <div class="pt-24 p-7 bg-gray-100 min-h-screen">
-        <router-outlet></router-outlet>
-      </div>
+ <!-- Main content wrapper with fixed header -->
+<div class="flex-1 ml-64">
+  <header class="fixed right-0 left-64 bg-white z-10 shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="assets/images/logo.png" alt="Logo" class="w-8 h-8">
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <button (click)="openLogoutModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="pt-24 p-7 bg-gray-100 min-h-screen">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- Logout Modal -->
+<div *ngIf="showLogoutModal" class="fixed inset-0 bg-white-/70 backdrop-blur-[1.5px] flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+    <h2 class="text-2xl font-semibold text-blue-800 mb-4">Confirm Logout</h2>
+    <p class="text-gray-700 mb-6">Are you sure you want to logout?</p>
+    <div class="flex justify-end space-x-4">
+      <button (click)="closeLogoutModal()" class="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition duration-200">
+        Cancel
+      </button>
+      <button (click)="confirmLogout()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+        Logout
+      </button>
     </div>
   </div>
+</div>

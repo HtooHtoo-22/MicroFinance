@@ -28,4 +28,11 @@ export class TransactionService {
     return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-account/${accountId}`);
   }
 
+// transaction.service.ts
+getTransactionsByDealerId(dealerId: number): Observable<ApiResponse<Transaction[]>> {
+  return this.http.get<ApiResponse<Transaction[]>>(
+    `${this.apiUrl}/by-dealer/${dealerId}`
+  );
+}
+
 }

@@ -10,12 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface HPScheduleRepo extends JpaRepository<HPSchedule,Integer> {
     List<HPSchedule> findByDueDate(LocalDate dueDate);
+
     @Query("SELECT h FROM HPSchedule h WHERE (h.dueDate = :date OR h.gracePeriodEndDate = :date) AND h.status IN :statuses")
     List<HPSchedule> findByDueDateOrGracePeriodEndDateAndStatusIn(
             @Param("date") LocalDate date,
@@ -30,7 +32,7 @@ public interface HPScheduleRepo extends JpaRepository<HPSchedule,Integer> {
             @Param("hpLoanId") Integer smeLoanId,
             @Param("statuses") List<RepaymentStatus> statuses);
 
-    List<HPSchedule> findByHpLoanAndStatus(HPLoan hpLoan , RepaymentStatus status);
+    List<HPSchedule> findByHpLoanAndStatus(HPLoan hpLoan, RepaymentStatus status);
 
     List<HPSchedule> findByHpLoanId(Integer hpLoanId);
 }

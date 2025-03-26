@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BranchService } from '../../../service/branch.service';
 import { UserService } from '../../../service/user.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-branch-user-count',
@@ -9,34 +10,33 @@ import { UserService } from '../../../service/user.service';
   styleUrl: './branch-user-count.component.css'
 })
 export class BranchUserCountComponent implements OnInit {
-  branches: any[] = [];
-  selectedBranchId: number | null = null;
   activeUserCount: number | null = null;
+  isLoading = false;
 
   constructor(
-    private branchService: BranchService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.loadBranches();
-  }
-
-  loadBranches(): void {
-    this.branchService.getBranches().subscribe({
-      next: (data) => (this.branches = data),
-      error: (error) => console.error('Error fetching branches:', error),
-    });
+    this.loadActiveUserCount();
   }
 
   loadActiveUserCount(): void {
-    if (this.selectedBranchId) {
-      this.userService.getActiveUserCount(this.selectedBranchId).subscribe({
-        next: (count) => (this.activeUserCount = count),
-        error: (error) => console.error('Error fetching active user count:', error),
+    this.isLoading = true;
+    const branchId = this.authService.getCurrentUserBranchId();
+    
+    if (branchId) {
+      this.userService.getActiveUserCount(+branchId).subscribe({
+        next: (count) => {
+          this.activeUserCount = count;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error fetching active user count:', error);
+          this.isLoading = false;
+        }
       });
-    } else {
-      this.activeUserCount = null;
     }
   }
 }
