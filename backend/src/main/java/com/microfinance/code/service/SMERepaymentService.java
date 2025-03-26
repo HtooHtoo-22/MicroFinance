@@ -31,8 +31,14 @@ public class SMERepaymentService {
     private  SMELateFeeCalculationRepo lateFeeRepo;
     @Autowired
     private SMERepaymentTrackRepo repaymentTrackRepo;
+    @Autowired
+    private SMELoanHasCollateralRepo loanHasCollateralRepo;
+    @Autowired
+    private CollateralRepo collateralRepo;
+    @Autowired
+    private SMELoanRepo loanRepo;
     @Transactional
-   // @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
 
@@ -103,17 +109,75 @@ public class SMERepaymentService {
             EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
 
         } else if (availableBalance.compareTo(dueAmount) >= 0) {
-            // Enough balance to repay without touching the minimum balance
-            currentAccount.setTotalBalence(totalBalance.subtract(dueAmount).doubleValue()); // Convert back to double if needed
+            // Enough balance to repay
+            currentAccount.setTotalBalence(totalBalance.subtract(dueAmount).doubleValue());
             schedule.setTotalRepaidAmount(schedule.getTotalRepaidAmount().add(dueAmount));
-            schedule.setStatus(RepaymentStatus.PAID); // Mark as fully paid
             schedule.setFullyPaidDate(today);
-            schedule.setInterestAmount(new BigDecimal(0.0));
+
+            // Check if this is the FINAL TERM (principal is due)
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                // Final term: Interest is paid, now check principal
+                BigDecimal principalDue = schedule.getSmeLoan().getPrincipal();
+                if (availableBalance.compareTo(principalDue) >= 0) {
+                    // Principal is paid → Close loan
+                    currentAccount.setTotalBalence(totalBalance.subtract(principalDue).doubleValue());
+                    schedule.setStatus(RepaymentStatus.PAID);
+                    System.out.println("Principal Enough");
+                    List<SMELoanHasCollateral> toDelete = loanHasCollateralRepo.findBySmeLoan(schedule.getSmeLoan());
+                    // 2. Delete in batch (efficient)
+                    loanHasCollateralRepo.deleteAll(toDelete); // Single DB operation
+                    String message = "RichCoin: Congratulations! Your SME loan Term: " + schedule.getTermNumber() +
+                            " has been fully repaid, including the principal amount of MMK " + principalDue +
+                            ". Your collateral has now been released. Thank you for your trust in us.";
+                    SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+                    String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Loan Fully Repaid";
+                    String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "Congratulations! You have successfully repaid the final term of your SME loan, including the principal amount of MMK " + principalDue + ".\n" +
+                            "As a result, your collateral for this loan has now been released. We appreciate your commitment to timely repayments.\n\n" +
+                            "Thank you for choosing RichCoin Financial Services.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
+                } else {
+                    System.out.println("Principal Not Enough");
+                    // Principal unpaid → DEFAULT
+                    schedule.setStatus(RepaymentStatus.PAID); // Interest is paid
+                    SMELoan loan = schedule.getSmeLoan();
+                    loan.setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                    loanRepo.save(loan);
+                 //   schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                    // Fetch all collaterals in one query
+                    List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                    // Update all collaterals in memory (no DB hits yet)
+                    collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                    // Batch save (1 transaction)
+                    collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                    String message = "RichCoin: Your loan's principal amount of MMK " + principalDue +
+                            " has not been repaid. Your collateral will remain with us until full payment is made.";
+                    SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+                    String emailSubject = "Outstanding Principal Payment";
+                    String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "Your loan's principal amount of MMK " + principalDue + " has not been repaid.\n" +
+                            "As a result, your collateral will remain with us until the full payment is made.\n\n" +
+                            "Please arrange the payment as soon as possible. If you need assistance, feel free to contact us.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
+                }
+            } else {
+                // Regular term (only interest)
+                schedule.setStatus(RepaymentStatus.PAID);
+            }
             SMERepaymentTrack repaymentTrack = new SMERepaymentTrack();
             repaymentTrack.setSmeRepaymentSchedule(schedule);
             repaymentTrack.setDate(today);
             repaymentTrack.setPaidAmount(dueAmount);
             repaymentTrackRepo.save(repaymentTrack);
+
 
             String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
                     "You repaid MMK " + dueAmount + ". " +
@@ -178,6 +242,31 @@ public class SMERepaymentService {
             repaymentTrack.setPaidAmount(availableBalance);
             repaymentTrack.setOdStatus(true);
             repaymentTrackRepo.save(repaymentTrack);
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                // Fetch all collaterals in one query
+                List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                // Update all collaterals in memory (no DB hits yet)
+                collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                // Batch save (1 transaction)
+                collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You repaid MMK " + dueAmount + ". " +
+                        "Your current balance is MMK " + currentAccount.getTotalBalence() + ". " +
+                        "Thank you for your timely repayment.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Repayment Successful";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We are pleased to inform you that your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You have repaid MMK " + dueAmount + " today. Your current balance is MMK " + currentAccount.getTotalBalence() + ".\n\n" +
+                        "Thank you for your timely repayment.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+            }
         } else {
             // No available balance, full overdue
             schedule.setInterestODAmount(schedule.getInterestODAmount().add(dueAmount)); // All remaining amount is OD interest
@@ -220,6 +309,31 @@ public class SMERepaymentService {
                 EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
             }
             schedule.setInterestAmount(new BigDecimal(0.0));
+            if (schedule.getTermNumber() == schedule.getSmeLoan().getDuration()) {
+                schedule.getSmeLoan().setStatus(com.microfinance.code.status.LoanStatus.DEFAULT);
+                // Fetch all collaterals in one query
+                List<Collateral> collaterals = loanHasCollateralRepo.findCollateralsBySmeLoanId(schedule.getSmeLoan().getId());
+
+                // Update all collaterals in memory (no DB hits yet)
+                collaterals.forEach(collateral -> collateral.setHeldByCompany(true)); // Or setHeldByCompany if you prefer
+
+                // Batch save (1 transaction)
+                collateralRepo.saveAll(collaterals); // More efficient than individual saves
+                String message = "RichCoin: Your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You repaid MMK " + dueAmount + ". " +
+                        "Your current balance is MMK " + currentAccount.getTotalBalence() + ". " +
+                        "Thank you for your timely repayment.";
+                SmsSender.sendSms(schedule.getSmeLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                String emailSubject = "SME Loan Term: " + schedule.getTermNumber() + " - Repayment Successful";
+                String emailBody = "Dear " + schedule.getSmeLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                        "We are pleased to inform you that your SME loan Term: " + schedule.getTermNumber() + " has been successfully paid. " +
+                        "You have repaid MMK " + dueAmount + " today. Your current balance is MMK " + currentAccount.getTotalBalence() + ".\n\n" +
+                        "Thank you for your timely repayment.\n\n" +
+                        "Best regards,\n" +
+                        "RichCoin Financial Services";
+                EmailSender.sendEmail(schedule.getSmeLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+            }
         }
 
         // Save updated data to the database

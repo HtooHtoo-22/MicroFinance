@@ -21,6 +21,8 @@ import { CreateBranchComponent } from './Components/branch/create-branch/create-
 import { BranchListComponent } from './Components/branch/branch-list/branch-list.component';
 import { UpdateBranchComponent } from './Components/branch/update-branch/update-branch.component';
 import { UpdateUserComponent } from './Components/user/update-user/update-user.component';
+import { CreateRoleComponent } from './Components/Role/create-role/create-role.component';
+import { EditRoleComponent } from './Components/Role/edit-role/edit-role.component';
 import { ListRoleComponent } from './Components/Role/role-list/role-list.component';
 import { CreateRateComponent } from './Components/Rate/create-rate/create-rate.component';
 import { RateListComponent } from './Components/Rate/rate-list/rate-list.component';
@@ -66,10 +68,13 @@ import { SmeLoanScheduleComponent } from './Components/sme-loan-schedule/sme-loa
 import { SmeRepayTrackComponent } from './Components/sme-repay-track/sme-repay-track.component';
 import { CreateDealerComponent } from './Components/Dealer/create-dealer/create-dealer.component';
 import { DealerListComponent } from './Components/Dealer/dealer-list/dealer-list.component';
+import { HpLoanTrackComponent } from './Components/hp-loan/hp-loan-track/hp-loan-track.component';
+import { HpLoanLatefeeComponent } from './Components/hp-loan/hp-loan-latefee/hp-loan-latefee.component';
+import { SmeApproveLoansComponent } from './Components/sme-approve-loans/sme-approve-loans.component';
+import { HpApproveLoansComponent } from './Components/hp-approve-loans/hp-approve-loans.component';
+
 import { MonthlySMELoancountComponent } from './Components/counting/monthly-smeloancount/monthly-smeloancount.component';
 import { MonthlyHploancountComponent } from './Components/counting/monthly-hploancount/monthly-hploancount.component';
-import { CreateRoleComponent } from './Components/Role/create-role/create-role.component';
-import { EditRoleComponent } from './Components/Role/edit-role/edit-role.component';
 import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
 import { DashboardComponent } from './Components/counting/dashboard/dashboard.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -90,7 +95,7 @@ import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.com
     CreateBranchComponent,
     BranchListComponent,
     UpdateBranchComponent,
-    UpdateUserComponent,    
+    UpdateUserComponent,
     ListRoleComponent,
     CreateRateComponent,
     RateListComponent,
@@ -138,6 +143,11 @@ import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.com
     DealerDetailviewComponent,
     DashboardComponent,
     LoanMetricsComponent,
+    DealerListComponent,
+    HpLoanTrackComponent,
+    HpLoanLatefeeComponent,
+    SmeApproveLoansComponent,
+    HpApproveLoansComponent
   ],
   imports: [
     BrowserModule,
@@ -158,7 +168,7 @@ import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.com
     MatDialogModule,
 
   ],
-  providers: [ AuthService, 
+  providers: [ AuthService,
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

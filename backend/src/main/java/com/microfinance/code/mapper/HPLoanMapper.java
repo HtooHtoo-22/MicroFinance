@@ -44,13 +44,17 @@ public class HPLoanMapper {
         dto.setApprovedUserId(hpLoan.getApprovedUser() != null ? hpLoan.getApprovedUser().getId() : null);
         dto.setApprovedUserName(hpLoan.getApprovedUser() != null ? hpLoan.getApprovedUser().getName() : null);
         dto.setCurrentAccountId(hpLoan.getCurrentAccount().getAccountId() != null ? hpLoan.getCurrentAccount().getAccountId() : null);
-        dto.setCurrentAccountId(hpLoan.getCurrentAccount().getCif().getCifId() != null ? hpLoan.getCurrentAccount().getCif().getCifId() : null);
-        dto.setBorrowerName(hpLoan.getCurrentAccount().getCif().getUserName());
+      //  dto.setCurrentAccountId(hpLoan.getCurrentAccount().getCif().getCifId() != null ? hpLoan.getCurrentAccount().getCif().getCifId() : null);
         dto.setProductId(hpLoan.getProduct() != null ? hpLoan.getProduct().getId() : null);
         dto.setProductName(hpLoan.getProduct().getProductName());
         dto.setProductPhoto(hpLoan.getProduct().getPhoto());
         dto.setDownPaymentRate(hpLoan.getDownPaymentRate());
         dto.setDealerCommissionRate(hpLoan.getDealerCommissionRate());
+
+        dto.setBorrowerName(hpLoan.getCurrentAccount() != null && hpLoan.getCurrentAccount().getCif() != null
+                ? hpLoan.getCurrentAccount().getCif().getUserName() : null);
+        dto.setCifId(hpLoan.getCurrentAccount().getCif().getCifId());
+        dto.setRealCifId(hpLoan.getCurrentAccount().getCif().getId());
 
         return dto;
     }

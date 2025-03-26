@@ -35,4 +35,5 @@ public class SMELoanDTO {
     private Integer cifId;
     private String cifIdNumber;
     private List<CollateralDTO> usedCollaterals;
+    private String loanStatus;
 }

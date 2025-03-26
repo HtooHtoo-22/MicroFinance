@@ -1,0 +1,128 @@
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Table Header with Filter -->
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-gray-700">Repayment History</h3>
+      <div class="flex flex-col items-end gap-2 bg-gray-50 p-4 rounded-lg shadow-md">
+        <div class="flex items-center gap-2">
+          <label for="filter" class="text-sm font-medium text-gray-700">Filter:</label>
+          <select 
+            id="filter"
+            [(ngModel)]="selectedFilter"
+            (change)="applyFilter()"
+            class="w-48 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:border-gray-400"
+          >
+            <option value="all">All Transactions</option>
+            <option value="od">Overdue Track</option>
+            <option value="lateFee">Late Fee Track</option>
+          </select>
+        </div>
+        <span class="text-xs text-gray-500 font-medium">
+          As of {{ currentDate | date:'MMM d, y, h:mm a' }}
+        </span>
+      </div>
+    </div>
+  
+    <!-- Table Container -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Date</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Purpose</th>
+            <th *ngIf="selectedFilter !== 'lateFee'" class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Term</th>
+            <th *ngIf="selectedFilter === 'lateFee'" class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Late Days</th>
+            <th *ngIf="selectedFilter === 'lateFee'" class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Late Fees</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        
+        <tbody class="bg-white divide-y divide-gray-200">
+          <!-- Loading State -->
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="px-6 py-4 text-center">
+              <div class="animate-pulse space-y-4">
+                <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+              </div>
+            </td>
+          </tr>
+  
+          <!-- Data Rows -->
+          <tr 
+            *ngFor="let track of filteredTracks"
+            class="hover:bg-gray-50 transition-colors duration-150"
+          >
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
+              {{ track.paymentDate | date:'dd MMM yyyy' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-mono">
+              {{ track.paymentAmount | number:'1.0-0' }} KS
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+              <span class="inline-flex items-center">
+                <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                {{ formatPaymentPurpose(track.paymentPurpose) }}
+              </span>
+            </td>
+            
+            <!-- Dynamic Columns -->
+            <td *ngIf="selectedFilter !== 'lateFee'" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+              <span class="inline-block px-2 py-1 rounded bg-gray-100 text-gray-700">
+                {{ track.term >= 0 ? 'Term ' + track.term : '-' }}
+              </span>
+            </td>
+            <td *ngIf="selectedFilter === 'lateFee'" class="px-6 py-4 whitespace-nowrap text-sm text-center text-red-600 font-medium">
+              {{ track.lateDays }}
+            </td>
+            <td *ngIf="selectedFilter === 'lateFee'" class="px-6 py-4 whitespace-nowrap text-sm text-center text-red-600 font-mono">
+              {{ track.lateFees | number:'1.0-0' }} KS
+            </td>
+            
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span 
+                [ngClass]="getStatusStyles(track.status)"
+                class="px-3 py-1.5 rounded-full text-xs font-medium inline-flex items-center"
+              >
+                <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 8 8">
+                  <circle cx="4" cy="4" r="3" />
+                </svg>
+                {{ formatStatusMessage(track.status) }}
+              </span>
+            </td>
+          </tr>
+  
+          <!-- Empty State -->
+          <tr *ngIf="!isLoading && !filteredTracks?.length">
+            <td [attr.colspan]="selectedFilter === 'lateFee' ? 6 : 5" class="px-6 py-12 text-center">
+              <div class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <p class="font-medium text-gray-500">No repayment records found</p>
+                <p class="text-sm mt-1">Try adjusting your filter selection</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+    <button 
+  (click)="refreshData()"
+  [disabled]="isRefreshing"
+  class="text-blue-600 hover:text-blue-800 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <svg 
+    [class.animate-spin]="isRefreshing"
+    class="w-4 h-4 mr-1" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+  </svg>
+  {{ isRefreshing ? 'Refreshing...' : 'Refresh Data' }}
+</button>
+  </div>

@@ -1,4 +1,5 @@
 <div class="max-w-6xl mx-auto p-6">
+  <h1>Hello</h1>
     <div *ngIf="loan; else noData">
       <!-- Header Section -->
       <div class="flex items-center justify-between mb-8 min-h-[88px]">
@@ -45,6 +46,30 @@
           >
             Repayment Schedule
           </button>
+        <!-- Add Repayment Track Tab -->
+        <button
+          (click)="switchTab('track')"
+          [class]="
+            activeTab === 'track'
+              ? 'border-b-2 border-blue-500 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+          "
+          class="pb-4 px-1 text-sm font-medium"
+        >
+          Repayment Track
+        </button>
+        <!-- Add Late Fee & Overdue Tab -->
+        <button
+          (click)="switchTab('lateFee')"
+          [class]="
+            activeTab === 'lateFee'
+              ? 'border-b-2 border-blue-500 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+          "
+          class="pb-4 px-1 text-sm font-medium"
+        >
+          Late Fee & Overdue
+        </button>
         </nav>
       </div>
   
@@ -182,6 +207,14 @@
         <div *ngSwitchCase="'schedule'" class=" rounded-lg border border-gray-100">          
           <!-- Embed the HpLoanScheduleComponent here -->
           <app-hp-loan-schedule [loanId]="loan.id"></app-hp-loan-schedule>
+        </div>
+        <div *ngSwitchCase="'track'" class=" rounded-lg border border-gray-100">          
+          <!-- Embed the HpLoanScheduleComponent here -->
+          <app-hp-loan-track [loanId]="loan.id"></app-hp-loan-track>
+        </div>
+        <div *ngSwitchCase="'lateFee'" class=" rounded-lg border border-gray-100">          
+          <!-- Embed the HpLoanScheduleComponent here -->
+          <app-hp-loan-latefee [loanId]="loan.id"></app-hp-loan-latefee>
         </div>
       </div>
     </div>

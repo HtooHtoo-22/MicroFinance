@@ -1,5 +1,6 @@
 package com.microfinance.code.service.interFace;
 
+import com.microfinance.code.dto.HPLateFeeSummaryDTO;
 import com.microfinance.code.dto.HPLoanDTO;
 import com.microfinance.code.dto.MonthlyHPLoanCountDTO;
 import com.microfinance.code.dto.MonthlySMELoanCountDTO;
@@ -16,5 +17,8 @@ public interface HPLoanService {
     HPLoanDTO getHPLoanById(Integer id); // New method
 
     List<HPLoanDTO> getApprovedHPLoans();
+
+    public HPLateFeeSummaryDTO getLateFeeAndODByLoanId(Integer loanId);
+
     List<MonthlyHPLoanCountDTO> getApprovedLoansByBranchMonthly(Integer branchId);
 }

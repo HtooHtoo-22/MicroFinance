@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../model/ApiResponse';
+import { HPRepaymentTrack } from '../model/HPRepaymentTrack';
+import { HPLateFeeSummary } from '../model/HPLateFeeSummary';
 import { MonthlyHpLoanCount } from '../model/MonthlyHpLoanCount';
 
 export interface HPLoan {
@@ -30,6 +32,7 @@ export interface HPLoan {
   productPhoto: string | null;
   productValue: number | null;
   tenor: number;
+  loanStatus: string;
 }
 
 @Injectable({
@@ -63,6 +66,16 @@ export class HpLoanService {
   getApprovedHPLoans(): Observable<ApiResponse<HPLoan[]>> {
     return this.http.get<ApiResponse<HPLoan[]>>(`${this.apiUrl}/approved`);
   }
+  getRepaymentTracksByLoanId(loanId: number): Observable<ApiResponse<HPRepaymentTrack[]>> {
+    return this.http.get<ApiResponse<HPRepaymentTrack[]>>(
+      `${this.apiUrl}/getRepaymentTracks/${loanId}`
+    );
+  }
+  getLateFeeSummaryByLoanId(loanId: number): Observable<ApiResponse<HPLateFeeSummary>> {
+      return this.http.get<ApiResponse<HPLateFeeSummary>>(
+        `${this.apiUrl}/getLateFeeSummary/${loanId}`
+      );
+    }
 
   getMonthlyApprovedLoans(): Observable<MonthlyHpLoanCount[]> {
     return this.http.get<MonthlyHpLoanCount[]>(`${this.apiUrl}/monthly-approved`);

@@ -4,12 +4,15 @@ import com.microfinance.code.dto.HPLoanDTO;
 import com.microfinance.code.dto.MonthlyHPLoanCountDTO;
 import com.microfinance.code.dto.MonthlySMELoanCountDTO;
 import com.microfinance.code.dto.SMELoanDTO;
+import com.microfinance.code.dto.*;
 import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.model.User;
 import com.microfinance.code.repository.UserRepo;
 import com.microfinance.code.service.interFace.HPLoanService;
+import com.microfinance.code.service.interFace.HPRepaymentTrackService;
 import com.microfinance.code.service.interFace.SMELoanService;
+import com.microfinance.code.service.interFace.SMERepaymentTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -27,6 +30,8 @@ public class HPLoanController {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private HPRepaymentTrackService repaymentTrackService;
     @PostMapping("/register")
     public ApiResponse<HPLoanDTO> createLoan(@RequestBody HPLoanDTO dto) {
         HPLoanDTO createdLoan = hpLoanService.createSMELoan(dto);
@@ -86,5 +91,15 @@ public class HPLoanController {
         // Since your User implements UserDetails
         User user = (User) auth.getPrincipal();
         return user.getBranch().getId();
+    }
+    @GetMapping("getRepaymentTracks/{loanId}")
+    public ApiResponse<List<HPRepaymentTrackDTO>> getRepaymentTracksByLoanId(@PathVariable("loanId")Integer loanId){
+        List<HPRepaymentTrackDTO> repayTrackList = repaymentTrackService.getTrackListByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "HP Repay Tracks retrieved successfully", repayTrackList);
+    }
+    @GetMapping("/getLateFeeSummary/{loanId}")
+    public ApiResponse<HPLateFeeSummaryDTO> getLateFeeSummaryByLoanId(@PathVariable("loanId")Integer loanId){
+        HPLateFeeSummaryDTO lateFeeSummaryDTO = hpLoanService.getLateFeeAndODByLoanId(loanId);
+        return ApiResponse.success(HttpStatus.OK, 200, "HP OD and Late Fee Summary retrieved successfully", lateFeeSummaryDTO);
     }
 }

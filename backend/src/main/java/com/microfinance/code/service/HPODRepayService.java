@@ -213,6 +213,7 @@ public class HPODRepayService {
         track.setPaidInterestODAmount(paidInterestODAmount); // Track repaid interest OD
         track.setPaidPrincipalODAmount(paidPrincipalODAmount); // Track repaid principal OD
         track.setDate(LocalDateTime.now());
+        track.setRepayStatus(schedule.getStatus());
         repaymentTrackRepo.save(track);
     }
 }

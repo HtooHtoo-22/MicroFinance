@@ -28,4 +28,6 @@ public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
     List<SMELoan> findByStatus(LoanStatus loanStatus);
 
     List<SMELoan> findByApprovedDateBetweenAndStatus(LocalDateTime localDateTime, LocalDateTime localDateTime1, LoanStatus loanStatus);
+    List<SMELoan> findByEntryUser_Branch_IdAndStatus(Integer branchId, LoanStatus loanStatus);
+
 }

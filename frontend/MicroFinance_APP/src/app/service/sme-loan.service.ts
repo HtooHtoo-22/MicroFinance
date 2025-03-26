@@ -13,7 +13,7 @@ import { MonthlySMELoanCount } from '../model/MonthlySMELoanCount';
   providedIn: 'root'
 })
 export class SmeLoanService {
-  private apiUrl = 'http://localhost:8081/api/sme-loans';  
+  private apiUrl = 'http://localhost:8081/api/sme-loans';
   constructor(private http: HttpClient) { }
   createLoan(loanData: Smeloan): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -61,5 +61,33 @@ export class SmeLoanService {
   getMonthlyApprovedLoans(): Observable<MonthlySMELoanCount[]> {
     return this.http.get<MonthlySMELoanCount[]>(`${this.apiUrl}/monthly-approved`);
   }
-  
+  getApprovedLoans(branchId: number): Observable<Smeloan[]> {
+    return this.http.get<any>(`${this.apiUrl}/approved-loans/${branchId}`).pipe(
+      map(response => {
+        if (Array.isArray(response)) {
+          return response; // ✅ Correct format
+        } else if (response && Array.isArray(response.data)) {
+          return response.data; // ✅ Fix if response is { data: [...] }
+        } else {
+          console.error("Unexpected API response format:", response);
+          return []; // ✅ Prevent errors
+        }
+      })
+    );
+  }
+  getPendingLoans(branchId: number): Observable<Smeloan[]> {
+    return this.http.get<any>(`${this.apiUrl}/pending-loans/${branchId}`).pipe(
+      map(response => {
+        if (Array.isArray(response)) {
+          return response; // ✅ Correct format
+        } else if (response && Array.isArray(response.data)) {
+          return response.data; // ✅ Fix if response is { data: [...] }
+        } else {
+          console.error("Unexpected API response format:", response);
+          return []; // ✅ Prevent errors
+        }
+      })
+    );
+  }
+
 }

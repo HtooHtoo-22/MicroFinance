@@ -4,10 +4,7 @@ package com.microfinance.code.service;
 
 import com.microfinance.code.etc.EmailSender;
 import com.microfinance.code.etc.SmsSender;
-import com.microfinance.code.model.HPLateFeeCalculation;
-import com.microfinance.code.model.HPLoan;
-import com.microfinance.code.model.HPSchedule;
-import com.microfinance.code.model.SMELateFeeCalculation;
+import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 
 
@@ -37,16 +34,14 @@ public class HPRepaymentService {
     @Autowired
     private HolidayRepository holidayRepository;
 
+    @Autowired
+    private HPRepaymentTrackRepo repaymentTrackRepo;
 
     @Transactional
-   // @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
         LocalDate today = LocalDate.now();
         boolean isHoliday = isHoliday(today);
-        if (isHoliday) {
-            System.out.println("Today is a holiday. Skipping repayments.");
-            return;
-        }
         System.out.println("___________________________HP Auto Pay__________________________________________");
 
         // Process repayments for today
@@ -126,6 +121,12 @@ public class HPRepaymentService {
             schedule.setInterestODAmount(BigDecimal.ZERO);
             schedule.setStatus(RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD);
 
+            HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
+            repaymentTrack.setHpSchedule(schedule);
+            repaymentTrack.setDate(LocalDate.now());
+            repaymentTrack.setPaidAmount(dueInterest);
+            repaymentTrack.setRepayStatus(RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD);
+            repaymentTrackRepo.save(repaymentTrack);
             String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " - Interest of MMK " +
                     dueInterest + " has been paid. However, your principal remains overdue. Please make the payment for the principal.";
             SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
@@ -143,6 +144,13 @@ public class HPRepaymentService {
             schedule.setInterestODAmount(dueInterest.subtract(availableBalance));
             availableBalance = BigDecimal.ZERO;
             schedule.setStatus(RepaymentStatus.INTEREST_OD_PRINCIPAL_OD);
+
+            HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
+            repaymentTrack.setHpSchedule(schedule);
+            repaymentTrack.setDate(LocalDate.now());
+            repaymentTrack.setPaidAmount(totalRepaidAmount);
+            repaymentTrack.setRepayStatus(RepaymentStatus.INTEREST_OD_PRINCIPAL_OD);
+            repaymentTrackRepo.save(repaymentTrack);
 
             String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " - Partial interest payment of MMK " +
                     availableBalance + " has been made. Your principal remains overdue, and the remaining interest balance is MMK " +
@@ -187,6 +195,13 @@ public class HPRepaymentService {
             schedule.setPrincipalODAmount(BigDecimal.ZERO);
             schedule.setStatus(RepaymentStatus.ALL_PAID);
             schedule.setFullyPaidDate(today);
+            HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
+            repaymentTrack.setHpSchedule(schedule);
+            repaymentTrack.setDate(LocalDate.now());
+            repaymentTrack.setPaidAmount(totalRepaidAmount);
+            repaymentTrack.setRepayStatus(RepaymentStatus.ALL_PAID);
+            repaymentTrackRepo.save(repaymentTrack);
+
             String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
                     "The full principal amount of MMK " + duePrincipal + " has been cleared. " +
                     "Thank you for your timely payment!";

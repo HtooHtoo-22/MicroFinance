@@ -1,56 +1,99 @@
 <!-- Error message -->
 <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-    {{ errorMessage }}
+  {{ errorMessage }}
+</div>
+
+<!-- Schedule Table -->
+<div class="overflow-x-auto bg-white rounded-lg shadow">
+  <table *ngIf="schedules && schedules.length > 0" class="min-w-full bg-white border border-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grace</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interest</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Installment</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Principal OD</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interest OD</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Repaid</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr 
+        *ngFor="let schedule of schedules"
+        [ngClass]="getRowClass(schedule.status)"
+        >
+        <!-- Term -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ schedule.termNumber }}</td>
+        
+        <!-- Due Date -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.dueDate | date:'dd MMM yyyy' }}
+        </td>
+        
+        <!-- Days -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.totalDays }}
+        </td>
+        
+        <!-- Grace Period -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.gracePeriodEndDate | date:'dd MMM yyyy' }}
+        </td>
+        
+        <!-- Principal -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.principal }} KS
+        </td>
+        
+        <!-- Interest -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.interestAmount  }} KS
+        </td>
+        
+        <!-- Installment -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.installment  }} KS
+        </td>
+        
+        <!-- Principal OD -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.principalOdAmount  }} KS
+        </td>
+        
+        <!-- Interest OD -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.interestODAmount  }} KS
+        </td>
+        
+        <!-- Total Repaid -->
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ schedule.totalRepaidAmount  }} KS
+        </td>
+        
+        <!-- Status -->
+        <!-- Status cell in the table -->
+<td class="px-6 py-4 whitespace-nowrap text-sm">
+  <span 
+    [ngClass]="{ 
+      'bg-green-100 text-green-800': schedule.status === 'ALL_PAID',
+      'bg-yellow-100 text-yellow-800': schedule.status === 'INTEREST_PAID_PRINCIPAL_OD',
+      'bg-orange-100 text-orange-800': schedule.status === 'INTEREST_OD_PRINCIPAL_OD',
+      'bg-blue-100 text-blue-800': schedule.status === 'IN_GRACE_PERIOD',
+      'bg-gray-100 text-gray-800': schedule.status === 'NOT_DUE_YET' 
+    }"
+    class="px-2 py-1 rounded-full text-xs font-medium">
+    {{ formatStatus(schedule.status) }}
+  </span>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="schedules.length === 0 && !errorMessage" class="text-center py-4">
+    <p class="text-gray-600">No schedules available for this loan.</p>
   </div>
-  
-  <!-- Schedule Table -->
-  <div class="overflow-x-auto bg-white rounded-lg shadow">
-    <table *ngIf="schedules && schedules.length > 0" class="min-w-full bg-white border border-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term Number</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Installment</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interest</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Repaid</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grace Period End</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fully Paid Date</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let schedule of schedules" [ngClass]="{
-          'bg-green-50 hover:bg-green-100': schedule.status === 'ALL_PAID',
-          'bg-yellow-50 hover:bg-yellow-100': schedule.status === 'INTEREST_PAID_PRINCIPAL_OD',
-          'bg-orange-50 hover:bg-orange-100': schedule.status === 'INTEREST_OD_PRINCIPAL_OD',
-          'bg-blue-50 hover:bg-blue-100': schedule.status === 'IN_GRACE_PERIOD',
-          'bg-gray-50 hover:bg-gray-100': schedule.status === 'NOT_DUE_YET'
-        }">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ schedule.termNumber }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.dueDate | date:'dd MMM yyyy' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.installment | currency:'MMK ' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.principal | currency:'MMK ' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.interestAmount | currency:'MMK ' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm">
-            <span [ngClass]="{
-              'bg-green-100 text-green-800': schedule.status === 'ALL_PAID',
-              'bg-yellow-100 text-yellow-800': schedule.status === 'INTEREST_PAID_PRINCIPAL_OD',
-              'bg-orange-100 text-orange-800': schedule.status === 'INTEREST_OD_PRINCIPAL_OD',
-              'bg-blue-100 text-blue-800': schedule.status === 'IN_GRACE_PERIOD',
-              'bg-gray-100 text-gray-800': schedule.status === 'NOT_DUE_YET'
-            }" class="px-2 py-1 rounded-full text-xs font-medium">
-              {{ schedule.status }}
-            </span>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.totalRepaidAmount | currency:'MMK ' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.gracePeriodEndDate | date:'dd MMM yyyy' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.fullyPaidDate | date:'dd MMM yyyy' }}</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <div *ngIf="schedules.length === 0 && !errorMessage" class="text-center py-4">
-      <p class="text-gray-600">No schedules available for this loan.</p>
-    </div>
-  </div>
+</div>

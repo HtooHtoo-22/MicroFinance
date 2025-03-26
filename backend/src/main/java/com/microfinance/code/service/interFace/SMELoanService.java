@@ -23,4 +23,8 @@ public interface SMELoanService {
     List<SMELoanDTO> getAllSMELoans(); // Add this line
 
     List<MonthlySMELoanCountDTO> getApprovedLoansByBranchMonthly(Integer branchId);
+
+    public List<SMELoanDTO> getApprovedLoansByBranchId(Integer branchId);
+
+    public List<SMELoanDTO> getPendingLoansByBranchId(Integer branchId);
 }

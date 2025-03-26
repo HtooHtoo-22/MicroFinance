@@ -4,7 +4,7 @@ public enum LoanStatus {
     APPROVE("Approve"),
     REJECT("Reject"),
     PENDING("Pending"),
-    DEFAULT_PENDING("Default Pending");
+    DEFAULT("Default");
 
     private final String displayName;
 

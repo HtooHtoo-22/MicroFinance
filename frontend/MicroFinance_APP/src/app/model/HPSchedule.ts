@@ -10,7 +10,7 @@ export interface HPSchedule {
     principal: number;
     principalOdAmount: number;
     interestAmount: number;
-    interestOdAmount: number;
+    interestODAmount: number;
     totalRepaidAmount: number;
     status: string;
     gracePeriodEndDate: string | null;
