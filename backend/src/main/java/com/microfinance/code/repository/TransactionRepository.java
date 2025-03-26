@@ -21,6 +21,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     List<Transaction> findByCurrentAccountId(@Param("currentAccountId") String currentAccountId);
 
     List<Transaction> findByCurrentAccountIdIn(List<CurrentAccount> currentAccounts);
-
+    List<Transaction> findByDateBetween(LocalDateTime start, LocalDateTime end);
 
 }

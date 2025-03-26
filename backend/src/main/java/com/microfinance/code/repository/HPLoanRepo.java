@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,5 @@ public interface HPLoanRepo extends JpaRepository<HPLoan,Integer> {
     List<HPLoan> findByStatus(LoanStatus loanStatus);
     List<HPLoan> findByEntryUser_Branch_Id(Integer branchId);
 
+    List<HPLoan> findByApprovedDateBetweenAndStatus(LocalDateTime localDateTime, LocalDateTime localDateTime1, LoanStatus loanStatus);
 }

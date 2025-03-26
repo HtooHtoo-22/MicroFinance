@@ -84,7 +84,7 @@ public class SecurityConfig {
                                 .requestMatchers(HP_LIST_URL).hasAnyAuthority("HP_LOAN_READ")
                                 .requestMatchers(SME_LIST_URL).hasAnyAuthority("SME_LOAN_WRITE", "SME_LOAN_READ")
                                 .requestMatchers("/api/permission/**").hasAnyAuthority("PERMISSION_READ")
-
+                                .requestMatchers("/api/dashboard/loan-metrics").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

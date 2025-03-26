@@ -73,6 +73,7 @@ import { EditRoleComponent } from './Components/Role/edit-role/edit-role.compone
 import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
 import { DashboardComponent } from './Components/counting/dashboard/dashboard.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.component';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     EditRoleComponent,
     DealerDetailviewComponent,
     DashboardComponent,
+    LoanMetricsComponent,
   ],
   imports: [
     BrowserModule,
