@@ -37,6 +37,8 @@ public class SMERepaymentService {
     private CollateralRepo collateralRepo;
     @Autowired
     private SMELoanRepo loanRepo;
+    @Autowired
+    private RateRepository rateRepo;
     @Transactional
     @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE)
     public void processRepayments() {
@@ -355,10 +357,10 @@ public class SMERepaymentService {
             SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
             lateFee.setSmeRepaymentSchedule(schedule);
             lateFee.setLateDays((int) lateDays);
-
+            BigDecimal lateFeeBefore90Rate  = rateRepo.findValueByRateType("SME Late Fee Before 90 Days").divide(BigDecimal.valueOf(100));
             // Late fee based on days overdue
             BigDecimal lateFeeAmount = schedule.getInterestODAmount()
-                    .multiply(BigDecimal.valueOf(0.001)) // Late fee rate
+                    .multiply(lateFeeBefore90Rate) // Late fee rate
                     .multiply(BigDecimal.valueOf(lateDays)); // Multiply by late days
 
             lateFee.setLateFees(lateFeeAmount);

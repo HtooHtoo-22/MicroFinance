@@ -25,17 +25,21 @@ public class SMEODRepayService2 {
     private final CurrentAccountRepository accountRepo;
     private final SMELateFeeCalculationRepo lateFeeRepo;
 
+    private final RateRepository rateRepo;
+
     @Autowired
     public SMEODRepayService2(SMERepaymentScheduleRepo scheduleRepo,
                              TransactionRepository transactionRepo,
                              SMEODRepaymentTrackRepo repaymentTrackRepo,
                              CurrentAccountRepository accountRepo,
-                             SMELateFeeCalculationRepo lateFeeRepo) {
+                             SMELateFeeCalculationRepo lateFeeRepo,
+                              RateRepository rateRepo) {
         this.scheduleRepo = scheduleRepo;
         this.transactionRepo = transactionRepo;
         this.repaymentTrackRepo = repaymentTrackRepo;
         this.accountRepo = accountRepo;
         this.lateFeeRepo = lateFeeRepo;
+        this.rateRepo = rateRepo;
     }
 
     @Transactional
@@ -181,9 +185,10 @@ public class SMEODRepayService2 {
         scheduleRepo.save(schedule);
 
         SMELateFeeCalculation lateFee = new SMELateFeeCalculation();
+        BigDecimal lateFeeBefore90Rate  = rateRepo.findValueByRateType("SME Late Fee Before 90 Days").divide(BigDecimal.valueOf(100));
         lateFee.setSmeRepaymentSchedule(schedule);
         lateFee.setLateDays(1);
-        lateFee.setLateFees(schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001)));
+        lateFee.setLateFees(schedule.getInterestODAmount().multiply(lateFeeBefore90Rate));
         lateFeeRepo.save(lateFee);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -23,22 +24,25 @@ public class HPODRepayService2 {
     private final HPODRepaymentTrackRepo repaymentTrackRepo;
     private final CurrentAccountRepository accountRepo;
     private final HPLateFeeCalculationRepo lateFeeRepo;
+    private final RateRepository rateRepo;
 
     @Autowired
     public HPODRepayService2(HPScheduleRepo scheduleRepo,
                               TransactionRepository transactionRepo,
                              HPODRepaymentTrackRepo repaymentTrackRepo,
                               CurrentAccountRepository accountRepo,
-                              HPLateFeeCalculationRepo lateFeeRepo) {
+                              HPLateFeeCalculationRepo lateFeeRepo,
+                             RateRepository rateRepo) {
         this.scheduleRepo = scheduleRepo;
         this.transactionRepo = transactionRepo;
         this.repaymentTrackRepo = repaymentTrackRepo;
         this.accountRepo = accountRepo;
         this.lateFeeRepo = lateFeeRepo;
+        this.rateRepo = rateRepo;
     }
 
     @Transactional
-    // @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
+     @Scheduled(initialDelay = 5000, fixedRate = Long.MAX_VALUE)
     public void processODRepayment() {
         System.out.println("++++++++++++++++++++++++++Processing OD Repayment++++++++++++++++++++++++++++++");
         List<HPSchedule> overdueSchedules = scheduleRepo.findByStatusInAndLateFeeStatus(
@@ -69,21 +73,44 @@ public class HPODRepayService2 {
                 schedule.setLateFeeStatus(true);
                 scheduleRepo.save(schedule);
                 applyLateFee(schedule);
-                String message = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
-                        " is still overdue. Late fees will start accumulating from today (" + today + "). " +
-                        "Please make your repayment as soon as possible to avoid additional penalties.";
-                SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), message);
+                if (schedule.getGracePeriodEndDate()==null){
+                    String message = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
+                            " is still overdue. Late fees will start accumulating from today (" + today + "). " +
+                            "Please make your repayment as soon as possible to avoid additional penalties.";
+                    SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), message);
 
-                String emailSubject = "HP Loan Overdue - Late Fee Started";
-                String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
-                        "We would like to inform you that your HP loan Term: " + schedule.getTermNumber() +
-                        " is still overdue as the due date has ended on " + schedule.getDueDate() + ".\n" +
-                        "Late fees have started accumulating from today (" + today + ").\n\n" +
-                        "Please make your repayment immediately to avoid further charges.\n\n" +
-                        "Best regards,\n" +
-                        "RichCoin Financial Services";
+                    String emailSubject = "HP Loan Overdue - Late Fee Started";
+                    String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "We would like to inform you that your HP loan Term: " + schedule.getTermNumber() +
+                            " is still overdue as the due date has ended on " + schedule.getDueDate() + ".\n" +
+                            "Late fees have started accumulating from today (" + today + ").\n\n" +
+                            "Remaining Due (Interest): " + schedule.getInterestODAmount() + "\n" +
+                            "Remaining Due (Principal): " + schedule.getPrincipalODAmount() + "\n\n" +
+                            "Please make your repayment immediately to avoid further charges.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
 
-                EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+                    EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
+                }else {
+                    String message = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
+                            " is still overdue. Late fees will start accumulating from due date (" + schedule.getDueDate() + ") although you have a grace period. " +
+                            "Please make your repayment as soon as possible to avoid additional penalties.";
+                    SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), message);
+
+                    String emailSubject = "HP Loan Overdue - Late Fee Started";
+                    String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "We would like to inform you that your HP loan Term: " + schedule.getTermNumber() +
+                            " is still overdue as the due date has ended on " + schedule.getDueDate() + ".\n" +
+                            "Late fees have started accumulating from due date  (" + schedule.getDueDate() + ") although you have a grace period.\n\n" +
+                            "Remaining Due (Interest): " + schedule.getInterestODAmount() + "\n" +
+                            "Remaining Due (Principal): " + schedule.getPrincipalODAmount() + "\n\n" +
+                            "Please make your repayment immediately to avoid further charges.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+
+                    EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+                }
 
             }
             return;
@@ -120,25 +147,46 @@ public class HPODRepayService2 {
                 schedule.setLateFeeStatus(true);
                 scheduleRepo.save(schedule);
                 applyLateFee(schedule);
-
-                // ===== SMS Message =====
-                String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
-                        " has received a partial repayment. Since full repayment was not made, late fees and late days are being applied from today (" + today + ")." +
-                        " Please clear the remaining balance soon to avoid additional charges.";
-                SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+                if (schedule.getGracePeriodEndDate()==null){
+                    // ===== SMS Message =====
+                    String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
+                            " has received a partial repayment. Since full repayment was not made, late fees and late days are being applied from today (" + today + ")." +
+                            " Please clear the remaining balance soon to avoid additional charges.";
+                    SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
 
 // ===== Email Notification =====
-                String emailSubject = "HP Loan Partial Repayment - Late Fee Applied";
-                String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
-                        "We have received a partial repayment for your HP loan Term: " + schedule.getTermNumber() + ".\n" +
-                        "However, the full repayment amount of " + schedule.getInterestODAmount().add(schedule.getPrincipalODAmount()).add(schedule.getTotalRepaidAmount()) + " was not covered. As a result, late days and late fees are being calculated starting from today (" + today + ").\n\n" +
-                        "Amount Paid: " + schedule.getTotalRepaidAmount() + "\n" +
-                        "Remaining Due (Interest): " + schedule.getInterestODAmount() + "\n" +
-                        "Remaining Due (Principal): " + schedule.getPrincipalODAmount() + "\n\n" +
-                        "Please repay the remaining amount as soon as possible to avoid further charges.\n\n" +
-                        "Best regards,\n" +
-                        "RichCoin Financial Services";
-                EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+                    String emailSubject = "HP Loan Partial Repayment - Late Fee Applied";
+                    String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "We have received a partial repayment for your HP loan Term: " + schedule.getTermNumber() + ".\n" +
+                            "However, the full repayment amount of " + schedule.getInterestODAmount().add(schedule.getPrincipalODAmount()).add(schedule.getTotalRepaidAmount()) + " was not covered. As a result, late days and late fees are being calculated starting from today (" + today + ").\n\n" +
+                            "Amount Paid: " + schedule.getTotalRepaidAmount() + "\n" +
+                            "Remaining Due (Interest): " + schedule.getInterestODAmount() + "\n" +
+                            "Remaining Due (Principal): " + schedule.getPrincipalODAmount() + "\n\n" +
+                            "Please repay the remaining amount as soon as possible to avoid further charges.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+
+                }else{
+                    // ===== SMS Message =====
+                    String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() +
+                            " has received a partial repayment. Since full repayment was not made, late fees and late days are being applied from due date  (" + schedule.getDueDate() + ") although you have a grace period ." +
+                            " Please clear the remaining balance soon to avoid additional charges.";
+                    SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+// ===== Email Notification =====
+                    String emailSubject = "HP Loan Partial Repayment - Late Fee Applied";
+                    String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                            "We have received a partial repayment for your HP loan Term: " + schedule.getTermNumber() + ".\n" +
+                            "However, the full repayment amount of " + schedule.getInterestODAmount().add(schedule.getPrincipalODAmount()).add(schedule.getTotalRepaidAmount()) + " was not covered. As a result, late days and late fees are being calculated starting from due date  (" + schedule.getDueDate() + ") although you have a grace period.\n\n" +
+                            "Amount Paid: " + schedule.getTotalRepaidAmount() + "\n" +
+                            "Remaining Due (Interest): " + schedule.getInterestODAmount() + "\n" +
+                            "Remaining Due (Principal): " + schedule.getPrincipalODAmount() + "\n\n" +
+                            "Please repay the remaining amount as soon as possible to avoid further charges.\n\n" +
+                            "Best regards,\n" +
+                            "RichCoin Financial Services";
+                    EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+                }
 
             }
         }
@@ -208,17 +256,28 @@ public class HPODRepayService2 {
 
         HPLateFeeCalculation lateFee = new HPLateFeeCalculation();
         lateFee.setHpRepaymentSchedule(schedule);
-
+        BigDecimal lateFeeBefore90Rate  = rateRepo.findValueByRateType("SME Late Fee Before 90 Days").divide(BigDecimal.valueOf(100));
         // Calculate Interest Late Fee (e.g., 0.1% of Interest OD Amount)
-        BigDecimal interestLateFee = schedule.getInterestODAmount().multiply(BigDecimal.valueOf(0.001));
+        BigDecimal interestLateFee = schedule.getInterestODAmount().multiply(lateFeeBefore90Rate);
 
         // Calculate Principal Late Fee (e.g., 0.1% of Principal OD Amount)
-        BigDecimal principalLateFee = schedule.getPrincipalODAmount().multiply(BigDecimal.valueOf(0.001));
+        BigDecimal principalLateFee = schedule.getPrincipalODAmount().multiply(lateFeeBefore90Rate);
+        if(schedule.getGracePeriodEndDate()==null){
+            lateFee.setLateDays(1);
+            lateFee.setInterestLateFee(interestLateFee);
+            lateFee.setPrincipalLateFee(principalLateFee);
+            lateFee.setTotalLateFee(interestLateFee.add(principalLateFee));
+        }else{
+            long lateDays = ChronoUnit.DAYS.between(schedule.getDueDate(), schedule.getGracePeriodEndDate());
+            lateFee.setLateDays((int) lateDays);
+            interestLateFee = interestLateFee.multiply(BigDecimal.valueOf(lateDays));
+            lateFee.setInterestLateFee(interestLateFee);
+            principalLateFee = principalLateFee.multiply(BigDecimal.valueOf(lateDays));
+            lateFee.setPrincipalLateFee(principalLateFee);
+            lateFee.setTotalLateFee(interestLateFee.add(principalLateFee));
 
-        lateFee.setLateDays(1);
-        lateFee.setInterestLateFee(interestLateFee);
-        lateFee.setPrincipalLateFee(principalLateFee);
-        lateFee.setTotalLateFee(interestLateFee.add(principalLateFee));
+        }
+
         lateFeeRepo.save(lateFee);
     }
 

@@ -24,17 +24,17 @@ public class SmsSender {
      * @param messageBody   The message you want to send
      */
     public static void sendSms(String toPhoneNumber, String messageBody) {
-        try {
-            Message message = Message.creator(
-                    new PhoneNumber(toPhoneNumber),
-                    new PhoneNumber(TWILIO_PHONE_NUMBER),
-                    messageBody
-            ).create();
-
-            System.out.println("✅ SMS sent successfully! SID: " + message.getSid());
-
-        } catch (Exception e) {
-            System.err.println("❌ Failed to send SMS: " + e.getMessage());
-        }
+//        try {
+//            Message message = Message.creator(
+//                    new PhoneNumber(toPhoneNumber),
+//                    new PhoneNumber(TWILIO_PHONE_NUMBER),
+//                    messageBody
+//            ).create();
+//
+//            System.out.println("✅ SMS sent successfully! SID: " + message.getSid());
+//
+//        } catch (Exception e) {
+//            System.err.println("❌ Failed to send SMS: " + e.getMessage());
+//        }
     }
 }

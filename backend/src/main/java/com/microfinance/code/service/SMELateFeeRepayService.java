@@ -49,7 +49,7 @@ public class SMELateFeeRepayService {
     @Autowired
     private RateRepository rateRepo;
     @Transactional
-   // @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
     public void processLateFees() {
         logProcessStart();
 
@@ -141,9 +141,35 @@ public class SMELateFeeRepayService {
             holdAmount = totalBalance.add(holdAmount); // Add balances
             account.setTotalBalence(0.0); // Set back as Double if needed
             accountRepo.save(account);
+            SMELoan smeLoan = smeLoanRepo.findById(smeLoanId)
+                    .orElseThrow(()->new NotFoundException("Sme loan not found"));
+            String loanId =  smeLoan.getLoanId();
+            // ==== SMS Message ====
+            String smsMessage = "RichCoin: Your SME loan (ID: " + loanId + ") late fee period has ended. " +
+                    "From now on, the late fee rate will increase, and all overdue amounts (including remaining interest and principal) " +
+                    "will be added to the outstanding balance. Please settle your payment as soon as possible to avoid further penalties.";
+            SmsSender.sendSms(smeLoan.getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            // ==== Email Notification ====
+            String emailSubject = "Urgent: HP Loan Late Fee Rate Increase Notification";
+            String emailBody = "Dear " + smeLoan.getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "Your HP loan (ID: " + loanId + ") has reached the maximum late period of 90 days.\n\n" +
+                    "From now on, the late fee rate will increase, and all overdue amounts (remaining interest, principal) " +
+                    "will be added to your outstanding balance.\n\n" +
+                    "We strongly advise you to settle your payment as soon as possible to avoid further penalties.\n\n" +
+                    "If you have any questions or need assistance, please contact us.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+
+            EmailSender.sendEmail(smeLoan.getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         }
         logAmountHeld(holdAmount);
-        updateAccountBalance(account, totalAvailableAmount);
+        if (maxLateDays>90){
+            account.setTotalBalence(0.0); // Set back as Double if needed
+            accountRepo.save(account);
+        }else{
+            updateAccountBalance(account, totalAvailableAmount);
+        }
         SMELoan smeLoan = smeLoanRepo.findById(smeLoanId)
                 .orElseThrow(()->new NotFoundException("SME Loan Not Found"));
         incrementLateDaysAndFees(lateFees,smeLoan);
@@ -192,7 +218,7 @@ public class SMELateFeeRepayService {
 
         }
         // ==== SMS Message ====
-        String smsMessage = "RichCoin: Your HP Loan (ID: " + loanId + ") has " + totalLateDays + " late days. " +
+        String smsMessage = "RichCoin: Your SME Loan (ID: " + loanId + ") has " + totalLateDays + " late days. " +
                 "Total late fee so far is " + totalLateFee + " Ks. " + calculationNote;
         SmsSender.sendSms(phone, smsMessage);
 
