@@ -166,7 +166,8 @@ const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'DEALER' },
     children: [
-      { path: '', redirectTo: 'dealer-transaction', pathMatch: 'full' },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: DashboardComponent },
       { path: 'dealer-transaction', component: TransactionComponent },
       { path: 'create-product', component: CreateEditProductComponent },
       { path: 'procuct-list', component: AllproductListComponent },

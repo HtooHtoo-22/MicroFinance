@@ -5,8 +5,12 @@ import com.microfinance.code.etc.ApiResponse;
 import com.microfinance.code.model.User;
 import com.microfinance.code.service.interFace.SMELoanService;
 import com.microfinance.code.service.interFace.SMERepaymentTrackService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -105,4 +109,17 @@ public class SMELoanController {
         List<SMELoanDTO> smeLoanDTOList = smeLoanService.getPendingLoansByBranchId(branchId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, 200, "SME Pending loan list retrieved. ", smeLoanDTOList));
     }
+
+    @GetMapping("/download-report/{id}")
+    public ResponseEntity<byte[]> getLoanReport(@PathVariable Integer id) throws JRException {
+        byte[] report = smeLoanService.generateLoanReport(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=LoanReport.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(report);
+    }
+
+
+
 }

@@ -1,6 +1,16 @@
+<!-- dealer-detail.component.html -->
 <div class="container mx-auto p-6">
   <h2 class="text-[#00A1FF] text-2xl font-bold mb-6">Dealers Accounts</h2>
 
+  <div class="flex justify-end space-x-4 mb-4">
+    <button (click)="downloadCSV()" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+      Download CSV
+    </button>
+    <button (click)="downloadPDF()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+      Download PDF
+    </button>
+  </div>
+  
   <!-- Loading State -->
   <div *ngIf="loading" class="flex flex-col items-center justify-center py-8">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -20,9 +30,7 @@
 
   <!-- Success State -->
   <div *ngIf="!loading && !errorMessage" class="space-y-4">
-    <div *ngFor="let dealer of paginatedDealers" 
-         class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
-         (click)="viewDetails(dealer.id)">
+    <div *ngFor="let dealer of paginatedDealers" class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
       <div class="flex items-center gap-4">
         <!-- User Photo -->
         <div class="flex-shrink-0">
@@ -60,66 +68,46 @@
           </div>
         </div>
       </div>
-
-      <!-- Add this section at the bottom of the card -->
-      <div class="mt-3 border-t pt-3">
-        <div class="flex items-center justify-between text-sm">
-          <div class="flex items-center text-blue-600 hover:text-blue-800"
-               (click)="viewDetails(dealer.id); $event.stopPropagation()">
-            <span>View Details</span>
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
-            </svg>
-          </div>
-          <span class="px-2 py-1 rounded-full text-xs font-medium"
-                [ngClass]="{
-                  'bg-green-100 text-green-800': dealer.status === 'ACTIVE',
-                  'bg-red-100 text-red-800': dealer.status === 'REJECTED',
-                  'bg-yellow-100 text-yellow-800': dealer.status === 'PENDING'
-                }">
-            {{ dealer.status }}
-          </span>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Pagination Controls -->
-  <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-    <div class="flex items-center justify-between">
-      <!-- Items per page info -->
-      <div class="text-sm text-gray-700">
-        Showing <span class="font-medium">{{ startIndex }}</span> to <span class="font-medium">{{ endIndex }}</span> of
-        <span class="font-medium">{{ totalDealers }}</span> results
-      </div>
+    <!-- Pagination Controls -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <!-- Items per page info -->
 
-      <!-- Pagination buttons -->
-      <div class="flex items-center space-x-2">
-        <button 
-          (click)="previousPage()" 
-          [disabled]="currentPage === 1"
-          class="px-3 py-1 rounded-md text-sm font-medium"
-          [ngClass]="currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
-          Previous
-        </button>
 
-        <div class="flex space-x-1">
-          <button *ngFor="let page of pages" 
-            (click)="goToPage(page)"
+<div class="text-sm text-gray-700">
+          Showing <span class="font-medium">{{ startIndex }}</span> to <span class="font-medium">{{ endIndex }}</span> of
+          <span class="font-medium">{{ totalDealers }}</span> results
+        </div>
+
+        <!-- Pagination buttons -->
+        <div class="flex items-center space-x-2">
+          <button 
+            (click)="previousPage()" 
+            [disabled]="currentPage === 1"
             class="px-3 py-1 rounded-md text-sm font-medium"
-            [ngClass]="currentPage === page ? 'bg-blue-500 text-white' : 'bg-white text-gray-500 hover:bg-blue-50 border border-gray-300'">
-            {{ page }}
+            [ngClass]="currentPage === 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
+            Previous
+          </button>
+
+          <div class="flex space-x-1">
+            <button *ngFor="let page of pages" 
+              (click)="goToPage(page)"
+              class="px-3 py-1 rounded-md text-sm font-medium"
+              [ngClass]="currentPage === page ? 'bg-blue-500 text-white' : 'bg-white text-gray-500 hover:bg-blue-50 border border-gray-300'">
+              {{ page }}
+            </button>
+          </div>
+
+          <button 
+            (click)="nextPage()" 
+            [disabled]="currentPage === totalPages"
+            class="px-3 py-1 rounded-md text-sm font-medium"
+            [ngClass]="currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
+            Next
           </button>
         </div>
-
-        <button 
-          (click)="nextPage()" 
-          [disabled]="currentPage === totalPages"
-          class="px-3 py-1 rounded-md text-sm font-medium"
-          [ngClass]="currentPage === totalPages ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-blue-500 hover:bg-blue-50 border border-gray-300'">
-          Next
-        </button>
       </div>
     </div>
   </div>
-</div>

@@ -28,12 +28,12 @@
           <div class="flex flex-wrap items-center gap-4">
             <h1 class="text-2xl font-bold text-gray-900">{{ cif.userName }}</h1>
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse" 
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse" 
                     *ngIf="currentAccounts[0]?.freezeStatus"></span>
               <span class="text-sm font-medium" 
-                    [class.text-green-600]="currentAccounts[0].freezeStatus"
-                    [class.text-red-600]="!currentAccounts[0].freezeStatus">
-                {{ currentAccounts[0].freezeStatus ? 'Active' : 'Frozen' }}
+                    [class.text-green-600]="!currentAccounts[0].freezeStatus"
+                    [class.text-red-600]="currentAccounts[0].freezeStatus">
+                {{ currentAccounts[0].freezeStatus ? 'Frozen' : 'Active' }}
               </span>
             </div>
           </div>

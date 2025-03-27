@@ -4,7 +4,8 @@ import { DealerService } from '../../../service/dealer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dealer } from '../../../model/Dealer';
 import { CifService } from '../../../service/cif.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-dealer-detail',
@@ -24,9 +25,7 @@ export class DealerDetailComponent implements OnInit {
   constructor(
     private dealerService: DealerService,
     private cifService: CifService,
-    private snackBar: MatSnackBar,
-    private router: Router,
-    private route: ActivatedRoute
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -66,11 +65,6 @@ export class DealerDetailComponent implements OnInit {
       });
     });
   }
-  viewDetails(dealerId: number) {
-    this.router.navigate(['/manager-dashboard/dealer-detail', dealerId], { 
-      relativeTo: this.route.parent 
-    });
-  }
 
   // Pagination methods
   get paginatedDealers(): Dealer[] {
@@ -100,5 +94,51 @@ export class DealerDetailComponent implements OnInit {
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) this.currentPage = page;
+  }
+  // CSV Export
+  downloadCSV() {
+    const headers = ['Business Name', 'Address', 'Phone', 'Email', 'Register Date', 'Company Value'];
+    const rows = this.dealers.map(dealer => [
+      dealer.businessName,
+      dealer.address,
+      dealer.phone,
+      dealer.email,
+      dealer.registerDate,
+      dealer.companyValue
+    ]);
+
+    const csvContent = [
+      headers.join(','), 
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dealers.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // PDF Export
+  downloadPDF() {
+    const doc = new jsPDF();
+    doc.text('Dealers List', 14, 10);
+
+    autoTable(doc, {
+      head: [['Business Name', 'Address', 'Phone', 'Email', 'Register Date', 'Company Value']],
+      body: this.dealers.map(dealer => [
+        dealer.businessName,
+        dealer.address,
+        dealer.phone,
+        dealer.email,
+        dealer.registerDate,
+        dealer.companyValue
+      ]),
+      startY: 20
+    });
+
+    doc.save('dealers.pdf');
   }
 }

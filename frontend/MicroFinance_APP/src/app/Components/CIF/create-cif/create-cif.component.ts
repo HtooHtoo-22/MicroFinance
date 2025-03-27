@@ -229,6 +229,6 @@ export class CreateCifComponent implements OnInit {
 
   closeModal(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/dashboard/cif-list']);
+    this.router.navigate(['/entry-dashboard/cif-list']);
   }
 }

@@ -16,5 +16,6 @@ public class CurrentAccountDTO {
     private Double totalBalance;
     private boolean freezeStatus;
     private Integer cifId;
+    private String cifCode;
     private String userName;
 }

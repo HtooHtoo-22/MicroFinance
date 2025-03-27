@@ -1,5 +1,5 @@
 <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
-  <h2 class="text-xl font-semibold text-center text-gray-800 mb-4">Create Collateral</h2>
+  <h2 class="text-xl font-semibold text-center text-gray-800 mb-4">Register Collateral</h2>
 
   <!-- Success Modal -->
   <div id="successModal" 
@@ -13,59 +13,72 @@
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
             </svg>
           </div>
-          <p class="text-sm font-semibold text-[#00A1FF]">{{ message }}</p>
+          <p class="text-sm font-semibold text-gray-900">Collateral created successfully!</p>
         </div>
         <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
           </svg>
-        </button>
+        </button>q
       </div>
     </div>
   </div>
 
-  <!-- Error Modal -->
-  <div id="errorModal" 
-       *ngIf="showErrorModal"
-       class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md">
-    <div class="relative p-4 bg-white rounded-lg shadow-md border border-red-300">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 rounded-full bg-red-100 p-2 flex items-center justify-center">
-            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-gray-900">{{ message }}</p>
-        </div>
-        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
+  <!-- Error Alert -->
+  <div *ngIf="showAlert" 
+       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+    <span class="block sm:inline">{{ alertMessage }}</span>
   </div>
-
+  
   <form [formGroup]="collateralForm" (ngSubmit)="onSubmit()" class="space-y-4">
-    <!-- Name -->
-    <div>
-      <label class="block text-sm/6 font-medium text-gray-900">Name</label>
-      <input type="text" formControlName="name" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
-      <div *ngIf="collateralForm.get('name')?.invalid && collateralForm.get('name')?.touched" class="text-red-500 text-xs">
-        Name is required.
+    <!-- Value Input -->
+    <div *ngIf="message" class="mt-4">
+      <div
+        [ngClass]="{
+          'bg-green-100 border-green-500 text-green-700': !error,
+          'bg-red-100 border-red-500 text-red-700': error
+        }"
+        class="border-l-4 p-4 rounded-md"
+      >
+        <p class="text-sm">{{ message }}</p>
       </div>
     </div>
+    
+     <div class="mb-4">
 
-    <!-- Current Account -->
-    <div>
-      <label class="block text-sm font-medium text-gray-900">Current Account</label>
-      <select formControlName="currentAccountId" class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
-        <option *ngFor="let account of accountList" [value]="account.id">{{ account.accountId }}</option>
-      </select>
+      <div>
+        <label class="block text-sm/6 font-medium text-gray-900">Name</label>
+        <input type="text" formControlName="name" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
+        <div *ngIf="collateralForm.get('name')?.invalid && collateralForm.get('name')?.touched" class="text-red-500 text-xs">
+          Name is required.
+        </div>
+      </div>
+
+      <label class="block text-sm font-medium text-gray-700 mb-1">Current Account</label>
+<div class="relative">
+<input id="currentAccountDisplay" formControlName="currentAccountDisplay" type="text"
+       (input)="onAccountInputChange($event)" 
+       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00A1FF] focus:border-transparent"
+       placeholder="Search account...">
+
+<input type="hidden" formControlName="currentAccountId"> <!-- Hidden field for backend -->
+
+<div *ngIf="filteredAccounts.length > 0" class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200">
+  <div class="max-h-60 overflow-auto">
+    <div *ngFor="let account of filteredAccounts" 
+         class="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+         (click)="selectAccount(account)">
+      <span class="font-medium">{{ account.accountId }}</span>
+      <span class="text-sm text-gray-500">{{ account.totalBalance | currency }}</span>
+    </div>
+  </div>
+</div>
+</div>
+
+    
     </div>
 
-    <!-- Value -->
+    
     <div>
       <label class="block text-sm/6 font-medium text-gray-900">Value</label>
       <input type="number" formControlName="value" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
@@ -74,7 +87,7 @@
       </div>
     </div>
 
-    <!-- Description -->
+    <!-- Description Textarea -->
     <div>
       <label class="block text-sm/6 font-medium text-gray-900">Description</label>
       <textarea formControlName="description" rows="4" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm"></textarea>
@@ -83,7 +96,7 @@
       </div>
     </div>
 
-    <!-- Address -->
+    <!-- Address Input -->
     <div>
       <label class="block text-sm/6 font-medium text-gray-900">Address</label>
       <input type="text" formControlName="address" class="w-full p-1 bg-white mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm">
@@ -91,45 +104,44 @@
         Address is required and must be less than 200 characters.
       </div>
     </div>
-
-    <!-- Photo Upload with Preview -->
+    <!-- Collateral Photo Upload -->
     <div>
-      <label class="block text-sm/6 font-medium text-gray-900">Collateral Photo</label>
+      <label for="collateralPhoto" class="block text-sm font-medium text-gray-900">Collateral Photo</label>
       <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
         <div class="text-center">
-          <ng-container *ngIf="!imageUrl; else imagePreview">
+          <ng-container *ngIf="!collateralPhotoUrl; else photoPreview">
             <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
             </svg>
-            <div class="mt-4 flex text-sm/6 text-gray-600">
-              <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#00A1FF] focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-[#0088CC]">
+            <div class="mt-4 flex text-sm text-gray-600">
+              <label for="collateralPhoto-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-blue-500 focus-within:ring-2 focus-within:ring-blue-400 focus-within:ring-offset-2 hover:text-blue-700">
                 <span>Upload a file</span>
-                <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/png,image/jpeg,image/gif">
+                <input id="collateralPhoto-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*">
               </label>
               <p class="pl-1">or drag and drop</p>
             </div>
-            <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+            <p class="text-xs text-gray-600">PNG, JPG, GIF up to 10MB</p>
           </ng-container>
-          <ng-template #imagePreview>
-            <img [src]="imageUrl" alt="Collateral Photo" class="rounded-lg border border-gray-300" style="max-width: 200px; height: auto;" />
+          <ng-template #photoPreview>
+            <img [src]="collateralPhotoUrl" alt="Collateral Photo" class="mx-auto rounded-lg border border-gray-300" style="max-width: 200px; height: auto;" />
             <div class="mt-2">
-              <button (click)="removeImage()" class="text-sm text-red-600 hover:underline">Remove Photo</button>
+              <button (click)="removeFile()" class="mt-2 text-sm text-red-600 hover:underline">Remove Photo</button>
             </div>
           </ng-template>
         </div>
       </div>
     </div>
 
-    <!-- Collateral Type -->
+    <!-- Collateral Type Dropdown -->
     <div>
       <label class="block text-sm/6 font-medium text-gray-900">Collateral Type</label>
       <select formControlName="collateralTypeId" class="w-full p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
         <option *ngFor="let type of collateralTypes" [value]="type.id">{{ type.name }}</option>
       </select>
     </div>
-
+    
     <!-- Submit Button -->
-    <button type="submit" [disabled]="collateralForm.invalid" class="w-full mt-2 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+    <button type="submit" class="w-full mt-2 py-2 px-4 bg-[#00A1FF] text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
       Register Collateral
     </button>
   </form>

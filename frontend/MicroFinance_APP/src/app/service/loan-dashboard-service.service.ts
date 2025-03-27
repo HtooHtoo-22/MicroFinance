@@ -7,8 +7,8 @@ import { LoanDashboardDTO, LoanDashboardService } from '../model/LoanDashboardDT
   providedIn: 'root'
 })
 export class LoanDashboardServiceImpl implements LoanDashboardService {
-  private apiUrl = '/api/dashboard/loan-metrics';
-
+// In loan-dashboard.service.ts
+private apiUrl = 'http://localhost:8081/api/dashboard/loan-metrics';
   constructor(private http: HttpClient) {}
 
   getLoanMetrics(startDate: string, endDate: string): Observable<LoanDashboardDTO> {

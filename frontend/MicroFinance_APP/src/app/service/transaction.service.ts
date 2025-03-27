@@ -35,4 +35,12 @@ getTransactionsByDealerId(dealerId: number): Observable<ApiResponse<Transaction[
   );
 }
 
+
+  downloadTransactionReport(transactionId: number) {
+    return this.http.get(`${this.apiUrl}/download-report/${transactionId}`, {
+      responseType: 'blob'
+    });
+  }
+
+
 }

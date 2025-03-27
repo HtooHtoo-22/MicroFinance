@@ -8,11 +8,12 @@ import com.microfinance.code.exception.ValidationException;
 import com.microfinance.code.model.CurrentAccount;
 import com.microfinance.code.repository.CurrentAccountRepository;
 import com.microfinance.code.service.interFace.TransactionService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -62,5 +63,15 @@ public class TransactionController {
     public ApiResponse<List<TransactionDTO>> getTransactionsByDealerId(@PathVariable Integer dealerId) {
         List<TransactionDTO> transactions = transactionService.getTransactionsByDealerId(dealerId);
         return ApiResponse.success(HttpStatus.OK, 200, "Transactions retrieved successfully", transactions);
+    }
+
+
+    @GetMapping({"/download-report/{transactionId}"})
+    public ResponseEntity<byte[]> downloadTransactionReport(@PathVariable Integer transactionId) throws JRException, IOException {
+        byte[] reportContent = this.transactionService.generateTransactionReport(transactionId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.attachment().filename("TransactionReport.pdf").build());
+        return ((ResponseEntity.BodyBuilder)ResponseEntity.ok().headers(headers)).body(reportContent);
     }
 }

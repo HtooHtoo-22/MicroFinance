@@ -58,7 +58,7 @@ export class DealerListComponent implements OnInit, OnDestroy{
     this.webSocketService.getStatusUpdates().subscribe(updatedDealer => {
       if (updatedDealer) {
         this.dealers = this.dealers.filter(d => d.id !== updatedDealer.id);
-        this.snackBar.open(`Dealer ${updatedDealer.businessName} status updated to ${updatedDealer.status}`, 
+        this.snackBar.open(`Dealer ${updatedDealer.businessName} status updated to ${updatedDealer.status}`,
           'Close', { duration: 3000 });
         this.cd.detectChanges();
       }

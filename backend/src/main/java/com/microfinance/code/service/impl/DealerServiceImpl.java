@@ -52,18 +52,27 @@ public class DealerServiceImpl implements DealerService {
         if (dealerRepo.findByEmail(dealerDTO.getEmail()).isPresent()) {
             throw new AlreadyExistException("Dealer email already exists");
         }
-        // Get current account by accountId string
+
+        System.out.println(dealerDTO.getCurrentAccount());
+
+        // Check if currentAccount is null
+        if (dealerDTO.getCurrentAccount() == null) {
+            throw new IllegalArgumentException("Current account must not be null");
+        }
+
         CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccount().getAccountId())
                 .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccount().getAccountId()));
+
+        // Rest of the code remains the same
         CIF cif = currentAccount.getCif(); // Get CIF from CurrentAccount
         if (cif == null) {
-                 throw new NotFoundException("CIF not found for current account");
+            throw new NotFoundException("CIF not found for current account");
         }
 
         Branch branch = cif.getBranch();
-         if (branch == null) {
-                 throw new IllegalStateException("CIF is not associated with any branch");
-         }
+        if (branch == null) {
+            throw new IllegalStateException("CIF is not associated with any branch");
+        }
 
         Dealer dealer = dealerMapper.toEntity(dealerDTO);
         dealer.setCurrentAccount(currentAccount);
@@ -93,7 +102,7 @@ public class DealerServiceImpl implements DealerService {
         user.setDealer(dealer);
         userRepo.save(user);
 
-        DealerDTO savedDealerDTO = dealerMapper.toDTO(savedDealer); // Corrected variable name
+        DealerDTO savedDealerDTO = dealerMapper.toDTO(savedDealer);
         notificationService.notifyNewDealer(savedDealerDTO);
         return savedDealerDTO;
     }

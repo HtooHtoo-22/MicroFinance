@@ -1,0 +1,186 @@
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="LoanReport" pageWidth="830" pageHeight="450" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <import value="java.text.SimpleDateFormat"/>
+
+    <!-- Parameters -->
+    <parameter name="lateDays" class="java.lang.Integer"/>
+    <parameter name="lateFees" class="java.math.BigDecimal"/>
+    <parameter name="holdAmount" class="java.math.BigDecimal"/>
+    <parameter name="totalInterestOD" class="java.math.BigDecimal"/>
+    <parameter name="calculatedLateFee" class="java.math.BigDecimal"/>
+    <parameter name="loanId" class="java.lang.String"/>
+    <parameter name="rateValues" class="java.math.BigDecimal"/>
+
+    <!-- Fields -->
+    <field name="term_number" class="java.lang.Integer"/>
+    <field name="due_date" class="java.util.Date"/>
+    <field name="grace_period_end_date" class="java.util.Date"/>
+    <field name="total_days" class="java.lang.Integer"/>
+    <field name="principal" class="java.math.BigDecimal"/>
+    <field name="interest_od_amount" class="java.math.BigDecimal"/>
+    <field name="total_repaid_amount" class="java.math.BigDecimal"/>
+    <field name="status" class="java.lang.String"/>
+    <field name="rateValues" class="java.math.BigDecimal"/>
+
+    <!-- Title -->
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement x="200" y="10" width="400" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text>Loan Repayment Report</text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- Column Header for Overdue Terms -->
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="10" y="0" width="100" height="20"/>
+                <text>Term</text>
+            </staticText>
+            <staticText>
+                <reportElement x="80" y="0" width="120" height="20"/>
+                <text>Due Date</text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="0" width="120" height="20"/>
+                <text>Grace End</text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="0" width="100" height="20"/>
+                <text>Days</text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="0" width="100" height="20"/>
+                <text>Principal</text>
+            </staticText>
+            <staticText>
+                <reportElement x="450" y="0" width="120" height="20"/>
+                <text>OD Interest</text>
+            </staticText>
+            <staticText>
+                <reportElement x="550" y="0" width="100" height="20"/>
+                <text>Total Repaid</text>
+            </staticText>
+            <staticText>
+                <reportElement x="650" y="0" width="100" height="20"/>
+                <text>Status</text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail Band for Overdue Terms Table -->
+    <detail>
+        <band height="40">
+            <textField>
+                <reportElement x="10" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{term_number}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="80" y="0" width="120" height="20"/>
+                <textFieldExpression><![CDATA[new SimpleDateFormat("MMMM dd, yyyy").format($F{due_date})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="200" y="0" width="120" height="20"/>
+                <textFieldExpression><![CDATA[new SimpleDateFormat("MMMM dd, yyyy").format($F{grace_period_end_date})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{total_days}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{principal} + "KS"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="450" y="0" width="120" height="20"/>
+                <textFieldExpression><![CDATA[$F{interest_od_amount} + "KS"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="550" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{total_repaid_amount} + "KS"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="650" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- Late Fee and Hold Amount -->
+    <summary>
+        <band height="180">
+            <!-- Late Days -->
+            <staticText>
+                <reportElement x="10" y="5" width="200" height="20"/>
+                <text>Late Days:</text>
+            </staticText>
+            <textField>
+                <reportElement x="10" y="25" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$P{lateDays}]]></textFieldExpression>
+            </textField>
+
+            <!-- Late Fees -->
+            <staticText>
+                <reportElement x="350" y="5" width="200" height="20"/>
+                <text>Late Fees:</text>
+            </staticText>
+            <textField>
+                <reportElement x="350" y="25" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$P{lateFees}+ " KS"]]></textFieldExpression>
+            </textField>
+
+            <!-- Hold Amount -->
+            <staticText>
+                <reportElement x="10" y="50" width="200" height="20"/>
+                <text>Hold Amount:</text>
+            </staticText>
+            <textField>
+                <reportElement x="10" y="70" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$P{holdAmount}+ " KS"]]></textFieldExpression>
+            </textField>
+
+            <!-- Total OD Interest -->
+            <staticText>
+                <reportElement x="10" y="100" width="200" height="20"/>
+                <textElement>
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text>Daily Late Fee Calculation</text>
+            </staticText>
+            <staticText>
+                <reportElement x="10" y="120" width="200" height="20"/>
+                <text>Total OD Interest:</text>
+            </staticText>
+            <textField>
+                <reportElement x="10" y="140" width="100" height="20"/>
+
+                <textFieldExpression><![CDATA[$P{totalInterestOD}+"KS"]]></textFieldExpression>
+            </textField>
+
+            <!-- Daily Late Fee Calculation -->
+            <staticText>
+                <reportElement x="350" y="120" width="200" height="20"/>
+                <text>Daily Calculation:</text>
+            </staticText>
+            <textField>
+                <reportElement x="350" y="140" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$P{rateValues} + "%  x  "]]></textFieldExpression>
+
+            </textField>
+            <textField>
+                <reportElement x="390" y="140" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$P{totalInterestOD}+"KS"]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+</jasperReport>
+

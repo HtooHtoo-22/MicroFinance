@@ -2,6 +2,8 @@ package com.microfinance.code.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
+
 import java.time.LocalDate;
 
 @Getter
@@ -14,6 +16,7 @@ public class DealerDTO {
     private String email;
     private LocalDate registerDate;
     private String status;
+
     private CurrentAccountDTO currentAccount;
     private Double companyValue;
     private String information;

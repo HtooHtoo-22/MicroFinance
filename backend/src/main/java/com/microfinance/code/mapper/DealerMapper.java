@@ -17,7 +17,7 @@ public class DealerMapper {
         dealer.setEmail(dto.getEmail());
         dealer.setCompanyValue(dto.getCompanyValue());
         dealer.setRegisterDate(dto.getRegisterDate());
-        dealer.setInformation(dto.getInformation());
+        dealer.setInformation(dto.getInformation()); // This is fine as is since it can be null
 
         if (dto.getCurrentAccount() != null) {
             CurrentAccount account = new CurrentAccount();
@@ -37,7 +37,7 @@ public class DealerMapper {
         dto.setEmail(dealer.getEmail());
         dto.setCompanyValue(dealer.getCompanyValue());
         dto.setRegisterDate(dealer.getRegisterDate());
-        dto.setInformation(dealer.getInformation());
+        dto.setInformation(dealer.getInformation()); // This is fine as is
 
         if (dealer.getStatusforDelar() != null) {
             dto.setStatus(dealer.getStatusforDelar().toString());

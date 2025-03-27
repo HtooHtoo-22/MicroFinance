@@ -50,6 +50,6 @@ export class CreateCollateralTypeComponent implements OnInit {
 
   closeModal(): void {
     this.showSuccessModal = false;
-    this.router.navigate(['/dashboard/collateral-type-list']);
+    this.router.navigate(['/admin-dashboard/collateral-type-list']);
   }
 }

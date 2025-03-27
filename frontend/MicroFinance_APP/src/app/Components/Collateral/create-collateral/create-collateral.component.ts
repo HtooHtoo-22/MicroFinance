@@ -3,29 +3,37 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CollateralService } from '../../../service/collateral.service';
 import { CurrentAccService } from '../../../service/current-acc.service';
 import { CollateralDTO } from '../../../model/CollateralDTO';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-collateral',
   standalone: false,
   templateUrl: './create-collateral.component.html',
-  styleUrls: ['./create-collateral.component.css']
+  styleUrl: './create-collateral.component.css'
 })
 export class CreateCollateralComponent implements OnInit {
   collateralForm!: FormGroup;
   collateralTypes: any[] = []; // This should be populated from your backend
   accountList: any[] = [];
   selectedFile: File | null = null; 
-  imageUrl: string | ArrayBuffer | null = null; // For image preview
-  collateralDTO !: CollateralDTO ;
-  message :string = '';
-  error : boolean = false;
-  showSuccessModal = false;
-  showErrorModal = false;
+  collateralDTO!: CollateralDTO;
+  message: string = '';
+  error: boolean = false;
+  filteredAccounts: any[] = [];
+  collateralPhotoFile?: File;
+  collateralPhotoUrl: string | ArrayBuffer | null = null;
+  showSuccessModal: boolean = false;
+  alertMessage: string = ''; // Declare the alertMessage property
+  showAlert: boolean = false; // Declare the showAlert property
+
+
 
   constructor(
     private collateralService: CollateralService,
     private currentAccService: CurrentAccService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +45,7 @@ export class CreateCollateralComponent implements OnInit {
   private initForm(): void {
     this.collateralForm = this.fb.group({
       currentAccountId: [null, Validators.required],
+      currentAccountDisplay: ['', Validators.required],
       value: [null, [Validators.required, Validators.min(0)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
       status: [true, Validators.required],
@@ -54,6 +63,7 @@ export class CreateCollateralComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching collateral types:', err);
+        this.showModal('Failed to fetch collateral types', false);
       }
     });
   }
@@ -66,26 +76,50 @@ export class CreateCollateralComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching Current Account types:', err);
+        this.showModal('Failed to fetch current accounts', false);
       }
     });
+  }
+
+  onAccountInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement; // Cast to HTMLInputElement
+    const value = input.value; // Now you can safely access the value
+
+    if (!value) {
+      this.filteredAccounts = [];
+      return;
+    }
+
+    const lowerCaseValue = value.toLowerCase();
+    this.filteredAccounts = this.accountList.filter(account =>
+      account.accountId.toLowerCase().includes(lowerCaseValue)
+    );
+  }
+
+  selectAccount(account: any): void {
+    this.collateralForm.patchValue({
+      currentAccountDisplay: account.accountId, // Show string accountId in UI
+      currentAccountId: account.id  // Use integer id for backend submission
+    });
+    this.filteredAccounts = [];
   }
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
-      this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.imageUrl = e.target?.result ?? null; // Set the preview URL
+        this.collateralPhotoFile = file;
+        this.collateralPhotoUrl = e.target?.result ?? null;
       };
       reader.readAsDataURL(file);
     }
   }
 
-  removeImage(): void {
-    this.selectedFile = null;
-    this.imageUrl = null;
+  removeFile(): void {
+    this.collateralPhotoFile = undefined;
+    this.collateralPhotoUrl = null;
   }
 
   onSubmit(): void {
@@ -93,47 +127,49 @@ export class CreateCollateralComponent implements OnInit {
   
     if (this.collateralForm.valid) {
       console.log("Form values:", this.collateralForm.value);
+  
+      delete this.collateralForm.value.currentAccountDisplay; 
+      this.collateralForm.value.currentAccountId = Number(this.collateralForm.value.currentAccountId);
       this.collateralDTO = {
         ...this.collateralForm.value,
-        imageFile: this.selectedFile || undefined // Attach the selected file
+        imageFile: this.collateralPhotoFile || undefined // Attach the selected file
       };
   
       console.log("Final DTO:", this.collateralDTO);
       this.collateralService.createCollateral(this.collateralDTO).subscribe({
         next: (response) => {
-          if (response && response.message) {  // Assuming `success` is a boolean in ApiResponse
+          if (response && response.message) {
             console.log("Collateral created successfully:", response.message);
             this.message = response.message;
-            this.showSuccessModal = true;
             this.collateralForm.reset(); // Reset form after success
-            setTimeout(() => this.closeModal(), 3000);
+            this.removeFile(); // Reset the file
+            this.showSuccessModal = true; // Show success modal
           } else {
             console.error("Error:", response.message);
-            this.message = response.message;
-            this.showErrorModal = true;
-            setTimeout(() => this.showErrorModal = false, 3000);
+            this.alertMessage = 'Failed to create collateral';
+            this.showAlert = true; // Show error alert
           }
         },
         error: (error) => {
           console.error("API Error:", error);
-          this.message = error.message;
-          this.showErrorModal = true;
-          setTimeout(() => this.showErrorModal = false, 3000);
+          this.alertMessage = 'Failed to create collateral';
+          this.showAlert = true; // Show error alert
         }
       });
     } else {
-      // Print errors to the console
-      Object.keys(this.collateralForm.controls).forEach(control => {
-        const formControl = this.collateralForm.get(control);
-        if (formControl?.invalid) {
-          console.log(`Error in ${control}:`, formControl.errors);
-        }
-      });
-  
+      console.warn("Form is invalid");
       this.markFormGroupTouched(this.collateralForm);
-      console.log("Form is invalid");
+      this.alertMessage = 'Please fill in all required fields';
+      this.showAlert = true; // Show error alert
     }
   }
+
+// Duplicate method removed
+
+closeModal(): void {
+  this.showSuccessModal = false; // Close success modal
+  this.showAlert = false; // Close error alert
+}
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach(control => {
@@ -144,8 +180,11 @@ export class CreateCollateralComponent implements OnInit {
     });
   }
 
-  closeModal(): void {
-    this.showSuccessModal = false;
-    this.showErrorModal = false;
+  private showModal(message: string, success: boolean): void {
+    this.dialog.open(ModelComponent, {
+      width: '300px',
+      data: { message, success }
+    });
   }
+
 }

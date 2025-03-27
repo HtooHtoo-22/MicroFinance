@@ -10,14 +10,22 @@ import com.microfinance.code.repository.SMELoanRepo;
 import com.microfinance.code.repository.SMERepaymentScheduleRepo;
 import com.microfinance.code.service.interFace.SMERepaymentScheduleService;
 import com.microfinance.code.status.RepaymentStatus;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +40,10 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
     private RateRepository rateRepo;
     @Autowired
     private SMEScheduleMapper scheduleMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Override
     public void createSchedule(SMELoan smeLoan) {
         // 1. Validate the input
@@ -146,4 +158,89 @@ public class SMERepaymentScheduleServiceImpl implements SMERepaymentScheduleServ
     private boolean isHoliday(LocalDate date) {
         return holidayRepo.existsByHolidayDate(date); // Assuming holidayRepo has a method to check for holidays
     }
+
+
+
+
+
+
+    @Override
+    public byte[] generateReport(Integer smeLoanId) throws JRException, IOException {
+        try {
+            // Query repayment schedule data
+            List<Map<String, Object>> repaymentData = jdbcTemplate.queryForList(
+                    "SELECT term_number, due_date, grace_period_end_date, total_days, " +
+                            "principal, interest_od_amount, total_repaid_amount, status " +
+                            "FROM sme_repayment_schedule WHERE sme_loan_id = ? AND status='FULL_OVERDUE'",
+                    smeLoanId
+            );
+
+            // Query late fee calculation data
+            Map<String, Object> lateFeeData = jdbcTemplate.queryForMap(
+                    "SELECT late_days, late_fees FROM sme_late_fee_calculation " +
+                            "WHERE sme_repayment_schedule_id = ?", smeLoanId
+            );
+
+            Integer lateDays = (Integer) lateFeeData.get("late_days");
+
+            String rateType = (lateDays != null && lateDays <= 90) ? "SME Late Fee Before 90 Days" : "SME Late Fee After 90 Days";
+
+            List<BigDecimal> rateList = jdbcTemplate.queryForList(
+                    "SELECT value FROM rate WHERE rate_type = ?",
+                    new Object[]{rateType},
+                    BigDecimal.class
+            );
+
+            BigDecimal rateValue = rateList.isEmpty() ? BigDecimal.ZERO : rateList.get(0);
+
+            if (rateValue.equals(BigDecimal.ZERO)) {
+                System.out.println("Warning: No rate value found for " + rateType);
+            }
+
+            // Query late fee holding amount data
+            Map<String, Object> holdAmountData = jdbcTemplate.queryForMap(
+                    "SELECT hold_amount FROM sme_late_fee_holding WHERE sme_loan_id = ?", smeLoanId
+            );
+
+            // Calculate the total interest overdue
+            BigDecimal totalInterestOD = BigDecimal.valueOf(
+                    jdbcTemplate.queryForObject(
+                            "SELECT SUM(interest_od_amount) FROM sme_repayment_schedule WHERE sme_loan_id = ?",
+                            Double.class, smeLoanId
+                    )
+            );
+
+
+            // Compute Late Fee
+            BigDecimal calculatedLateFee = rateValue.multiply(totalInterestOD).setScale(2, RoundingMode.HALF_UP);
+
+
+
+            // Prepare parameters for the report
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("repaymentData", new JRBeanCollectionDataSource(repaymentData));
+            parameters.put("lateDays", lateFeeData.get("late_days"));
+            parameters.put("lateFees", lateFeeData.get("late_fees"));
+            parameters.put("holdAmount", holdAmountData.get("hold_amount"));
+            parameters.put("totalInterestOD", totalInterestOD.setScale(2, RoundingMode.HALF_UP));
+            parameters.put("calculatedLateFee", calculatedLateFee.setScale(2, RoundingMode.HALF_UP));
+            parameters.put("rateValues", rateValue);
+            // Compile and fill the report
+            InputStream reportStream = getClass().getResourceAsStream("/reports/SMELoanRepaymentReport.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(repaymentData));
+
+            // Return the report as a PDF
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } catch (Exception e) {
+            // Log the error and rethrow it
+            e.printStackTrace();
+            throw new JRException("Error generating report", e);
+        }
+    }
+
+
+
+
+
 }

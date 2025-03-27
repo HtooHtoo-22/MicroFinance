@@ -8,7 +8,7 @@
              alt="User photo">
       </div>
       <div class="ml-6 text-white">
-        <h1 class="text-2xl font-bold">{{ cif.userFullName }}</h1>
+        <h1 class="text-2xl font-bold">{{ cif.userName }}</h1>
         <p class="mt-1">CIF ID: {{ cif.cifId }}</p>
       </div>
     </div>
@@ -88,7 +88,7 @@
     <!-- Action Buttons -->
     <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
       <div class="flex space-x-4">
-        <button [routerLink]="['/dashboard/updated-cif', cif.id]" 
+        <button [routerLink]="['/entry-dashboard/updated-cif', cif.id]" 
                 class="px-4 py-2 bg-[#ffca68] text-white rounded-md hover:bg-yellow-600 transition">
           Edit CIF
         </button>

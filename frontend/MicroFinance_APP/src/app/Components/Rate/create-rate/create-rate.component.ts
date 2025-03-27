@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RateService } from '../../../service/rate.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ModelComponent } from '../../model/model.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-rate',
@@ -15,7 +17,8 @@ export class CreateRateComponent implements OnInit {
   constructor(
     private rateService: RateService, 
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -34,7 +37,7 @@ export class CreateRateComponent implements OnInit {
     if (this.rateForm.valid) {
       this.rateService.createRate(this.rateForm.value).subscribe({
         next: (createdRate) => {
-          alert('Rate created successfully.');
+          this.showModal('Rate created successfully!', true);
           this.rateForm.reset({
             rateType: '',
             value: 0,
@@ -43,10 +46,17 @@ export class CreateRateComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating rate', error);
-          alert('Error creating rate.');
+          this.showModal('Error creating rate.', false);
         }
       });
     }
   }
+
+  showModal(message: string, success: boolean): void {
+          this.dialog.open(ModelComponent, {
+            width: '300px',
+            data: { message, success, }
+          });
+        }
   
 }

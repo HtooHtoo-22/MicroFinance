@@ -29,7 +29,7 @@ export class RateService {
     );
   }
   createRate(rate: Rate): Observable<Rate> {
-    return this.http.post<any>(this.apiUrl, rate).pipe(
+    return this.http.post<any>(`${this.apiUrl}/create`, rate).pipe(
       map(response => response.data)
     );
   }

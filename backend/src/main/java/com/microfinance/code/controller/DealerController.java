@@ -40,7 +40,7 @@ public class DealerController {
     @PostMapping("/create")
     public ApiResponse<DealerDTO> createDealer(@RequestBody DealerDTO dealerDTO) {
         DealerDTO savedDealer = dealerService.createDealer(dealerDTO);
-
+        System.out.println(dealerDTO);
         // Send WebSocket notification
         messagingTemplate.convertAndSend("/topic/dealer-notifications", savedDealer);
 

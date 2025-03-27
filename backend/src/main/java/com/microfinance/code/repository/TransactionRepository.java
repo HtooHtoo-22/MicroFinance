@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
@@ -22,5 +23,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     List<Transaction> findByCurrentAccountIdIn(List<CurrentAccount> currentAccounts);
     List<Transaction> findByDateBetween(LocalDateTime start, LocalDateTime end);
+
+    Optional<Transaction> findById(Integer id);
 
 }

@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { AuthService } from '../../service/auth.service';
 import { Smeloan } from '../../model/SmeLoan';
@@ -11,7 +13,7 @@ import { ModelComponent } from '../model/model.component';
   selector: 'app-sme-laon-history',
   standalone: false,
   templateUrl: './sme-laon-history.component.html',
-  styleUrls: ['./sme-laon-history.component.css']
+  styleUrl: './sme-laon-history.component.css'
 })
 export class SmeLaonHistoryComponent implements OnInit {
   loans: Smeloan[] = [];
@@ -24,7 +26,7 @@ export class SmeLaonHistoryComponent implements OnInit {
   filteredLoans: Smeloan[] = [];
   showApprovalModal = false;
   selectedLoan: Smeloan | null = null;
-  currentDate = new Date(); 
+  currentDate = new Date();
   estimatedEndDate?: Date;
 
   constructor(
@@ -38,7 +40,7 @@ export class SmeLaonHistoryComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("Hi");
-    
+
     this.fetchLoans();
   }
 
@@ -49,7 +51,7 @@ export class SmeLaonHistoryComponent implements OnInit {
         if (Array.isArray(data)) {
           this.loans = data;
           console.log("This loans : "+this.loans);
-          
+
           this.filterLoans(); // Apply initial filter here
         }
       },
@@ -61,7 +63,7 @@ export class SmeLaonHistoryComponent implements OnInit {
 
   // Add filter function
   filterLoans(): void {
-    this.filteredLoans = this.loans.filter(loan => 
+    this.filteredLoans = this.loans.filter(loan =>
       loan.status.toUpperCase() === this.selectedStatus.toUpperCase()
     );
     this.currentPage = 1;
@@ -116,20 +118,37 @@ export class SmeLaonHistoryComponent implements OnInit {
     this.filterLoans();
   }
 
-  approveLoan(loanId: number): void {
-    this.smeLoanService.approveLoan(loanId).subscribe({
-        next: (response) => {
-            console.log('Loan Approved successfully:', response.message);
-            this.showModal('Loan approved successfully!', true);
-            this.showApprovalModal = false; // Close the modal
-            this.fetchLoans(); // Refresh the loan list
+approveLoan(loanId: number): void {
+  this.smeLoanService.approveLoan(loanId).subscribe({
+    next: (response) => {
+      console.log('Loan Approved successfully:', response.message);
+
+      // Fetch the updated loan details
+      this.smeLoanService.getLoanById(loanId).subscribe({
+        next: (loanResponse) => {
+          this.selectedLoan = loanResponse.data;
+          this.currentDate = new Date();
+          if (this.selectedLoan?.duration) {
+            this.estimatedEndDate = this.addMonths(this.currentDate, this.selectedLoan.duration);
+          }
+
+          // Automatically trigger the report download
+
+          this.downloadSmeReport();
+          // Navigate to loan details page
+
+          this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
         },
-        error: (error) => {
-            console.error('Error while approving loan:', error);
-            this.showModal('Failed to approve loan', false);
-        }
-    });
+        error: (err) => console.error('Error fetching updated loan details:', err)
+      });
+    },
+    error: (error) => {
+      console.error('Error while approving loan:', error);
+    }
+  });
 }
+
+
 
 rejectLoan(loanId: number): void {
     this.smeLoanService.rejectLoan(loanId).subscribe({
@@ -163,7 +182,7 @@ rejectLoan(loanId: number): void {
         this.showApprovalModal = true;
         if (this.selectedLoan?.duration) {
           this.estimatedEndDate = this.addMonths(
-            this.currentDate, 
+            this.currentDate,
             this.selectedLoan.duration
           );
         }
@@ -188,17 +207,6 @@ rejectLoan(loanId: number): void {
     return total;
   }
 
-  private addMonths(date: Date, months: number): Date {
-    const result = new Date(date);
-    result.setMonth(result.getMonth() + months);
-    
-    // Handle edge cases (e.g. 31st -> 30th/28th)
-    if (result.getDate() !== date.getDate()) {
-      result.setDate(0);
-    }
-    
-    return result;
-  }
 
   showModal(message: string, success: boolean): void {
     const dialogRef = this.dialog.open(ModelComponent, {
@@ -210,4 +218,128 @@ rejectLoan(loanId: number): void {
       this.fetchLoans(); // Refresh the loan list after closing the modal
     });
   }
+
+
+
+private addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+
+  // Handle edge cases (e.g. 31st -> 30th/28th)
+  if (result.getDate() !== date.getDate()) {
+    result.setDate(0);
+  }
+
+  return result;
+}
+
+downloadSmeReport(): void {
+  if (!this.selectedLoan) {
+    console.error('No loan selected.');
+    return;
+  }
+
+  const doc = new jsPDF({
+    format: [148, 148], // Shorter page
+    orientation: 'portrait'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 8;
+  let yPos = 10; // Adjusted start position for better spacing
+
+  // Define Colors
+  const primaryColor: [number, number, number] = [0, 102, 204];  // Blue
+  const grayColor: [number, number, number] = [100, 100, 100];   // Dark Gray
+  const lightGray: [number, number, number] = [240, 240, 240];   // Light Gray
+
+  // Set Font
+  doc.setFont('helvetica', 'normal');
+
+  // Header Box (like Modal)
+  doc.setFillColor(...lightGray);
+  doc.rect(margin, yPos - 4, pageWidth - margin * 2, 10, 'F');
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...primaryColor);
+  doc.text('SME Loan Voucher', margin + 40, yPos + 2);
+
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  yPos += 12;
+  doc.text(`ID: ${this.selectedLoan.loanId}`, margin, yPos);
+  yPos += 8;
+
+  // Borrower Row - Closer Spacing
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text('Borrower:', margin, yPos);
+  const borrowerName = this.selectedLoan.borrowerName || '';
+  doc.text(borrowerName, margin + 25, yPos); // Name closer to label
+
+  // Line Below Borrower
+  yPos += 5;
+  doc.setDrawColor(180, 180, 180);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+  yPos += 6;
+
+  // Key Numbers Grid
+  const colWidth = (pageWidth - margin * 2) / 3;
+  const centerX = margin + colWidth + 8;
+  const rightX = margin + colWidth * 2+ 8;
+
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  doc.text('Amount', margin, yPos);
+  doc.text('Rate', centerX, yPos);
+  doc.text('Term', rightX, yPos);
+  doc.setTextColor(0);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${this.selectedLoan.loanAmount?.toLocaleString()} KS`, margin, yPos + 5);
+  doc.text(`${this.selectedLoan.interestRate}%`, centerX, yPos + 5);
+  doc.text(`${this.selectedLoan.duration} months`, rightX, yPos + 5);
+  yPos += 10;
+
+  // Collateral Summary (box)
+  doc.setFillColor(...lightGray);
+  doc.rect(margin, yPos, pageWidth - margin * 2, 8, 'F');
+  doc.setTextColor(0);
+  doc.text('Total Collateral:', margin + 2, yPos + 5);
+  const collateral = this.getTotalCollateral().toLocaleString() + ' KS';
+  doc.text(collateral, pageWidth - margin - doc.getTextWidth(collateral) , yPos + 5);
+  yPos += 12;
+
+  // Dates Section
+  doc.setFontSize(10);
+  doc.setTextColor(...grayColor);
+  doc.text('Start Date', margin, yPos);
+  doc.text('Maturity Date', pageWidth - margin - doc.getTextWidth('Maturity Date'), yPos);
+
+  doc.setTextColor(0);
+  const startDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+  const endDate = this.selectedLoan.expiredDate
+    ? new Date(this.selectedLoan.expiredDate).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'N/A';
+
+  doc.text(startDate.toString(), margin, yPos + 5);
+  doc.text(endDate, pageWidth - margin - doc.getTextWidth(endDate), yPos + 5);
+
+
+  // Save PDF
+  const fileName = `Loan_Approval_${this.selectedLoan.loanId}.pdf`;
+  doc.save(fileName);
+}
+
+
+
+
 }

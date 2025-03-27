@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-
 import { SmeLoanService } from '../../service/sme-loan.service';
 import { SMERepaymentTrack } from '../../model/SMERepaymentTrack';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-sme-repay-track',
@@ -18,8 +19,7 @@ export class SmeRepayTrackComponent implements OnInit, OnChanges {
   isRefreshing = false;
   isLoading = false;
   fromDate: string = '';
-toDate: string = '';
-
+  toDate: string = '';
 
   constructor(private smeLoanService: SmeLoanService) {}
 
@@ -46,6 +46,7 @@ toDate: string = '';
       }
     });
   }
+
   getStatusDisplay(status: string): { text: string, class: string, icon: string } {
     const statusMap: { [key: string]: { text: string, class: string, icon: string } } = {
       'partial repayment with od occurred': {
@@ -74,20 +75,21 @@ toDate: string = '';
         icon: '⏰'
       }
     };
-  
+
     const key = status.toLowerCase().split(' for ')[0];
-    return statusMap[key] || { 
-      text: status, 
+    return statusMap[key] || {
+      text: status,
       class: 'bg-gray-100 text-gray-800',
       icon: 'ℹ️'
     };
   }
-  
+
   private getLateFeeText(status: string): string {
     const daysMatch = status.match(/\d+/);
     const days = daysMatch ? daysMatch[0] : '0';
     return `Late Fee (${days} Day${days !== '1' ? 's' : ''})`;
   }
+
   getPaymentPurposeIcon(purpose: string): string {
     const icons: { [key: string]: string } = {
       'normal repayment': '📅',
@@ -96,12 +98,13 @@ toDate: string = '';
     };
     return icons[purpose.toLowerCase()] || '📝';
   }
+
   get filteredRepaymentTracks(): SMERepaymentTrack[] {
     if (!this.repaymentTracks) return [];
-  
+
     // Step 1: Filter by selected filter (od, lateFee, all)
     let tracks = this.repaymentTracks;
-  
+
     switch (this.selectedFilter) {
       case 'od':
         tracks = tracks.filter(t => t.paymentPurpose.toLowerCase() === 'od repayment');
@@ -111,22 +114,22 @@ toDate: string = '';
         break;
       // case 'all' → no need to change anything
     }
-  
+
     // Step 2: Filter by fromDate
     if (this.fromDate) {
       const from = new Date(this.fromDate);
       tracks = tracks.filter(t => new Date(t.paymentDate) >= from);
     }
-  
+
     // Step 3: Filter by toDate
     if (this.toDate) {
       const to = new Date(this.toDate);
       tracks = tracks.filter(t => new Date(t.paymentDate) <= to);
     }
-  
+
     return tracks;
   }
-  
+
   refreshData(): void {
     this.isRefreshing = true;
     this.smeLoanService.getRepaymentTracksByLoanId(this.loanId!).subscribe({
@@ -141,9 +144,10 @@ toDate: string = '';
       }
     });
   }
+
   getStatusStyles(status: string): any {
     const base = 'inline-flex items-center transition-colors';
-    
+
     if (status.includes('Paid') || status.includes('All Paid')) {
       return `${base} bg-emerald-100 text-emerald-700`;
     }
@@ -158,5 +162,62 @@ toDate: string = '';
     }
     return `${base} bg-gray-100 text-gray-700`;
   }
-  
+
+  generateReport(): void {
+    const doc = new jsPDF();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('Loan Repayment Report', 14, 15);
+
+    doc.setFontSize(10);
+    doc.text(`Generated Date: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`, 14, 32);
+
+    const formattedFromDate = this.fromDate ? new Date(this.fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+    const formattedToDate = this.toDate ? new Date(this.toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+    // Include date range in the report title if filters are set
+    if (this.fromDate && this.toDate) {
+      doc.text(`Date Range: ${formattedFromDate} to ${formattedToDate}`, 14, 39);
+    }
+
+    // Prepare table headers based on the selected filter
+    let tableHeaders = ['Payment Date', 'Amount', 'Purpose', 'Status'];
+    if (this.selectedFilter === 'lateFee') {
+      tableHeaders.push('Late Days', 'Late Fees');
+    } else {
+      tableHeaders.push('Term');
+    }
+
+    // Prepare table data
+    const tableData = this.filteredRepaymentTracks.map(track => {
+      let row = [
+        new Date(track.paymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        `${track.paymentAmount.toLocaleString()} Ks`,
+        track.paymentPurpose,
+        track.status
+      ];
+
+      if (this.selectedFilter === 'lateFee') {
+        row.push(track.lateDays?.toString() || '-');
+        row.push(track.lateFees ? `${track.lateFees.toLocaleString()} Ks` : '-');
+      } else {
+        row.push(track.term ? `Term ${track.term}` : '-');
+      }
+
+      return row;
+    });
+
+    // Generate table
+    autoTable(doc, {
+      startY: 45,
+      head: [tableHeaders],
+      body: tableData,
+      theme: 'striped',
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [22, 160, 133] }
+    });
+
+    // Save PDF
+    doc.save(`Loan_Repayment_Report_${this.loanId}.pdf`);
+  }
 }

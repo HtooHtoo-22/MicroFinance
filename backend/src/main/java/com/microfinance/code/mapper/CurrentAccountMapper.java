@@ -17,6 +17,7 @@ public class CurrentAccountMapper {
 
         CIF cif = new CIF();
         cif.setId(dto.getCifId());
+        cif.setCifId(dto.getCifCode());
         account.setCif(cif);
 
         return account;
@@ -34,6 +35,9 @@ public class CurrentAccountMapper {
 
         if (account.getCif() != null) {
             dto.setCifId(account.getCif().getId());
+            dto.setCifCode(account.getCif().getCifId());
+
+            System.out.println("CIF Code in DTO: " + dto.getCifCode());
             dto.setUserName(account.getCif().getUserName()); // Assuming CIF has a userName field
         }
 

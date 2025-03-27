@@ -20,14 +20,20 @@ import com.microfinance.code.status.RepaymentStatus;
 import com.microfinance.code.status.transactionType;
 import jakarta.transaction.Transactional;
 import org.aspectj.apache.bcel.generic.ClassGen;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -67,6 +73,7 @@ public class SMELoanServiceImpl implements SMELoanService {
 
     @Autowired
     private WebSocketNotificationService notificationService;
+
 
     @Override
     public SMELoanDTO createSMELoan(SMELoanDTO dto) {
@@ -316,7 +323,7 @@ public class SMELoanServiceImpl implements SMELoanService {
         // Fetch late fee calculations
         List<SMELateFeeCalculation> calculations = lateFeeRepo.findBySmeLoanId(loanId);
 
-        // If no late fee calculations are found, log and continue (or return an empty DTO)
+        // Check if no late fee calculations are found
         if (calculations.isEmpty()) {
             System.out.println("No late fee calculations found for loan ID: " + loanId);
             return lateFeeSummaryDTO; // Return empty DTO or a DTO with a "not found" flag
@@ -376,17 +383,14 @@ public class SMELoanServiceImpl implements SMELoanService {
         return lateFeeSummaryDTO;
     }
 
-
     private BigDecimal calculateTotalLateFees(List<SMELateFeeCalculation> lateFees) {
         return lateFees.stream()
                 .map(SMELateFeeCalculation::getLateFees)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
     private SMELateFeeHolding fetchLateFeeHolding(Integer smeLoanId) {
         return lateFeeHoldingRepo.findBySmeLoan_Id(smeLoanId).orElse(null);
     }
-
     private BigDecimal calculateOutstandingAmount(SMELoan smeLoan) {
         BigDecimal outstandingAmount = BigDecimal.ZERO;
 
@@ -536,4 +540,41 @@ public class SMELoanServiceImpl implements SMELoanService {
                 })
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    public byte[] generateLoanReport(Integer id) throws JRException {
+        SMELoan loanReport = smeLoanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loan id not found"));
+
+
+        List<Collateral> collaterals = collateralRepo.findByCurrentAccount(loanReport.getCurrentAccount());
+
+        // Calculate the total collateral value
+        BigDecimal totalCollateralValue = collaterals.stream()
+                .map(Collateral::getValue)
+                .filter(Objects::nonNull) // Exclude null values
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<SMELoan> reportData = Collections.singletonList(loanReport);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("reports/SMELoanReport.jrxml");
+        if (reportStream == null) {
+            throw new JRException("Report template file 'SMELoanReport.jrxml' not found.");
+        }
+
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Loan Report");
+        parameters.put("approvedDate", Timestamp.valueOf(loanReport.getApprovedDate()));
+        parameters.put("expiredDate",Timestamp.valueOf(loanReport.getExpiredDate().atStartOfDay()));
+        parameters.put("totalCollateralValue", totalCollateralValue);  // Make sure this is passed
+
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
 }
