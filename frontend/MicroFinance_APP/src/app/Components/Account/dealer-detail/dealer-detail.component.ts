@@ -1,9 +1,9 @@
-// dealer-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { DealerService } from '../../../service/dealer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dealer } from '../../../model/Dealer';
 import { CifService } from '../../../service/cif.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -25,8 +25,10 @@ export class DealerDetailComponent implements OnInit {
   constructor(
     private dealerService: DealerService,
     private cifService: CifService,
-    private snackBar: MatSnackBar
-  ) { }
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.loadApprovedDealers();
@@ -66,6 +68,12 @@ export class DealerDetailComponent implements OnInit {
     });
   }
 
+  viewDetails(dealerId: number) {
+    this.router.navigate(['/manager-dashboard/dealer-detail', dealerId], { 
+      relativeTo: this.route.parent 
+    });
+  }
+
   // Pagination methods
   get paginatedDealers(): Dealer[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -95,6 +103,7 @@ export class DealerDetailComponent implements OnInit {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
+
   // CSV Export
   downloadCSV() {
     const headers = ['Business Name', 'Address', 'Phone', 'Email', 'Register Date', 'Company Value'];

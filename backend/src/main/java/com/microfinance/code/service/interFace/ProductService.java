@@ -19,4 +19,6 @@ public interface ProductService {
     List<ProductDTO> getAllProducts();
 
     List<ProductDTO> getProductByBranchId(Integer branchId);
+
+    ProductDTO getProductById(Integer id);
 }

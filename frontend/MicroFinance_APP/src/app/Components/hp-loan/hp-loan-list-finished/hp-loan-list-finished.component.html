@@ -1,8 +1,7 @@
 <div class="container mx-auto p-4">
   <div class="bg-white rounded-lg shadow-md">
-    <div class="p-4 border-b">
+    <div class="p-4 ">
       <h2 class="text-xl font-semibold text-gray-800">Housing Loan Portfolio</h2>
-      <p class="text-gray-600 mt-1">List of housing loan facilities</p>
     </div>
 
     <!-- Status Tabs -->
@@ -27,73 +26,57 @@
       </div>
     </div>
 
-    <!-- Loan Table -->
-    <div class="relative overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Loan ID</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Product</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Amount</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Interest</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Borrower</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tenor</th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-            <th class="px-4 py-3 text-right text-sm font-medium text-gray-700">Actions</th>
-          </tr>
-        </thead>
-        
-        <tbody class="divide-y divide-gray-200">
-          <tr *ngFor="let loan of filteredLoans" class="hover:bg-gray-50 transition-colors">
-            <td class="px-4 py-3 text-sm font-mono text-blue-600">#{{ loan.loanId }}</td>
-            <td class="px-4 py-3 text-sm text-gray-800">
-              <div class="flex items-center">
-                <img *ngIf="loan.productPhoto" [src]="loan.productPhoto" class="w-8 h-8 rounded-md object-cover mr-2">
-                {{ loan.productName || 'N/A' }}
-              </div>
-            </td>
-            <td class="px-4 py-3 text-sm font-medium">
-              {{ loan.loanAmount | number }} KS
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-600">
-              {{ loan.interestRate }}%
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-800">
-              <div class="flex flex-col">
-                <span>{{ loan.borrowerName }}</span>
-                <span class="text-xs text-gray-500">{{ loan.cifId }}</span>
-              </div>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-600">
-              {{ loan.tenor }} months
-            </td>
-            <td class="px-4 py-3 text-sm">
-              <span [class]="getStatusClass(loan.loanStatus)" class="px-2 py-1 rounded-full text-xs">
-                {{ loan.loanStatus }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-right text-sm">
-              <button 
-                (click)="viewDetails(loan.id)"
-                class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm min-w-[100px] justify-center"
-              >
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
-                </svg>
-                Details
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div *ngIf="loading" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center">
-        <svg class="animate-spin h-8 w-8 text-blue-500" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-        </svg>
+    <!-- Loan Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      <div *ngFor="let loan of filteredLoans" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+        <div class="flex items-center mb-2">
+          <img *ngIf="loan.productPhoto" [src]="loan.productPhoto" class="w-16 h-16 rounded-md object-cover mr-2">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">{{ loan.loanId }}</h3>
+            <p class="text-gray-600">{{ loan.productName || 'N/A' }}</p>
+          </div>
+        </div>
+        <div class="mb-2">
+          <span class="font-medium">Amount:</span> {{ loan.loanAmount | number }} KS
+        </div>
+        <div class="mb-2">
+          <span class="font-medium">Interest:</span> {{ loan.interestRate }}%
+        </div>
+        <div class="mb-2">
+          <span class="font-medium">Borrower:</span>
+          <div class="flex flex-col">
+            <span>{{ loan.borrowerName }}</span>
+            <span class="text-xs text-gray-500">{{ loan.cifId }}</span>
+          </div>
+        </div>
+        <div class="mb-2">
+          <span class="font-medium">Tenor:</span> {{ loan.tenor }} months
+        </div>
+        <div class="mb-2">
+          <span [class]="getStatusClass(loan.loanStatus)" class="px-2 py-1 rounded-full text-xs">
+            {{ loan.loanStatus }}
+          </span>
+        </div>
+        <div class="text-right">
+          <button 
+            (click)="viewDetails(loan.id)"
+            class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm min-w-[100px] justify-center"
+          >
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+            </svg>
+            Details
+          </button>
+        </div>
       </div>
+    </div>
+
+    <div *ngIf="loading" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center">
+      <svg class="animate-spin h-8 w-8 text-blue-500" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+      </svg>
     </div>
   </div>
 </div>

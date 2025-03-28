@@ -18,7 +18,10 @@ import { ModelComponent } from '../model/model.component';
 export class SmeLaonHistoryComponent implements OnInit {
   loans: Smeloan[] = [];
   errorMessage: string | null = null;
+  successMessage: string | null = null; // Success message for modal
   loading: boolean = false;
+  showErrorModal = false; // Error modal visibility
+  showSuccessModal = false; // Success modal visibility
   currentPage: number = 1;
   itemsPerPage: number = 7;
   totalPages: number = 0;
@@ -46,8 +49,8 @@ export class SmeLaonHistoryComponent implements OnInit {
 
   fetchLoans(): void {
     this.loading = true;
-    this.smeLoanService.getPendingLoans(Number(this.authService.getCurrentUserBranchId())).subscribe(
-      (data) => {
+    this.smeLoanService.getPendingLoans(Number(this.authService.getCurrentUserBranchId())).subscribe({
+      next: (data) => {
         if (Array.isArray(data)) {
           this.loans = data;
           console.log("This loans : "+this.loans);
@@ -55,10 +58,16 @@ export class SmeLaonHistoryComponent implements OnInit {
           this.filterLoans(); // Apply initial filter here
         }
       },
-      (error) => {
+      error: (error) => {
         this.errorMessage = error.message || 'Failed to load loan data.';
+        this.showErrorModal = true; // Show error modal
       }
-    ).add(() => this.loading = false);
+    }).add(() => this.loading = false);
+  }
+
+  closeModal(): void {
+    this.showErrorModal = false;
+    this.showSuccessModal = false;
   }
 
   // Add filter function
@@ -118,57 +127,77 @@ export class SmeLaonHistoryComponent implements OnInit {
     this.filterLoans();
   }
 
-approveLoan(loanId: number): void {
-  this.smeLoanService.approveLoan(loanId).subscribe({
-    next: (response) => {
-      console.log('Loan Approved successfully:', response.message);
-
-      // Fetch the updated loan details
-      this.smeLoanService.getLoanById(loanId).subscribe({
-        next: (loanResponse) => {
-          this.selectedLoan = loanResponse.data;
-          this.currentDate = new Date();
-          if (this.selectedLoan?.duration) {
-            this.estimatedEndDate = this.addMonths(this.currentDate, this.selectedLoan.duration);
+  approveLoan(loanId: number): void {
+    this.loading = true; // Show loading state
+    this.smeLoanService.approveLoan(loanId).subscribe({
+      next: (response) => {
+        console.log('Loan Approved successfully:', response.message);
+        this.loading = false;
+        this.showApprovalModal = false;
+  
+        // Fetch the updated loan details
+        this.smeLoanService.getLoanById(loanId).subscribe({
+          next: (loanResponse) => {
+            this.selectedLoan = loanResponse.data;
+            this.currentDate = new Date();
+            if (this.selectedLoan?.duration) {
+              this.estimatedEndDate = this.addMonths(this.currentDate, this.selectedLoan.duration);
+            }
+  
+            // Automatically trigger the report download
+            this.downloadSmeReport();
+            
+            // Show success modal
+            this.successMessage = 'Loan approved successfully!';
+            this.showSuccessModal = true;
+  
+            // Refresh the loan list
+            this.fetchLoans();
+          },
+          error: (err) => {
+            console.error('Error fetching updated loan details:', err);
+            this.errorMessage = 'Error fetching loan details after approval';
+            this.showErrorModal = true;
           }
-
-          // Automatically trigger the report download
-
-          this.downloadSmeReport();
-          // Navigate to loan details page
-
-          this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
-        },
-        error: (err) => console.error('Error fetching updated loan details:', err)
-      });
-    },
-    error: (error) => {
-      console.error('Error while approving loan:', error);
-    }
-  });
-}
-
+        });
+      },
+      error: (error) => {
+        console.error('Error while approving loan:', error);
+        this.loading = false;
+        
+        // Extract error message from the error response
+        const errorMessage = error.error?.message || 
+                           error.message || 
+                           'Failed to approve loan. Please try again.';
+        
+        this.errorMessage = errorMessage;
+        this.showErrorModal = true;
+      }
+    });
+  }
 
 
 rejectLoan(loanId: number): void {
     this.smeLoanService.rejectLoan(loanId).subscribe({
         next: (response) => {
             console.log('Loan rejected successfully:', response.message);
-            this.showModal('Loan rejected successfully!', true);
+            this.successMessage = 'Loan rejected successfully!';
+            this.showSuccessModal = true;
             this.showApprovalModal = false; // Close the modal
             this.fetchLoans(); // Refresh the loan list
         },
         error: (error) => {
             console.error('Error while rejecting loan:', error);
-            this.showModal('Failed to reject loan', false);
+            this.errorMessage = 'Failed to reject loan';
+            this.showErrorModal = true;
         }
     });
 }
 
   viewDetails(loanId: number | undefined): void {
+    console.log('Navigating to SME Loan Detail with ID:', loanId);
     if (loanId) {
-      this.router.navigate(['/operation-dashboard/sme-loan-detail', loanId]);
-      console.log(loanId);
+      this.router.navigate(['/manager-dashboard/sme-loan-detail', loanId]);
     } else {
       console.warn('Loan ID is missing');
     }

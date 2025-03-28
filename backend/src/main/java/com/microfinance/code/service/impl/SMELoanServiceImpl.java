@@ -91,6 +91,9 @@ public class SMELoanServiceImpl implements SMELoanService {
         CurrentAccount currentAcc = currentAccountRepository.findByAccountId(dto.getCurrentAccountaccId()).
                 orElseThrow(() -> new NotFoundException("Current account not found"));
 
+        if (currentAcc.isFreezeStatus()) {
+            throw new ValidationException("Cannot register SME loan - the current account is frozen");
+        }
         // Convert DTO to Entity
         SMELoan smeLoan = SMELoanMapper.toEntity(dto);
         smeLoan.setLoanId(SMELoanIDGenerator.generateLoanId());

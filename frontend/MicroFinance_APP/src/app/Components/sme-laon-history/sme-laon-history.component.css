@@ -25,3 +25,19 @@
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+/* Add to your component's CSS or global styles */
+.success-snackbar {
+    background-color: #4CAF50 !important; /* Green */
+    color: white !important;
+  }
+  
+  .error-snackbar {
+    background-color: #F44336 !important; /* Red */
+    color: white !important;
+  }
+  
+  .warning-snackbar {
+    background-color: #FF9800 !important; /* Orange */
+    color: white !important;
+  }

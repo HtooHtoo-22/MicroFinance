@@ -55,6 +55,8 @@ import { CollateralDetailComponent } from './Components/Collateral/collateral-de
 import { DealerDetailviewComponent } from './Components/Account/dealer-detailview/dealer-detailview.component';
 import { HpApproveLoansComponent } from './Components/hp-approve-loans/hp-approve-loans.component';
 import { SmeApproveLoansComponent } from './Components/sme-approve-loans/sme-approve-loans.component';
+import { ProductListComponent } from './Components/product-list/product-list.component';
+import { EditProductComponent } from './Components/Product/edit-product/edit-product.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -131,6 +133,9 @@ const routes: Routes = [
       { path: 'sme-loan-list', component: SmeLaonHistoryComponent },
       { path: 'dealer-detail/:id', component: DealerDetailviewComponent},
       { path: 'hp-loan-detail/:id', component: HpLoanDetailComponent },
+      { path: 'sme-loan-detail/:id', component: SmeLoanDetailComponent},
+
+
 
     ]
   },
@@ -166,12 +171,13 @@ const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'DEALER' },
     children: [
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: DashboardComponent },
+      { path: '', redirectTo: '', pathMatch: 'full' },
       { path: 'dealer-transaction', component: TransactionComponent },
       { path: 'create-product', component: CreateEditProductComponent },
       { path: 'procuct-list', component: AllproductListComponent },
-      { path: 'all-list', component: AllproductListComponent }
+      { path: 'all-list', component: ProductListComponent },
+      { path: 'products/edit/:id', component: EditProductComponent },
+
     ]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' }

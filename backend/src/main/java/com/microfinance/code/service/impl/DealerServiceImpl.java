@@ -53,13 +53,6 @@ public class DealerServiceImpl implements DealerService {
             throw new AlreadyExistException("Dealer email already exists");
         }
 
-        System.out.println(dealerDTO.getCurrentAccount());
-
-        // Check if currentAccount is null
-        if (dealerDTO.getCurrentAccount() == null) {
-            throw new IllegalArgumentException("Current account must not be null");
-        }
-
         CurrentAccount currentAccount = currentAccountRepo.findByAccountId(dealerDTO.getCurrentAccount().getAccountId())
                 .orElseThrow(() -> new NotFoundException("Current account not found with ID: " + dealerDTO.getCurrentAccount().getAccountId()));
 

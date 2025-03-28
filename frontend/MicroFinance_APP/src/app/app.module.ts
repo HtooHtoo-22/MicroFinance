@@ -79,6 +79,8 @@ import { DealerDetailviewComponent } from './Components/Account/dealer-detailvie
 import { DashboardComponent } from './Components/counting/dashboard/dashboard.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.component';
+import { ProductListComponent } from './Components/product-list/product-list.component';
+import { EditProductComponent } from './Components/Product/edit-product/edit-product.component';
 
 @NgModule({
   declarations: [
@@ -147,7 +149,9 @@ import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.com
     HpLoanTrackComponent,
     HpLoanLatefeeComponent,
     SmeApproveLoansComponent,
-    HpApproveLoansComponent
+    HpApproveLoansComponent,
+    ProductListComponent,
+    EditProductComponent
   ],
   imports: [
     BrowserModule,

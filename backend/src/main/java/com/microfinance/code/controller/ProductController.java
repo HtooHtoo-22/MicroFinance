@@ -98,10 +98,18 @@ public class ProductController {
 
     @GetMapping("/branch/{branchId}")
     public ApiResponse<List<ProductDTO>> getProductByBranchId(@PathVariable Integer branchId) {
-        System.out.println("Hi");
         List<ProductDTO> products = productService.getProductByBranchId(branchId);
-        System.out.println("Products : "+products);
         return ApiResponse.success(HttpStatus.OK, 200, "Products fetched successfully", products);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ProductDTO> getProductById(@PathVariable Integer id) {
+        try {
+            ProductDTO product = productService.getProductById(id);
+            return ApiResponse.success(HttpStatus.OK, 200, "Product fetched successfully", product);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.NOT_FOUND, 404, "Product not found with ID: " + id);
+        }
     }
 
 }

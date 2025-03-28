@@ -21,11 +21,6 @@ export class ProductService {
     );
   }
 
-  getProductById(productId: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${productId}`).pipe(
-      catchError(this.handleError)
-    );
-  }
 
   getProductsByDealerId(dealerId: string): Observable<Product[]> {
     const headers = new HttpHeaders({
@@ -59,11 +54,19 @@ export class ProductService {
       );
   }
 
-  updateProduct(id: number, formData: FormData): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, formData).pipe(
-      catchError(this.handleError)
+  getProductById(productId: number): Observable<Product> {
+    return this.http.get<ApiResponse<Product>>(`${this.apiUrl}/${productId}`).pipe(
+        map(response => response.data),
+        catchError(this.handleError)
     );
-  }
+}
+
+updateProduct(id: number, formData: FormData): Observable<Product> {
+    return this.http.put<ApiResponse<Product>>(`${this.apiUrl}/${id}`, formData).pipe(
+        map(response => response.data),
+        catchError(this.handleError)
+    );
+}
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
@@ -97,4 +100,5 @@ export class ProductService {
   clearSelectedProduct() {
     this.selectedProduct = null; // Reset selection after use
   }
+
 }

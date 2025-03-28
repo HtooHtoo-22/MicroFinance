@@ -27,10 +27,11 @@ export class CreateDealerComponent {
       address: ['', Validators.required],
       phone: ['', [Validators.required, Validators.pattern('[0-9]{10,11}')]],
       email: ['', [Validators.required, Validators.email]],
-      currentAccountId: ['', Validators.required],
+      currentAccountId: ['', Validators.required], // Changed from currentAccGenerateId
       companyValue: ['', [Validators.required, Validators.min(0)]],
       information: [''],
     });
+    
 
     this.loadCurrentAccounts();
   }
@@ -62,16 +63,19 @@ export class CreateDealerComponent {
     );
   }
   selectAccount(account: any): void {
-    const currentAccountControl = this.dealerForm.get('currentAccountId');
-    if (currentAccountControl) {
-      currentAccountControl.setValue(account.accountId);
-    }
+    this.dealerForm.get('currentAccountId')?.setValue(account.accountId);
     this.filteredAccounts = []; // Clear the suggestions
   }
 
   onSubmit() {
     if (this.dealerForm.valid) {
-      this.dealerService.createDealer(this.dealerForm.value).subscribe({
+      const formValue = this.dealerForm.value;
+      const dealerData = {
+        ...formValue,
+        currentAccount: { accountId: formValue.currentAccountId } // Map to the expected DTO structure
+      };
+      
+      this.dealerService.createDealer(dealerData).subscribe({
         next: () => {
           this.dealerForm.reset();
           this.showSuccessModal = true;

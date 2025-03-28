@@ -13,10 +13,10 @@
   <div class="sidebar w-64 bg-white h-screen fixed top-0 left-0 p-6 shadow-lg overflow-y-auto">
     <img [src]="imagePath" class="w-34 h-16 object-contain mb-6">
     <ul class="space-y-4 text-gray-900 text-sm font-semibold">
-      <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+      <!-- <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
         <img src="https://cdn0.iconfinder.com/data/icons/set-app-incredibles/24/Home-01-512.png" class="w-5 h-5">
         <a [routerLink]="['/dealer-dashboard/home']" routerLinkActive="text-[#00A1FF]">Dashboard</a>
-      </li>
+      </li> -->
 
       <li class="flex items-center space-x-3 hover:bg-gray-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
         <img src="https://cdn2.iconfinder.com/data/icons/e-commerce-line-4-1/1024/user4-512.png" class="w-5 h-5">
@@ -48,12 +48,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
             </svg>
           </button>
+
           <div class="flex items-center space-x-2">
-            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">JD</div>
-            <span class="text-sm font-medium text-gray-700">John Doe</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <img src="https://img.icons8.com/?size=100&id=M5Fdxwcgi37M&format=png&color=000000" alt="Logo" class="w-8 h-8" />
             <button (click)="openLogoutModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
               <span>Logout</span>
             </button>

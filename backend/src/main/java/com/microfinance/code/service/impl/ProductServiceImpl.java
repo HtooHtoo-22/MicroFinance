@@ -5,6 +5,7 @@ import com.cloudinary.Cloudinary;
 import com.microfinance.code.dto.ProductDTO;
 
 import com.microfinance.code.etc.ApiResponse;
+import com.microfinance.code.exception.NotFoundException;
 import com.microfinance.code.mapper.ProductMapper;
 import com.microfinance.code.model.Dealer;
 import com.microfinance.code.model.Product;
@@ -165,5 +166,12 @@ public class ProductServiceImpl implements ProductService {
                 .flatMap(dealer -> productRepo.findByDealer(dealer).stream())
                 .map(productMapper::toDTO) // Map each Product entity to ProductDTO
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductDTO getProductById(Integer id) {
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Product not found with ID: " + id));
+        return productMapper.toDTO(product);
     }
 }

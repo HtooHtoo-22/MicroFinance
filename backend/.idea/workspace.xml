@@ -5,81 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/jasperreports.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/reports/SMELoanRepaymentReport.jrxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/reports/SMELoanReport.jrxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/reports/TransactionReport.jrxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CurrentAccountController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/CurrentAccountController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/DealerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/DealerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMELoanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMEScheduleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/SMEScheduleController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/TransactionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CollateralDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CurrentAccountDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/CurrentAccountDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/DealerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/DealerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/dto/SMELoanDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CurrentAccountMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/CurrentAccountMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/DealerMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/DealerMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/mapper/SMELoanMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/SMELoan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/model/SMELoan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/CollateralRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/CollateralRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanHasCollateralRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/SMELoanHasCollateralRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/TransactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/repository/TransactionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CurrentAccountServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/CurrentAccountServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/controller/ProductController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/DealerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/DealerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/ProductServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMELoanServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMERepaymentScheduleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/SMERepaymentScheduleServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/TransactionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/TransactionServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMELoanService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMERepaymentScheduleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/SMERepaymentScheduleService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/controller/TransactionController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/dto/CurrentAccountDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/mapper/CurrentAccountMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/TransactionRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/microfinance/code/repository/TransactionRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/interFace/ProductService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CIF/cif-detail/cif-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CIF/cif-detail/cif-detail.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CIF/create-cif/create-cif.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CIF/create-cif/create-cif.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Collateral/create-collateral/create-collateral.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/create/create.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/create/create.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/create/create.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/create/create.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/update/update.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/CurrentACC/update/update.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/create-dealer/create-dealer.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/create-dealer/create-dealer.component.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/create-dealer/create-dealer.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/create-dealer/create-dealer.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-list/dealer-list.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-list/dealer-list.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Rate/create-rate/create-rate.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Rate/create-rate/create-rate.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/collateral_Type/create-collateral-type/create-collateral-type.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/collateral_Type/create-collateral-type/create-collateral-type.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/counting/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/counting/dashboard/dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/dealer-dashboard/dealer-dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/dealer-dashboard/dealer-dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-detail/hp-loan-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-detail/hp-loan-detail.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-list-finished/hp-loan-list-finished.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/hp-loan/hp-loan-list-finished/hp-loan-list-finished.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/operation-dashboard/operation-dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/operation-dashboard/operation-dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/operation-dashboard/operation-dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/operation-dashboard/operation-dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-approve-loans/sme-approve-loans.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-approve-loans/sme-approve-loans.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-laon-history/sme-laon-history.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-od-latefee/sme-od-latefee.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-od-latefee/sme-od-latefee.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-od-latefee/sme-od-latefee.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-od-latefee/sme-od-latefee.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-repay-track/sme-repay-track.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction-history/transaction-history.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction-history/transaction-history.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction-history/transaction-history.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction-history/transaction-history.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/createuser/createuser.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/createuser/createuser.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/update-user/update-user.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/update-user/update-user.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/update-user/update-user.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/user/update-user/update-user.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/current-acc.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/current-acc.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/loan-dashboard-service.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/loan-dashboard-service.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/rate.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/rate.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-loan.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-loan.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-schedule.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/sme-schedule.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/transaction.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/transaction.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/product.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/product.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,31 +74,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.MicroFinanceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging HH-WHA&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/user/Documents/Mother/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.1019368&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.32494006&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;0e017c4f537886ac610bece265d80b59&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MicroFinanceApplication.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "HH-WHA",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/user/Documents/Mother/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.1019368",
+    "project.structure.side.proportion": "0.32494006",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "spring.configuration.checksum": "0e017c4f537886ac610bece265d80b59",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="backend" />

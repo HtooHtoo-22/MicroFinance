@@ -8,15 +8,10 @@ import { AuthService } from '../../service/auth.service';
   styleUrls: ['./operation-dashboard.component.css']
 })
 export class OperationDashboardComponent {
-  isCustomerDropdownOpen: boolean = false;
   imagePath: string = "image/richcon-logo.png";
   showLogoutModal: boolean = false;
 
   constructor(private authService: AuthService) {}
-
-  toggleCustomerDropdown(): void {
-    this.isCustomerDropdownOpen = !this.isCustomerDropdownOpen;
-  }
 
   isAdmin(): boolean {
     return this.authService.isAdmin();
