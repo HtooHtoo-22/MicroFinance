@@ -118,6 +118,27 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
         return CurrentAccountMapper.toDTO(updatedAccount);
     }
+    @Override
+    public List<CurrentAccountDTO> getAllCurrentACCByBranchId(Integer branchId){
+        List<CurrentAccount> accounts = currentAccountRepository.findByCif_Branch_Id(branchId);
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found for Branch ID: " + branchId); // Log if no accounts are found
+        }
+        return accounts.stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 //    @Override
 //    // TransactionService.java

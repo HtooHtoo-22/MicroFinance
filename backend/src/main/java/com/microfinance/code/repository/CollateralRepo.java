@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface CollateralRepo extends JpaRepository<Collateral,Integer> {
     List<Collateral> findByCurrentAccount(CurrentAccount account);
+
+    List<Collateral> findByCurrentAccount_Cif_Branch_Id(Integer branchId);
 }

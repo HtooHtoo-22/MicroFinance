@@ -60,7 +60,7 @@ export class HpLoanFormComponent {
   }
 
   private loadCurrentAccounts() {
-    this.currentAccService.listCurrentAcc().subscribe({
+    this.currentAccService.listCurrentAcc(Number(this.authService.getCurrentUserBranchId())).subscribe({
       next: (response) => {
         this.currentAccounts = response.data;
         console.log('Current Accounts:', this.currentAccounts);

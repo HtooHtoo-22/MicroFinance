@@ -12,4 +12,6 @@ public interface CollateralService {
     void deleteCollateral(Integer id);
 
     public List<CollateralDTO> getCollateralByAccId(String id);
+
+    public List<CollateralDTO> getCollateralsByBranchId(Integer id);
 }

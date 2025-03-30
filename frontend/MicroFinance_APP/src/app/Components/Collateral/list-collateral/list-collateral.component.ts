@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CollateralDTO } from '../../../model/CollateralDTO';
 import { CollateralService } from '../../../service/collateral.service';
-import { ApiResponse } from '../../../model/Apirespon';
+import { AuthService } from '../../../service/auth.service';
+import { ApiResponse } from '../../../model/ApiResponse';
 
 @Component({
   selector: 'app-list-collateral',
@@ -16,11 +17,14 @@ export class ListCollateralComponent {
   selectedCollateralType: string = "";
   collateralTypes: string[] = [];
   errorMessage: string | null = null;
-  constructor(private collateralService: CollateralService, private router: Router) {}
+  constructor(private collateralService: CollateralService, private router: Router,
+              private authService:AuthService
+  ) {}
  
 
   ngOnInit(): void {
-    this.collateralService.getAllCollaterals().subscribe(
+    this.collateralService.getCollateralByBranchId(Number(this.authService.getCurrentUserBranchId())).subscribe(
+
       (response: ApiResponse<CollateralDTO[]>) => {
        
           this.collaterals = response.data;

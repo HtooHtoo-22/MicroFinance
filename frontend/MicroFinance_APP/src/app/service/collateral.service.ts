@@ -62,4 +62,7 @@ export class CollateralService {
   getCollateralByCurrentAccountId(id: string): Observable<ApiResponse<CollateralDTO>> {
     return this.http.get<ApiResponse<CollateralDTO>>(`${this.apiUrl2}/getByAcc/${id}`);
   }
+  getCollateralByBranchId(id: number): Observable<ApiResponse<CollateralDTO[]>> {
+    return this.http.get<ApiResponse<CollateralDTO[]>>(`${this.apiUrl2}/getByBranchId/${id}`);
+  }
 }

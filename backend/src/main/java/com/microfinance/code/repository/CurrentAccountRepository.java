@@ -19,4 +19,6 @@ public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, 
     long countByBranchId(@Param("branchId") Integer branchId);
     boolean existsByCifId(Integer cifId); // Add this method
 
+    List<CurrentAccount> findByCif_Branch_Id(Integer branchId);
+
 }

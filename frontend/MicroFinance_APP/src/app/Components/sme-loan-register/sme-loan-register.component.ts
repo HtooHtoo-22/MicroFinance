@@ -123,7 +123,7 @@ export class SmeLoanRegisterComponent implements OnInit {
   
 
   private loadCurrentAccounts(): void {
-    this.currentAccService.listCurrentAcc().subscribe({
+    this.currentAccService.listCurrentAcc((Number(this.authService.getCurrentUserBranchId()))).subscribe({
       next: (accounts) => {
         this.accountList = accounts.data;
         console.log('Current Accounts:', this.accountList);
