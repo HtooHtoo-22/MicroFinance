@@ -59,6 +59,7 @@ import { ProductListComponent } from './Components/product-list/product-list.com
 import { EditProductComponent } from './Components/Product/edit-product/edit-product.component';
 import { BranchViewDetailComponent } from './Components/branch/branch-view-detail/branch-view-detail.component';
 import { DashboardReportComponent } from './Components/admin/dashboard/dashboard.component';
+import { ListCollateralComponent } from './Components/Collateral/list-collateral/list-collateral.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -116,7 +117,8 @@ const routes: Routes = [
       { path: 'cif-detail-view/:id', component: CifDetailComponent },
       { path: 'dealer-detail', component: DealerDetailComponent },
       { path: 'create-collateral', component: CreateCollateralComponent },
-      { path: 'collateral-detail', component: CollateralDetailComponent }
+      { path: 'collateral-detail', component: CollateralDetailComponent },
+      { path: 'collateral-list', component: ListCollateralComponent}
 
     ]
   },

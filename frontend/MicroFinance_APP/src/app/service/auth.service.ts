@@ -54,6 +54,20 @@ export class AuthService {
     );
   }
 
+
+  // In auth.service.ts
+getCurrentUserRoleName(): string {
+  const role = this.getCurrentUserRole();
+  switch(role) {
+    case 'ADMIN': return 'Administrator';
+    case 'MANAGER': return 'Manager';
+    case 'ENTRY': return 'Entry User';
+    case 'OPERATION': return 'Operation User';
+    case 'DEALER': return 'Dealer';
+    default: return 'User';
+  }
+}
+
   getCurrentDealerId(): string | null {
     const dealerId = this.storageService.getItem('dealerId');
     console.log('Retrieved dealerId:', dealerId); // Debug log

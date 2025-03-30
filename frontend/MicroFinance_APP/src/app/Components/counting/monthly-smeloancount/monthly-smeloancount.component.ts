@@ -1,5 +1,4 @@
-// src/app/monthly-smeloancount/monthly-smeloancount.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Chart, LinearScale, BarController, BarElement, Title, Tooltip, Legend, CategoryScale } from 'chart.js';
 import { SmeLoanService } from '../../../service/sme-loan.service';
 import { AuthService } from '../../../service/auth.service';
@@ -13,16 +12,18 @@ Chart.register(LinearScale, BarController, BarElement, Title, Tooltip, Legend, C
   selector: 'app-monthly-smeloancount',
   standalone: false,
   templateUrl: './monthly-smeloancount.component.html',
-  styleUrl: './monthly-smeloancount.component.css'
+  styleUrls: ['./monthly-smeloancount.component.css']
 })
-export class MonthlySMELoancountComponent implements OnInit {
+export class MonthlySMELoancountComponent implements OnInit, OnDestroy {
+  @Input() branchId: number = 0; // Accept branchId as input
+  
   isLoggedIn: boolean = false;
   chart: Chart | undefined;
   allData: MonthlySMELoanCount[] = [];
   filteredData: MonthlySMELoanCount[] = [];
   years: number[] = [];
-  selectedYear: number = new Date().getFullYear(); // Default to current year
-  pageSize = 6; // 6 combined periods (12 months)
+  selectedYear: number = new Date().getFullYear();
+  pageSize = 6;
   currentPage = 1;
   totalPages = 1;
 
@@ -35,14 +36,24 @@ export class MonthlySMELoancountComponent implements OnInit {
   ngOnInit(): void {
     this.isLoggedIn = !!this.authService.getAccessToken();
     if (this.isLoggedIn) {
-      this.loadData();
+      if (this.branchId) {
+        this.loadData();
+      } else {
+        console.error('No branchId provided to monthly-smeloancount component');
+      }
     } else {
       this.router.navigate(['/login']);
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+
   loadData(): void {
-    this.smeloanservice.getMonthlyApprovedLoans().subscribe({
+    this.smeloanservice.getMonthlyApprovedLoansByBranch(this.branchId).subscribe({
       next: (data: MonthlySMELoanCount[]) => {
         this.allData = data;
         this.years = [...new Set(data.map(item => parseInt(item.month.split('-')[0])))].sort();
@@ -59,10 +70,8 @@ export class MonthlySMELoancountComponent implements OnInit {
   }
 
   filterAndGroupData(): void {
-    // Filter by selected year
     this.filteredData = this.allData.filter(item => item.month.startsWith(this.selectedYear.toString()));
 
-    // Group every two months
     const groupedData: { period: string; count: number }[] = [];
     for (let i = 0; i < 12; i += 2) {
       const month1 = `${this.selectedYear}-${String(i + 1).padStart(2, '0')}`;
@@ -84,64 +93,44 @@ export class MonthlySMELoancountComponent implements OnInit {
     const endIdx = startIdx + this.pageSize;
     const paginatedData = groupedData.slice(startIdx, endIdx);
 
-    const branchId = this.authService.getCurrentUserBranchId();
     if (this.chart) {
-        this.chart.destroy();
+      this.chart.destroy();
     }
 
     this.chart = new Chart('loanChart', {
-        type: 'bar',
-        data: {
-            labels: paginatedData.map(item => item.period),
-            datasets: [{
-                label: '', // No label here since we will draw it below
-                data: paginatedData.map(item => item.count),
-                backgroundColor: 'rgba(14, 103, 237, 0.94)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                },
-                x: {}
-            },
-            plugins: {
-                legend: {
-                    display: false // Hide the legend
-                },
-                title: {
-                    display: true,
-                    text: `Monthly Approved SME Loans (${this.selectedYear})`,
-                    font: { size: 16 }
-                }
-            }
-        },
-        plugins: [{
-            id: 'customPlugin',
-            afterDraw: (chart) => {
-                const ctx = chart.ctx;
-                const fontSize = 14;
-                ctx.save();
-                ctx.font = `${fontSize}px Arial`;
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.87)'; // Text color
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                const x = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
-                const y = chart.chartArea.bottom + fontSize + 10; // Position below the chart
-                ctx.restore();
-            }
+      type: 'bar',
+      data: {
+        labels: paginatedData.map(item => item.period),
+        datasets: [{
+          label: '',
+          data: paginatedData.map(item => item.count),
+          backgroundColor: 'rgba(14, 103, 237, 0.94)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
         }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true },
+          x: {}
+        },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: `Monthly Approved SME Loans - Branch ${this.branchId} (${this.selectedYear})`,
+            font: { size: 16 }
+          }
+        }
+      }
     });
-}
+  }
 
   onYearChange(event: Event): void {
     this.selectedYear = parseInt((event.target as HTMLSelectElement).value);
-    this.currentPage = 1; // Reset to first page
+    this.currentPage = 1;
     this.filterAndGroupData();
   }
 

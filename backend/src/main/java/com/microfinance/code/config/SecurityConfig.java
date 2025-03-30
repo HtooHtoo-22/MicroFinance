@@ -35,7 +35,7 @@ public class SecurityConfig {
 
     private static final String[] SME_LIST_URL = {
             "/api/sme-loans/**",
-            "/api/sme-loans/monthly-approved",
+            "/api/sme-loans/monthly-approved/{branchId}",
             "/api/sme-loans/loans/{branchId}" // Add this temporarily
     };
 
@@ -43,7 +43,7 @@ public class SecurityConfig {
             "/api/hp-loans/**",
             "/api/hp-loans/list",
             "/api/hp-loans-schedule/**",
-            "/api/hp-loans/monthly-approved"
+            "/api/hp-loans/monthly-approved/{branchId}"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;

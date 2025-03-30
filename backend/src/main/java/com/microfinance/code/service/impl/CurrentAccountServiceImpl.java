@@ -96,6 +96,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
                 .collect(Collectors.toList());
     }
 
+
     // CurrentAccountServiceImpl.java
     @Override
     public List<CurrentAccountDTO> getAccountsByCifId(Integer cifId) {
@@ -131,6 +132,17 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     @Override
     public long countActiveAccounts() {
         return currentAccountRepository.countActiveAccounts();
+    }
+
+    @Override
+    public List<CurrentAccountDTO> getAllCurrentACCByBranchId(Integer branchId){
+        List<CurrentAccount> accounts = currentAccountRepository.findByCif_Branch_Id(branchId);
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found for Branch ID: " + branchId); // Log if no accounts are found
+        }
+        return accounts.stream()
+                .map(CurrentAccountMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
 //    @Override

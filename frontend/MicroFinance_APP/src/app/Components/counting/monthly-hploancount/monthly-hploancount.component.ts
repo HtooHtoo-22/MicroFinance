@@ -1,52 +1,82 @@
-import { Component, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ElementRef, ViewChild, Input, SimpleChanges, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { MonthlyHpLoanCount } from '../../../model/MonthlyHpLoanCount';
 import { Chart } from 'chart.js';
 import { HpLoanService } from '../../../service/hp-loan.service';
 import { AuthService } from '../../../service/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-monthly-hploancount',
   standalone: false,
   templateUrl: './monthly-hploancount.component.html',
-  styleUrl: './monthly-hploancount.component.css'
+  styleUrls: ['./monthly-hploancount.component.css']
 })
-export class MonthlyHploancountComponent implements OnInit {
+export class MonthlyHploancountComponent implements OnInit, OnChanges {
   @ViewChild('loanChart', { static: false }) loanChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @Input() branchId: number = 0;
+  
   isLoggedIn: boolean = false;
   chart: Chart | undefined;
   allData: MonthlyHpLoanCount[] = [];
   filteredData: MonthlyHpLoanCount[] = [];
   years: number[] = [];
   selectedYear: number = new Date().getFullYear();
-  pageSize = 6; // 6 combined periods (12 months)
+  pageSize = 6;
   currentPage = 1;
   totalPages = 1;
+  loading = false;
+  errorMessage: string | null = null;
 
   constructor(
-    private hpLoanService: HpLoanService, // Changed to HpLoanService
+    private hpLoanService: HpLoanService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+
   ) {}
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.authService.getAccessToken();
     if (this.isLoggedIn) {
-      this.loadData();
+      if (this.branchId) {
+        this.loadData();
+      }
     } else {
       this.router.navigate(['/login']);
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['branchId'] && !changes['branchId'].firstChange && this.branchId) {
+      this.resetComponent();
+      this.loadData();
+    }
+  }
+
+  resetComponent(): void {
+    this.allData = [];
+    this.filteredData = [];
+    this.years = [];
+    this.currentPage = 1;
+    this.totalPages = 1;
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = undefined;
+    }
+  }
+
   loadData(): void {
-    this.hpLoanService.getMonthlyApprovedLoans().subscribe({
+    this.hpLoanService.getMonthlyApprovedLoansByBranch(this.branchId).subscribe({
       next: (data: MonthlyHpLoanCount[]) => {
         this.allData = data;
         this.years = [...new Set(data.map(item => parseInt(item.month.split('-')[0])))].sort();
+        this.cdr.detectChanges(); // Ensure view is updated
         this.filterAndGroupData();
       },
       error: (err) => {
         console.error('Error loading chart data:', err);
+        this.errorMessage = 'Failed to load HP loan data';
+        this.loading = false;
         if (err.status === 401) {
           this.authService.logout();
           this.router.navigate(['/login']);
@@ -79,64 +109,41 @@ export class MonthlyHploancountComponent implements OnInit {
     const endIdx = startIdx + this.pageSize;
     const paginatedData = groupedData.slice(startIdx, endIdx);
 
-    const branchId = this.authService.getCurrentUserBranchId();
-
-    // Destroy existing chart if it exists
     if (this.chart) {
-        this.chart.destroy();
-        this.chart = undefined; // Ensure reference is cleared
+      this.chart.destroy();
+      this.chart = undefined;
     }
 
-    // Create new chart
     this.chart = new Chart(this.loanChartCanvas.nativeElement, {
-        type: 'bar',
-        data: {
-            labels: paginatedData.map(item => item.period),
-            datasets: [{
-                label: '', // No label here since we will draw it below
-                data: paginatedData.map(item => item.count),
-                backgroundColor: 'rgb(20, 122, 231)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                },
-                x: {}
-            },
-            plugins: {
-                legend: {
-                    display: false // Hide the legend
-                },
-                title: {
-                    display: true,
-                    text: `Monthly Approved HP Loans (${this.selectedYear})`,
-                    font: { size: 16 }
-                }
-            }
-        },
-        plugins: [{
-            id: 'customPlugin',
-            afterDraw: (chart) => {
-                const ctx = chart.ctx;
-                const fontSize = 14;
-                ctx.save();
-                ctx.font = `${fontSize}px Arial`;
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.87)'; // Text color
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
-                const x = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
-                const y = chart.chartArea.bottom + fontSize + 10; // Position below the chart
-                ctx.restore();
-            }
+      type: 'bar',
+      data: {
+        labels: paginatedData.map(item => item.period),
+        datasets: [{
+          label: '',
+          data: paginatedData.map(item => item.count),
+          backgroundColor: 'rgb(20, 122, 231)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
         }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true },
+          x: {}
+        },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: `Monthly Approved HP Loans - Branch ${this.branchId} (${this.selectedYear})`,
+            font: { size: 16 }
+          }
+        }
+      }
     });
-}
+  }
 
   onYearChange(event: Event): void {
     this.selectedYear = parseInt((event.target as HTMLSelectElement).value);

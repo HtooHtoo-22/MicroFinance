@@ -87,10 +87,8 @@ public class SMELoanController {
         ));
     }
 
-    @GetMapping("/monthly-approved")
-    public List<MonthlySMELoanCountDTO> getMonthlyApprovedLoans() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Integer branchId = getBranchIdFromAuthentication(auth);
+    @GetMapping("/monthly-approved/{branchId}")
+    public List<MonthlySMELoanCountDTO> getMonthlyApprovedLoans(@PathVariable Integer branchId) {
         return smeLoanService.getApprovedLoansByBranchMonthly(branchId);
     }
 

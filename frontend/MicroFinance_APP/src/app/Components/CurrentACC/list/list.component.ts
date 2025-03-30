@@ -7,6 +7,7 @@ import { ModelComponent } from '../../model/model.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { Cif } from '../../../model/CIF';
 import { CifService } from '../../../service/cif.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-list',
@@ -25,7 +26,7 @@ export class ListComponent implements OnInit {
   totalAccounts: number = 0;
   totalPages: number = 0;
 
-  constructor(private CurrentAccService: CurrentAccService,  private dialog:MatDialog,private cdr: ChangeDetectorRef,private router:Router, private cifService: CifService) {}
+  constructor(private CurrentAccService: CurrentAccService,  private dialog:MatDialog,private cdr: ChangeDetectorRef,private router:Router, private cifService: CifService, private auth: AuthService) {}
 
   ngOnInit(): void {
     this.getCurrentAccs();
@@ -89,7 +90,7 @@ export class ListComponent implements OnInit {
   }
 
   getCurrentAccs() {
-    this.CurrentAccService.listCurrentAcc().subscribe({
+    this.CurrentAccService.listCurrentAcc(Number(this.auth.getCurrentUserBranchId())).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.currentAccounts = response.data; // Assign the data to the component property

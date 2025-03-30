@@ -18,6 +18,18 @@ export class EntryDashboardComponent {
 
   constructor(private authService: AuthService) {}
 
+  getCurrentRole(): string | null {
+    return this.authService.getCurrentUserRole();
+  }
+  
+  getCurrentRoleName(): string {
+    return this.authService.getCurrentUserRoleName();
+  }
+  
+  getCurrentEmail(): string | null {
+    return this.authService.getStoredEmail();
+  }
+
   toggleCustomerDropdown(): void {
     this.isCustomerDropdownOpen = !this.isCustomerDropdownOpen;
   }

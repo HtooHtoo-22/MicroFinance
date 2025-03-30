@@ -21,4 +21,6 @@ public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, 
     boolean existsByCifId(Integer cifId); // Add this method
     @Query("SELECT COUNT(ca) FROM CurrentAccount ca WHERE ca.freezeStatus = false")
     long countActiveAccounts();
+
+    List<CurrentAccount> findByCif_Branch_Id(Integer branchId);
 }

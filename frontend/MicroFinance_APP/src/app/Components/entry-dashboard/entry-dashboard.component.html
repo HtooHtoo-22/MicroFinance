@@ -63,6 +63,11 @@
               <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/174-1024.png" class="w-5 h-5" />
               <a [routerLink]="['/entry-dashboard/create-collateral']" routerLinkActive="text-[#00A1FF]">Collateral</a>
             </li>
+            <li *ngIf="isEntry()" class="flex items-center space-x-3 hover:bg-blue-100 p-2 rounded-lg transition duration-200" routerLinkActive="active-link">
+              <img src="https://cdn0.iconfinder.com/data/icons/money-2-3/66/174-1024.png" class="w-5 h-5" />
+              <a [routerLink]="['/entry-dashboard/collateral-list']" routerLinkActive="text-[#00A1FF]">Collateral List</a>
+            </li>
+            
           </ul>
         </li>
       </ng-container>
@@ -88,23 +93,30 @@
   </div>
 
 <!-- Main content wrapper with fixed header -->
-<div class="flex-1 ml-64">
-  <div class="fixed right-0 left-64 bg-white z-10 p-4 shadow-md">
-    <div class="flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <img src="https://img.icons8.com/?size=100&id=0qxdKWVkmxjy&format=png&color=228BE6" alt="Logo" class="w-8 h-8" />
-      </div>
-      <div class="flex items-center space-x-4">
-        <button (click)="openLogoutModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center space-x-2 transition">
-          <span>Logout</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
+<div class="flex-1 justify-between ml-64">
+  <header class="fixed right-0 left-64 bg-white z-10 shadow-md p-4 flex justify-between items-center">
+    <!-- Left side content -->
+    <div class="flex items-center space-x-2">
+      <span class="font-medium text-gray-700">Entry Dashboard</span>
     </div>
-  </div>
-  <div class="pt-24 p-7 bg-gray-100 min-h-screen">
+  
+    <!-- Right side content -->
+    <div class="flex items-center space-x-4">
+      <div *ngIf="getCurrentRole()" class="text-right">
+        <div class="text-sm font-medium text-gray-700">
+          {{ getCurrentRoleName() }}
+        </div>
+        <div *ngIf="getCurrentEmail()" class="text-xs text-gray-500">
+          {{ getCurrentEmail() }}
+        </div>
+      </div>
+      <button (click)="openLogoutModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="pt-20 p-7 bg-gray-100 min-h-screen">
     <router-outlet></router-outlet>
   </div>
 </div>

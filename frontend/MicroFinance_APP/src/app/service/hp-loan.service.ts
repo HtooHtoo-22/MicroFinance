@@ -77,9 +77,10 @@ export class HpLoanService {
       );
     }
 
-  getMonthlyApprovedLoans(): Observable<MonthlyHpLoanCount[]> {
-    return this.http.get<MonthlyHpLoanCount[]>(`${this.apiUrl}/monthly-approved`);
-  }
+// In your HpLoanService
+getMonthlyApprovedLoansByBranch(branchId: number): Observable<MonthlyHpLoanCount[]> {
+  return this.http.get<MonthlyHpLoanCount[]>(`${this.apiUrl}/monthly-approved/${branchId}`);
+}
 
 
 }

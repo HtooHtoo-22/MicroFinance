@@ -1,16 +1,58 @@
+<!-- monthly-hploancount.component.html -->
 <div class="max-w-4xl mx-auto p-6">
     <div *ngIf="isLoggedIn" class="flex-1 flex flex-col">
-        <div class="mb-4">
-            <select 
-                [value]="selectedYear" 
-                (change)="onYearChange($event)" 
-                class="w-full max-w-xs border border-gray-300 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-500"
-            >
-                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-            </select>
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex flex-col items-center justify-center py-8 space-y-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <p class="text-gray-600 font-medium">Loading HP loan data...</p>
         </div>
-        <div class="flex-1 min-w-[150px] min-h-[400px]"> <!-- Increased height -->
-            <canvas #loanChart></canvas>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 rounded-lg border border-red-200 shadow-sm flex items-start">
+            <svg class="w-5 h-5 mt-0.5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <h3 class="font-medium text-red-800">Error Loading Data</h3>
+                <p class="text-sm text-red-600 mt-1">{{ errorMessage }}</p>
+                <button (click)="loadData()" class="mt-2 text-sm text-red-700 hover:text-red-900 font-medium flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Retry
+                </button>
+            </div>
+        </div>
+
+        <!-- Chart Content -->
+        <div *ngIf="!loading && !errorMessage">
+            <div class="mb-4">
+                <select 
+                    [value]="selectedYear" 
+                    (change)="onYearChange($event)" 
+                    class="w-full max-w-xs border border-gray-300 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-500"
+                >
+                    <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                </select>
+            </div>
+            <div class="flex-1 min-w-[150px] min-h-[400px]">
+                <canvas #loanChart></canvas>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="flex justify-between mt-4">
+                <button (click)="prevPage()" 
+                        [disabled]="currentPage === 1"
+                        class="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50">
+                    Previous
+                </button>
+                <span class="self-center">Page {{currentPage}} of {{totalPages}}</span>
+                <button (click)="nextPage()" 
+                        [disabled]="currentPage === totalPages"
+                        class="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50">
+                    Next
+                </button>
+            </div>
         </div>
     </div>
 

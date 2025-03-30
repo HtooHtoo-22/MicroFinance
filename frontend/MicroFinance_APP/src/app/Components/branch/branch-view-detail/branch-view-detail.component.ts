@@ -4,9 +4,8 @@ import { UserService } from '../../../service/user.service';
 import { CurrentAccService } from '../../../service/current-acc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Branch } from '../../../model/user';
-import { User } from '../../../model/user';
-import { CurrentAccount } from '../../../model/current-account';
 import { finalize } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-branch-view-detail',
@@ -16,23 +15,12 @@ import { finalize } from 'rxjs/operators';
 })
 export class BranchViewDetailComponent implements OnInit {
   branch: Branch | null = null;
-  users: User[] = [];
-  accounts: CurrentAccount[] = [];
+  activeUsersCount: number = 0;
+  activeAccountsCount: number = 0;
   loading = false;
-  loadingUsers = false;
-  loadingAccounts = false;
+  loadingCounts = false;
   errorMessage: string | null = null;
   branchId: number = 0;
-
-  // Pagination for users
-  currentUserPage = 1;
-  itemsPerUserPage = 5;
-  totalUsers = 0;
-
-  // Pagination for accounts
-  currentAccountPage = 1;
-  itemsPerAccountPage = 5;
-  totalAccounts = 0;
 
   constructor(
     private branchService: BranchService,
@@ -46,8 +34,6 @@ export class BranchViewDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.branchId = +params['id'];
       this.loadBranchDetails();
-      this.loadBranchUsers();
-      this.loadBranchAccounts();
     });
   }
 
@@ -62,58 +48,33 @@ export class BranchViewDetailComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.branch = data;
+          this.loadActiveCounts();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error fetching branch details:', error);
           this.errorMessage = 'Failed to load branch details. Please try again later.';
         }
       });
   }
 
-  loadBranchUsers(): void {
-    this.loadingUsers = true;
-    this.userService.getActiveUserCount(this.branchId)
-      .pipe(
-        finalize(() => this.loadingUsers = false)
-      )
-      .subscribe({
-        next: (response) => {
-          this.users = response.data;
-          this.totalUsers = response.total;
-        },
-        error: (error) => {
-          console.error('Error fetching branch users:', error);
-        }
-      });
-  }
-
-  loadBranchAccounts(): void {
-    this.loadingAccounts = true;
-    this.currentAccService.getActiveCurrentAccountCount(this.branchId, this.currentAccountPage, this.itemsPerAccountPage)
-      .pipe(
-        finalize(() => this.loadingAccounts = false)
-      )
-      .subscribe({
-        next: (response) => {
-          this.accounts = response.data;
-          this.totalAccounts = response.total;
-        },
-        error: (error) => {
-          console.error('Error fetching branch accounts:', error);
-        }
-      });
-  }
-
-  // User pagination
-  onUserPageChange(page: number): void {
-    this.currentUserPage = page;
-    this.loadBranchUsers();
-  }
-
-  // Account pagination
-  onAccountPageChange(page: number): void {
-    this.currentAccountPage = page;
-    this.loadBranchAccounts();
+  loadActiveCounts(): void {
+    this.loadingCounts = true;
+    
+    forkJoin([
+      this.userService.getActiveUserCount(this.branchId),
+      this.currentAccService.getActiveCurrentAccountCount(this.branchId)
+    ]).pipe(
+      finalize(() => this.loadingCounts = false)
+    ).subscribe({
+      next: ([userCount, accountCount]: [number, number]) => {
+        this.activeUsersCount = userCount;
+        this.activeAccountsCount = accountCount;
+      },
+      error: (error: any) => {
+        console.error('Error fetching counts:', error);
+        this.errorMessage = 'Failed to load activity counts. Please try again later.';
+      }
+    });
   }
 
   goBack(): void {

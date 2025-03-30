@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
+import { StoreService } from '../../service/store.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -20,7 +21,20 @@ export class AdminDashboardComponent {
   imagePath: string = "image/richcon-logo.png";
   showLogoutModal: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private storageServie: StoreService) {}
+
+  getCurrentRole(): string | null {
+    return this.authService.getCurrentUserRole();
+  }
+  
+  getCurrentRoleName(): string {
+    return this.authService.getCurrentUserRoleName();
+  }
+  
+  getCurrentEmail(): string | null {
+    return this.authService.getStoredEmail();
+  }
+
 
   toggleRoleDropdown(): void {
     this.isRoleDropdownOpen = !this.isRoleDropdownOpen;

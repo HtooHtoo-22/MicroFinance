@@ -93,4 +93,12 @@ public class CollateralServiceImpl implements CollateralService {
                 .map(collateralMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<CollateralDTO> getCollateralsByBranchId(Integer id){
+        List<Collateral> collaterals = collateralRepo.findByCurrentAccount_Cif_Branch_Id(id);
+        return collaterals.stream()
+                .map(collateralMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DealerService } from '../../../service/dealer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrentAccService } from '../../../service/current-acc.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-dealer-form',
@@ -21,6 +22,7 @@ export class CreateDealerComponent {
     private dealerService: DealerService,
     private snackBar: MatSnackBar,
      private currentAccService: CurrentAccService,
+     private auth: AuthService
   ) {
     this.dealerForm = this.fb.group({
       businessName: ['', Validators.required],
@@ -37,7 +39,7 @@ export class CreateDealerComponent {
   }
 
   private loadCurrentAccounts(): void {
-    this.currentAccService.listCurrentAcc().subscribe({
+    this.currentAccService.listCurrentAcc(Number(this.auth.getCurrentUserBranchId())).subscribe({
       next: (accounts) => {
         this.accountList = accounts.data;
         console.log('Current Accounts:', this.accountList);

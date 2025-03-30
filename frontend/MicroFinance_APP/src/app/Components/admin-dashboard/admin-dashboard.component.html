@@ -135,20 +135,30 @@
     </div>
   
  <!-- Main content wrapper with fixed header -->
-<div class="flex-1 ml-64">
+ <div class="flex-1 justify-between ml-64">
   <header class="fixed right-0 left-64 bg-white z-10 shadow-md p-4 flex justify-between items-center">
+    <!-- Left side content -->
     <div class="flex items-center space-x-2">
-      <img src="assets/images/logo.png" alt="Logo" class="w-8 h-8">
+      <span class="font-medium text-gray-700">Admin Dashboard</span>
     </div>
-    
+  
+    <!-- Right side content -->
     <div class="flex items-center space-x-4">
+      <div *ngIf="getCurrentRole()" class="text-right">
+        <div class="text-sm font-medium text-gray-700">
+          {{ getCurrentRoleName() }}
+        </div>
+        <div *ngIf="getCurrentEmail()" class="text-xs text-gray-500">
+          {{ getCurrentEmail() }}
+        </div>
+      </div>
       <button (click)="openLogoutModal()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
         <span>Logout</span>
       </button>
     </div>
   </header>
 
-  <div class="pt-24 p-7 bg-gray-100 min-h-screen">
+  <div class="pt-20 p-7 bg-gray-100 min-h-screen">
     <router-outlet></router-outlet>
   </div>
 </div>

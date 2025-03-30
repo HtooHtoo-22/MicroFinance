@@ -32,6 +32,19 @@ export class ManagerDashboardComponent implements OnDestroy {
     this.setupRouteListener();
   }
 
+  getCurrentRole(): string | null {
+    return this.authService.getCurrentUserRole();
+  }
+  
+  getCurrentRoleName(): string {
+    return this.authService.getCurrentUserRoleName();
+  }
+  
+  getCurrentEmail(): string | null {
+    return this.authService.getStoredEmail();
+  }
+
+
   private setupWebSocketListeners() {
     this.dealerSubscription = this.webSocketService.getNewDealers().subscribe(dealer => {
       if (dealer && dealer.status === 'PENDING') {

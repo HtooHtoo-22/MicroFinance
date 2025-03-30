@@ -15,4 +15,6 @@ public interface CurrentAccountService {
     CurrentAccountDTO updateFreezeStatus(String accountId, boolean freeze);
 
     long getActiveCurrentAccountCountByBranch(Integer branchId);
+
+    List<CurrentAccountDTO> getAllCurrentACCByBranchId(Integer branchId);
 }

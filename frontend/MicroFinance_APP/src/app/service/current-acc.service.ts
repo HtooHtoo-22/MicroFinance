@@ -41,8 +41,8 @@ export class CurrentAccService {
     );
   }
 
-  listCurrentAcc(): Observable<{ data: CurrentAccount[] }> {
-    return this.http.get<{ data: CurrentAccount[] }>(`${this.apiUrl}`);
+  listCurrentAcc(branchId : number): Observable<{ data: CurrentAccount[] }> {
+    return this.http.get<{ data: CurrentAccount[] }>(`${this.apiUrl}/${branchId}/list`);
   }
 
   getAccountsByCifId(cifId: number): Observable<ApiResponse<CurrentAccount[]>> {

@@ -5,6 +5,7 @@ import { CurrentAccService } from '../../../service/current-acc.service';
 import { CollateralDTO } from '../../../model/CollateralDTO';
 import { ModelComponent } from '../../model/model.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-create-collateral',
@@ -33,7 +34,8 @@ export class CreateCollateralComponent implements OnInit {
     private collateralService: CollateralService,
     private currentAccService: CurrentAccService,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -69,7 +71,7 @@ export class CreateCollateralComponent implements OnInit {
   }
 
   private loadCurrentAccounts(): void {
-    this.currentAccService.listCurrentAcc().subscribe({
+    this.currentAccService.listCurrentAcc(Number(this.auth.getCurrentUserBranchId)).subscribe({
       next: (accounts) => {
         this.accountList = accounts.data;
         console.log('Current Accounts:', this.accountList);

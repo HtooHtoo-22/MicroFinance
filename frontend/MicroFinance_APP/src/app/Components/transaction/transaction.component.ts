@@ -5,6 +5,7 @@ import { Transaction, TransactionType } from '../../model/Transaction';
 import { TransactionService } from '../../service/transaction.service';
 import { ApiResponse } from '../../model/ApiResponse';
 import { CurrentAccService } from '../../service/current-acc.service';
+import { AuthService } from '../../service/auth.service';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class TransactionComponent implements OnInit {
     private transactionService: TransactionService,
     private route: ActivatedRoute,
      private currentAccService: CurrentAccService,
+     private auth: AuthService
   ) {
     this.transactionForm = this.fb.group({
       type: ['', Validators.required],
@@ -141,7 +143,7 @@ export class TransactionComponent implements OnInit {
   }
   
   private loadCurrentAccounts(): void {
-    this.currentAccService.listCurrentAcc().subscribe({
+    this.currentAccService.listCurrentAcc(Number(this.auth.getCurrentUserBranchId())).subscribe({
       next: (accounts) => {
         this.accountList = accounts.data;
         console.log('Current Accounts:', this.accountList);

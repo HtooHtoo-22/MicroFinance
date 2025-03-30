@@ -62,4 +62,10 @@ public class CollateralController {
         List<CollateralDTO> collaterals = collateralService.getCollateralByAccId(id);
         return ApiResponse.success(HttpStatus.OK, 200, "Collateral retrieved successfully", collaterals);
     }
+
+    @GetMapping("/getByBranchId/{id}")
+    public ApiResponse<List<CollateralDTO>> getCollateralByBranch(@PathVariable Integer id) {
+        List<CollateralDTO> collaterals = collateralService.getCollateralsByBranchId(id);
+        return ApiResponse.success(HttpStatus.OK, 200, "Collateral retrieved By Branchsuccessfully", collaterals);
+    }
 }

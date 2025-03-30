@@ -80,10 +80,8 @@ public class HPLoanController {
         return ApiResponse.success(HttpStatus.OK, HttpStatus.OK.value(), "Successfully fetched HP loan with ID: " + id, loan);
     }
 
-    @GetMapping("/monthly-approved")
-    public List<MonthlyHPLoanCountDTO> getMonthlyApprovedLoans() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Integer branchId = getBranchIdFromAuthentication(auth);
+    @GetMapping("/monthly-approved/{branchId}")
+    public List<MonthlyHPLoanCountDTO> getMonthlyApprovedLoans(@PathVariable Integer branchId) {
         return hpLoanService.getApprovedLoansByBranchMonthly(branchId);
     }
 

@@ -58,8 +58,8 @@ export class SmeLoanService {
       `${this.apiUrl}/getLateFeeSummary/${loanId}`
     );
   }
-  getMonthlyApprovedLoans(): Observable<MonthlySMELoanCount[]> {
-    return this.http.get<MonthlySMELoanCount[]>(`${this.apiUrl}/monthly-approved`);
+  getMonthlyApprovedLoansByBranch(branchId: number): Observable<MonthlySMELoanCount[]> {
+    return this.http.get<MonthlySMELoanCount[]>(`${this.apiUrl}/monthly-approved/${branchId}`);
   }
   getApprovedLoans(branchId: number): Observable<Smeloan[]> {
     return this.http.get<any>(`${this.apiUrl}/approved-loans/${branchId}`).pipe(
