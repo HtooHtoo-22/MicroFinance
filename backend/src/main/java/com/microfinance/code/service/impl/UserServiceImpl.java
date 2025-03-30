@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
             default:
                 return "default@richcoin"; // Password for unknown or unhandled roles
         }
-    }
+    } 
 
 
     @Override

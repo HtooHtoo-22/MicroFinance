@@ -91,7 +91,7 @@ const routes: Routes = [
       { path: 'current-account-register', component: CurrentAccountRegisterComponent },
       { path: 'current-acc-list2', component: CurrentAccListComponent },
       { path: 'transaction/create/:currentAccountId', component: TransactionComponent },
-      { path: 'transaction', component: TransactionComponent },
+     { path: 'transaction', component: TransactionComponent },
       { path: 'transaction-history', component: TransactionHistoryComponent },
       { path: 'sme-loan-list', component: SmeLaonHistoryComponent },
       { path: 'cif-list', component: CifListComponent },
@@ -157,7 +157,7 @@ const routes: Routes = [
     data: { role: 'DEALER' },
     children: [
       { path: '', redirectTo: 'dealer-transaction', pathMatch: 'full' },
-      { path: 'dealer-transaction', component: TransactionComponent },
+    //  { path: 'dealer-transaction', component: TransactionComponent },
       { path: 'create-product', component: CreateEditProductComponent },
       { path: 'procuct-list', component: AllproductListComponent },
       { path: 'all-list', component: AllproductListComponent }

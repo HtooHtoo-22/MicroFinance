@@ -45,8 +45,9 @@ ngOnInit() {
 }
 
 private isValidNumber(id: string): boolean {
-  return !isNaN(Number(id)) && isFinite(Number(id));
+  return Number.isInteger(Number(id));
 }
+
 
 private handleNumericId(id: number): void {
   this.smeloanService.getLoanById(id).subscribe({
@@ -94,4 +95,17 @@ private handleError(err: any): void {
   switchTab(tab: 'details' | 'schedule') {
     this.activeTab = tab;
   }
+  downloadSchedule(schedule: any) {
+    if (!schedule) return;
+  
+    const data = JSON.stringify(schedule, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `repayment-schedule-${schedule.id}.json`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+  
 }

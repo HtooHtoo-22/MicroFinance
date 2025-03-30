@@ -13,8 +13,7 @@ export class TransactionService {
   constructor(private http: HttpClient) {}
 
   createTransaction(transactionData: any): Observable<ApiResponse<Transaction[]>> {
-    return this.http.post<ApiResponse<Transaction[]>>(`${this.apiUrl}/create`, transactionData);
-  }
+    return this.http.post<ApiResponse<Transaction[]>>(`${this.apiUrl}/create`, transactionData);  }
 
   getAllTransactions(): Observable<ApiResponse<Transaction[]>> {
     return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/list`);
@@ -24,8 +23,11 @@ export class TransactionService {
     return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-cif/${cifId}`);
   }
 
-  getTransactionsByAccountId(accountId: number): Observable<ApiResponse<Transaction[]>> {
-    return this.http.get<ApiResponse<Transaction[]>>(`${this.apiUrl}/by-account/${accountId}`);
+  getTransactionsByAccountId(currentAccountId: string) {
+    return this.http.get<ApiResponse<Transaction[]>>(
+      `http://localhost:8081/transactions/${currentAccountId}`
+    );
   }
+  
 
 }

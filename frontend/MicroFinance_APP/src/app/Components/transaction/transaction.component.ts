@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TransactionType } from '../../model/Transaction';
 import { TransactionService } from '../../service/transaction.service';
+import { CurrentAccount } from '../../model/CurrentAcc';
 
 @Component({
   selector: 'app-transaction',
@@ -12,17 +13,18 @@ import { TransactionService } from '../../service/transaction.service';
 })
 export class TransactionComponent implements OnInit {
   transactionForm: FormGroup;
-  transactionTypes = Object.values(TransactionType); 
+  transactionTypes = Object.values(TransactionType);
+  currentAccount: CurrentAccount[] = [];
   showSuccessModal = false;
-  showErrorModal = false; 
+  showErrorModal = false;
   errorMessage: string = '';
-  accountId: string | null = null;
   showConfirmModal = false;
-
+  accountId: any;
+   // Holds the list of accounts to be displayed in the dropdown
   constructor(
     private fb: FormBuilder, 
     private transactionService: TransactionService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {
     this.transactionForm = this.fb.group({
       type: ['', Validators.required],
@@ -30,17 +32,20 @@ export class TransactionComponent implements OnInit {
       currentAccountId: [{value: '', disabled: true}, Validators.required]
     });
   }
-
   ngOnInit(): void {
-    // Check if route parameters exist before accessing them
+    
     this.route.paramMap.subscribe(params => {
-      this.accountId = params.get('currentAccountId'); 
+      this.accountId = params.get('currentAccountId');
+      console.log("Account ID from route:", this.accountId);
       if (this.accountId) {
-        this.transactionForm.patchValue({ currentAccountId: this.accountId });
+        this.transactionForm.patchValue({
+          currentAccountId: this.accountId  // Fixed typo in variable name (was 'accurrentAccountcountId')
+        });
       }
     });
   }
-
+  
+  
   onSubmit() {
     if (this.transactionForm.valid) {
       // Show confirmation modal instead of direct submission
@@ -75,7 +80,7 @@ export class TransactionComponent implements OnInit {
     this.transactionForm.patchValue({
       type: '',
       amount: '',
-      currentAccountId: this.accountId
+      currentAccountId: this.accountId || ''
     });
   }
 

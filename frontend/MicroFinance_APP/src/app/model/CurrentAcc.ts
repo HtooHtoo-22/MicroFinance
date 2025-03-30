@@ -1,5 +1,6 @@
 export interface CurrentAccount {
-   // id: number;
+
+    //id: number;
     accountId: string;
     maxAmount: number;
     minAmount: number;

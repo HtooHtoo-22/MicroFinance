@@ -91,14 +91,17 @@
 
   <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-4 " >
 
-    <!-- Current Account ID -->
-    <div>
-      <label class="block text-sm font-medium text-gray-900">Current Account ID</label>
-      <input type="text" 
-             formControlName="currentAccountId" 
-             class="w-full p-1 bg-gray-100 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-sm" 
-             readonly>
-    </div>
+<!-- Current Account ID Dropdown -->
+<div>
+  <label class="block text-sm font-medium text-gray-900">Current Account ID</label>
+  <select formControlName="currentAccountId"class="w-48 p-1 bg-white border border-gray-300 mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+    <option *ngFor="let account of currentAccount" [value]="account.accountId">
+      {{ account.accountId }}
+    </option>
+  </select>
+
+</div>
+
 
     <!-- Transaction Type Dropdown -->
     <div>

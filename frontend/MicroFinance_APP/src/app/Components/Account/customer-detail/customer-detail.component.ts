@@ -7,6 +7,9 @@ import { CurrentAccount } from '../../../model/CurrentAcc';
 import { ApiResponse } from '../../../model/ApiResponse';
 import { Transaction } from '../../../model/Transaction';
 import { TransactionService } from '../../../service/transaction.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 @Component({
   selector: 'app-customer-profile',
@@ -85,4 +88,48 @@ export class CustomerDetailComponent implements OnInit {
       }
     });
   }
+  exportToCSV(): void {
+    let csvContent = 'Transaction ID, Date, Type, Amount (MMK)\n';
+    this.transactions.forEach((tx) => {
+      csvContent += `${tx.id},${tx.date},${tx.type === 'CR' ? 'Credit' : 'Debit'},${tx.amount}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transactions.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  generatePDF(): void {
+    const doc = new jsPDF();
+    doc.text('Transaction History', 14, 10);
+  
+    if (!this.transactions || this.transactions.length === 0) {
+      doc.text('No transactions available.', 14, 20);
+    } else {
+      const tableData = this.transactions.map((tx) => {
+        return [
+          tx.id ?? 'N/A',  // Ensure id exists
+          tx.date ? new Date(tx.date).toLocaleDateString() : 'N/A', // Format date
+          tx.type === 'CR' ? 'Credit' : 'Debit',
+          tx.amount ? `${tx.amount.toLocaleString()} MMK` : 'N/A' // Format amount
+        ];
+      });
+  
+      console.log('Table Data:', tableData); // Debugging step
+  
+      autoTable(doc, {
+        head: [['Transaction ID', 'Date', 'Type', 'Amount']],
+        body: tableData, // This must be a valid 2D array
+        startY: 20
+      });
+    }
+  
+    doc.save('transactions.pdf');
+  }
+  
+  
 }

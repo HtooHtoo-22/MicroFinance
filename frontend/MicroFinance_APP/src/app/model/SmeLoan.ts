@@ -1,4 +1,5 @@
 import { CollateralDTO } from "./CollateralDTO";
+import { RepaymentSchedule } from "./repayment-schedule";
 
 export interface Smeloan {
   id?: number;
@@ -27,4 +28,5 @@ export interface Smeloan {
   cifId: number;
   cifIdNumber: string;
   usedCollaterals: CollateralDTO[];
+  repaymentSchedule: RepaymentSchedule[];
 }

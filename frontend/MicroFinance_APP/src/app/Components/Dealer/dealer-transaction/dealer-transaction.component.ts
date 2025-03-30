@@ -27,7 +27,7 @@ export class DealerTransactionComponent implements OnInit {
           next: (dealer: any) => {
             this.currentAccountId = dealer.currentAccount?.accountId;
             if (this.currentAccountId) {
-              this.loadTransactions();
+              // this.loadTransactions();
             }
           },
           error: (err: any) => console.error('Error fetching dealer', err)
@@ -36,15 +36,15 @@ export class DealerTransactionComponent implements OnInit {
     });
   }
 
-  private loadTransactions(): void {
-    if (this.currentAccountId) {
-      this.transactionService.getTransactionsByAccountId(Number(this.currentAccountId))
-        .subscribe({
-          next: (response: any) => {
-            this.transactions = response.data || [];
-          },
-          error: (err: any) => console.error('Error loading transactions', err)
-        });
-    }
-  }
+  // private loadTransactions(): void {
+  //   if (this.currentAccountId) {
+  //     this.transactionService.getTransactionsByAccountId(Number(this.currentAccountId))
+  //       .subscribe({
+  //         next: (response: any) => {
+  //           this.transactions = response.data || [];
+  //         },
+  //         error: (err: any) => console.error('Error loading transactions', err)
+  //       });
+  //   }
+  // }
 }

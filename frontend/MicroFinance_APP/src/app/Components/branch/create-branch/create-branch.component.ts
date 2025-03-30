@@ -32,7 +32,6 @@ export class CreateBranchComponent implements OnInit {
           this.branchForm.reset();
         },
         error => {
-          console.error('Error creating branch', error);
         }
       );
     }

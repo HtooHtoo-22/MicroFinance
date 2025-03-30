@@ -6,8 +6,28 @@
   <component name="ChangeListManager">
     <list default="true" id="45b33ae8-6227-40e3-85f3-51998a415d93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microfinance/code/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/customer-detail/customer-detail.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Account/dealer-detail/dealer-detail.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-transaction/dealer-transaction.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-transaction/dealer-transaction.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-transaction/dealer-transaction.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/Dealer/dealer-transaction/dealer-transaction.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-detail/sme-loan-detail.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/sme-loan-schedule/sme-loan-schedule.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/Components/transaction/transaction.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/app-routing.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/CurrentAcc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/SmeLoan.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/model/SmeLoan.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/transaction.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/MicroFinance_APP/src/app/service/transaction.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +55,13 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
   </component>
@@ -49,31 +76,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MicroFinanceApplication.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "ForKMS",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/user/Documents/Mother/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.1019368",
-    "project.structure.side.proportion": "0.32494006",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
-    "spring.configuration.checksum": "0e017c4f537886ac610bece265d80b59",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MicroFinanceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ForSanSan&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Microfinance1/backend/src/main/resources&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.1019368&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.32494006&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;0e017c4f537886ac610bece265d80b59&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Microfinance1\backend\src\main\resources" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="backend" />
@@ -106,6 +138,17 @@
       <option name="presentableId" value="Default" />
       <updated>1724680484294</updated>
       <workItem from="1739360741710" duration="10340000" />
+      <workItem from="1742355136810" duration="2049000" />
+      <workItem from="1742366489266" duration="3997000" />
+      <workItem from="1742393666654" duration="4641000" />
+      <workItem from="1742438608063" duration="3804000" />
+      <workItem from="1742539618021" duration="2564000" />
+      <workItem from="1742652992112" duration="3456000" />
+      <workItem from="1742785953279" duration="3873000" />
+      <workItem from="1742871669835" duration="6724000" />
+      <workItem from="1742964645145" duration="1396000" />
+      <workItem from="1743088578707" duration="1805000" />
+      <workItem from="1743221866101" duration="1326000" />
     </task>
     <servers />
   </component>

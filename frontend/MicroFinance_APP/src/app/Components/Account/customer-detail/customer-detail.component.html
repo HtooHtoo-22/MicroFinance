@@ -104,7 +104,16 @@
     <div class="px-6 py-8 bg-gray-100 min-h-screen">
       <!-- Transaction History Header -->
       <h2 class="text-2xl font-semibold text-gray-800 mb-6">Transaction History</h2>
-    
+      <div class="space-x-2">
+        <button (click)="exportToCSV()"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Download CSV 📄
+        </button>
+        <button (click)="generatePDF()"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Download PDF 📑
+        </button>
+      </div>
       <!-- No Transactions Placeholder -->
       <div *ngIf="transactions.length === 0" class="text-center text-gray-500 p-6 bg-gray-50 rounded-lg border-dashed border-2 border-gray-300">
         No transactions found for this customer. 🧾
