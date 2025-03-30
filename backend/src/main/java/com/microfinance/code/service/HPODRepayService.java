@@ -1,5 +1,7 @@
 package com.microfinance.code.service;
 
+import com.microfinance.code.etc.EmailSender;
+import com.microfinance.code.etc.SmsSender;
 import com.microfinance.code.model.*;
 import com.microfinance.code.repository.*;
 import com.microfinance.code.status.RepaymentStatus;
@@ -21,9 +23,9 @@ public class HPODRepayService {
     private final HPLateFeeCalculationRepo lateFeeRepo;
     @Autowired
     public HPODRepayService(HPScheduleRepo scheduleRepo,
-                             TransactionRepository transactionRepo,
+                            TransactionRepository transactionRepo,
                             HPODRepaymentTrackRepo repaymentTrackRepo,
-                             CurrentAccountRepository accountRepo,
+                            CurrentAccountRepository accountRepo,
                             HPLateFeeCalculationRepo lateFeeRepo) {
         this.scheduleRepo = scheduleRepo;
         this.transactionRepo = transactionRepo;
@@ -90,6 +92,24 @@ public class HPODRepayService {
         //logRepayment(schedule, amountToRepay);
         updateAccountBalance(schedule.getHpLoan().getCurrentAccount(), amountToRepay);
         logRepayment(schedule, amountToRepay, BigDecimal.ZERO);
+
+        // Fetch HP Loan ID and term number
+        String hpLoanId = schedule.getHpLoan().getLoanId();  // Assuming getId() fetches the HP Loan ID
+        int termNumber = schedule.getTermNumber(); // Assuming getTermNumber() fetches the term number
+
+        // Send email notification
+        String email = schedule.getHpLoan().getCurrentAccount().getCif().getEmail();
+        String emailSubject = "Interest OD Payment - HP Loan " + hpLoanId + " (Term " + termNumber + ")";
+        String emailMessage = "Dear customer, your interest OD amount of " + amountToRepay +
+                " has been successfully paid. The interest overdue is now clear.";
+        EmailSender.sendEmail(email, emailSubject, emailMessage);
+
+        // Send SMS notification
+        String phoneNumber = schedule.getHpLoan().getCurrentAccount().getCif().getPhone();
+        String smsMessage = "Interest OD of " + amountToRepay + " paid for HP Loan " + hpLoanId +
+                " (Term " + termNumber + "). The interest overdue is now clear.";
+        SmsSender.sendSms(phoneNumber, smsMessage);
+
         return remainingAmount;
     }
 
@@ -101,6 +121,23 @@ public class HPODRepayService {
         //logRepayment(schedule, amountToRepay);
         updateAccountBalance(schedule.getHpLoan().getCurrentAccount(), amountToRepay);
         logRepayment(schedule, BigDecimal.ZERO, amountToRepay);
+
+        // Fetch HP Loan ID and term number
+        String hpLoanId = schedule.getHpLoan().getLoanId();  // Assuming getId() fetches the HP Loan ID
+        int termNumber = schedule.getTermNumber(); // Assuming getTermNumber() fetches the term number
+
+        // Send email notification
+        String email = schedule.getHpLoan().getCurrentAccount().getCif().getEmail();
+        String emailSubject = "Term Payment Completed - HP Loan " + hpLoanId + " (Term " + termNumber + ")";
+        String emailMessage = "Dear customer, your interest OD and principal OD amount of " + amountToRepay +
+                " has been successfully paid. Your term " + termNumber + " is now fully paid.";
+        EmailSender.sendEmail(email, emailSubject, emailMessage);
+
+        // Send SMS notification
+        String phoneNumber = schedule.getHpLoan().getCurrentAccount().getCif().getPhone();
+        String smsMessage = "HP Loan " + hpLoanId + " (Term " + termNumber + ") fully paid. Thank you.";
+        SmsSender.sendSms(phoneNumber, smsMessage);
+
         return remainingAmount;
     }
 

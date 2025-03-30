@@ -48,7 +48,7 @@ public class HPLateFeeRepayService {
     private RateRepository rateRepo;
 
     @Transactional
-   // @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
+    @Scheduled(initialDelay = 0, fixedRate = Long.MAX_VALUE)
     public void processLateFees() {
         System.out.println("================================Hp late fee hehe ==================================");
 
@@ -62,7 +62,7 @@ public class HPLateFeeRepayService {
     private void processLateFeesForLoan(Integer hpLoanId) {
         List<HPLateFeeCalculation> lateFees = lateFeeCalculationRepo.findByHpLoanId(hpLoanId);
         System.out.println("Late Fee Term List : "+lateFees);
-      //  logLateFees(lateFees);
+        //  logLateFees(lateFees);
 
         BigDecimal totalLateFees = calculateTotalLateFees(lateFees);
         System.out.println("His Total Late Fees : "+totalLateFees);
@@ -78,7 +78,7 @@ public class HPLateFeeRepayService {
         System.out.println("Held Amount : "+heldAmount);
         BigDecimal totalAvailableAmount = availableFunds.add(heldAmount);
         System.out.println("Total Amount (Tran+Hold) : "+totalAvailableAmount);
-       // logTotalAvailableAmount(totalAvailableAmount);
+        // logTotalAvailableAmount(totalAvailableAmount);
 
         if (totalAvailableAmount.compareTo(totalLateFees) >= 0) {
             handleFullPayment(hpLoanId, lateFees, account, totalLateFees, totalAvailableAmount, lateFeeHolding);
@@ -136,14 +136,41 @@ public class HPLateFeeRepayService {
 
 
         BigDecimal holdAmount = totalAvailableAmount;
-        if(maxLateDays==90){
+        if (maxLateDays == 90) {
             BigDecimal totalBalance = BigDecimal.valueOf(account.getTotalBalence()); // Convert to BigDecimal
             holdAmount = totalBalance.add(holdAmount); // Add balances
             account.setTotalBalence(0.0); // Set back as Double if needed
             accountRepo.save(account);
+            HPLoan hpLoan = hpLoanRepo.findById(hpLoanId)
+                    .orElseThrow(()->new NotFoundException("HP Loan Not Found"));
+            String loanId = hpLoan.getLoanId();
+            // ==== SMS Message ====
+            String smsMessage = "RichCoin: Your HP loan (ID: " + loanId + ") late fee period has ended. " +
+                    "From now on, the late fee rate will increase, and all overdue amounts (including remaining interest and principal) " +
+                    "will be added to the outstanding balance. Please settle your payment as soon as possible to avoid further penalties.";
+            SmsSender.sendSms(hpLoan.getCurrentAccount().getCif().getPhone(), smsMessage);
+
+            // ==== Email Notification ====
+            String emailSubject = "Urgent: HP Loan Late Fee Rate Increase Notification";
+            String emailBody = "Dear " + hpLoan.getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "Your HP loan (ID: " + loanId + ") has reached the maximum late period of 90 days.\n\n" +
+                    "From now on, the late fee rate will increase, and all overdue amounts (remaining interest, principal) " +
+                    "will be added to your outstanding balance.\n\n" +
+                    "We strongly advise you to settle your payment as soon as possible to avoid further penalties.\n\n" +
+                    "If you have any questions or need assistance, please contact us.\n\n" +
+                    "Best regards,\n" +
+                    "RichCoin Financial Services";
+
+            EmailSender.sendEmail(hpLoan.getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         }
-       // logAmountHeld(holdAmount);
-        updateAccountBalance(account, totalAvailableAmount);
+        if (maxLateDays>90){
+            account.setTotalBalence(0.0); // Set back as Double if needed
+            accountRepo.save(account);
+        }else{
+            updateAccountBalance(account, totalAvailableAmount);
+        }
+        // logAmountHeld(holdAmount);
+
         HPLoan hpLoan = hpLoanRepo.findById(hpLoanId)
                 .orElseThrow(()->new NotFoundException("HP Loan Not Found"));
         incrementLateDaysAndFees(lateFees,hpLoan);
@@ -193,6 +220,23 @@ public class HPLateFeeRepayService {
                             "Calculation: Outstanding Amount (" + outstandingAmount + ") × Rate (" + lateFeeAfter90Rate + "%) = " + dailyIncrease;
 
         }
+        // ==== SMS Message ====
+        String smsMessage = "RichCoin: Your HP Loan (ID: " + loanId + ") has " + totalLateDays + " late days. " +
+                "Total late fee so far is " + totalLateFee + " Ks. " + calculationNote;
+        SmsSender.sendSms(phone, smsMessage);
+
+// ==== Email Notification ====
+        String emailSubject = "HP Loan Late Fee & Daily Increase Notification";
+        String emailBody = "Dear " + userName + ",\n\n" +
+                "We would like to inform you regarding your HP Loan (ID: " + loanId + "):\n\n" +
+                "- Total Late Days: " + totalLateDays + "\n" +
+                "- Total Late Fee: " + totalLateFee + " Ks\n\n" +
+                calculationNote + "\n\n" +
+                "Please try to settle the remaining late fee to avoid further charges. If you need any assistance, feel free to contact us.\n\n" +
+                "Best regards,\n" +
+                "RichCoin Financial Services";
+
+        EmailSender.sendEmail(email, emailSubject, emailBody);
     }
     @Transactional
     public void incrementLateDaysAndFees(List<HPLateFeeCalculation> lateFees, HPLoan hpLoan) {

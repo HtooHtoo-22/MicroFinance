@@ -137,4 +137,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public Long getTotalActiveUserCount() {
+        return userRepo.countByActiveTrue();
+    }
 }

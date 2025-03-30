@@ -1,0 +1,47 @@
+<div class="container mx-auto p-4">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-8 space-y-4">
+      <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent"></div>
+      <p class="text-gray-600 font-medium">Loading user data...</p>
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 rounded-lg border border-red-200 shadow-sm flex items-start">
+      <svg class="w-5 h-5 mt-0.5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <div>
+        <h3 class="font-medium text-red-800">Error Loading Data</h3>
+        <p class="text-sm text-red-600 mt-1">{{ errorMessage }}</p>
+        <button (click)="fetchActiveUserCount()" class="mt-2 text-sm text-red-700 hover:text-red-900 font-medium flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Retry
+        </button>
+      </div>
+    </div>
+  
+    <!-- Active User Count -->
+    <div *ngIf="!loading && activeUserCount !== null" class="p-4 bg-gradient-to-br  from-green-50 to-green-100  rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-all duration-300">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-md font-semibold text-green-800 mb-1">Active Users</h3>
+          <p class="text-sm text-green-600">Currently using the platform</p>
+        </div>
+        <div class="p-2 bg-green-100 rounded-lg">
+          <img [src]="imagePath2" class="h-6 w-6" alt="Active Users">
+        </div>
+      </div>
+      
+      <div class="mt-4 flex items-end justify-between">
+        <p class="text-2xl font-bold text-green-900">{{ activeUserCount | number }}</p>
+        <div class="flex items-center text-green-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+          </svg>
+          <span class="ml-1 text-sm font-medium">Active</span>
+        </div>
+      </div>
+    </div>
+  </div>

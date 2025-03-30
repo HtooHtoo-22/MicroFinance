@@ -81,6 +81,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { LoanMetricsComponent } from './Components/loan-metrics/loan-metrics.component';
 import { ProductListComponent } from './Components/product-list/product-list.component';
 import { EditProductComponent } from './Components/Product/edit-product/edit-product.component';
+import { LoanMetricsAdminComponent } from './Components/loan-metrics-admin/loan-metrics-admin.component';
+import { UserCountComponent } from './Components/admin/user-count/user-count.component';
+import { CurrentAccCountComponent } from './Components/admin/current-acc-count/current-acc-count.component';
+import { BranchViewDetailComponent } from './Components/branch/branch-view-detail/branch-view-detail.component';
+import { BranchVieDashboardComponent } from './Components/branch/branch-vie-dashboard/branch-vie-dashboard.component';
+import { DashboardReportComponent } from './Components/admin/dashboard/dashboard.component';
+import { SmeloancountComponent } from './Components/admin/smeloancount/smeloancount.component';
+import { HploancountComponent } from './Components/admin/hploancount/hploancount.component';
 
 @NgModule({
   declarations: [
@@ -151,8 +159,16 @@ import { EditProductComponent } from './Components/Product/edit-product/edit-pro
     SmeApproveLoansComponent,
     HpApproveLoansComponent,
     ProductListComponent,
-    EditProductComponent
-  ],
+    EditProductComponent,
+    LoanMetricsAdminComponent,
+    UserCountComponent,
+    CurrentAccCountComponent,
+    BranchViewDetailComponent,
+    BranchVieDashboardComponent,
+    DashboardReportComponent,
+    SmeloancountComponent,
+    HploancountComponent
+    ],
   imports: [
     BrowserModule,
     AppRoutingModule,

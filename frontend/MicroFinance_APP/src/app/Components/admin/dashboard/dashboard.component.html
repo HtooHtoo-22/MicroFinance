@@ -1,0 +1,29 @@
+<div class="grid grid-cols-1 gap-4">
+  <!-- Top Metrics Cards - Grid Layout -->
+  <div class="flex flex-wrap gap-1.5 "> <!-- 1.5 = 6px gap -->
+    <!-- User Count Card -->
+    <div class="flex-1 min-w-[200px]">
+      <app-user-count class="h-full"></app-user-count>
+    </div>
+    
+    <!-- Account Count Card -->
+    <div class="flex-1 min-w-[200px]">
+      <app-current-acc-count class="h-full"></app-current-acc-count>
+    </div>
+    
+    <!-- SME Loan Count Card -->
+    <div class="flex-1 min-w-[200px]">
+      <app-smeloancount class="h-full"></app-smeloancount>
+    </div>
+    
+    <!-- HP Loan Count Card -->
+    <div class="flex-1 min-w-[200px]">
+      <app-hploancount class="h-full"></app-hploancount>
+    </div>
+  </div>
+
+  <!-- Branch View Dashboard Card -->
+  <div class="rounded-lg transition-all h-full w-full">
+    <app-branch-vie-dashboard class="h-full"></app-branch-vie-dashboard>
+  </div>
+</div>

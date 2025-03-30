@@ -1,6 +1,8 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { HPRepaymentTrack } from '../../../model/HPRepaymentTrack';
 import { HpLoanService } from '../../../service/hp-loan.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-hp-loan-track',
@@ -105,5 +107,64 @@ export class HpLoanTrackComponent {
           this.isRefreshing = false;
         }
       });
+    }
+
+    generateReport(): void {
+      const doc = new jsPDF();
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('HP Loan Repayment Report', 14, 15);
+    
+      doc.setFontSize(10);
+      doc.text(`Generated Date: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`, 14, 32);
+      doc.text(`Loan ID: ${this.loanId}`, 14, 39);
+    
+      // Prepare table headers based on the selected filter
+      let tableHeaders = ['Payment Date', 'Amount (Ks)', 'Purpose', 'Status'];
+      if (this.selectedFilter === 'lateFee') {
+        tableHeaders.push('Late Days', 'Late Fees (Ks)');
+      } else {
+        tableHeaders.push('Term');
+      }
+    
+      // Prepare table data
+      const tableData = this.filteredTracks.map(track => {
+        let row = [
+          new Date(track.paymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          track.paymentAmount.toLocaleString(),
+          this.formatPaymentPurpose(track.paymentPurpose),
+          this.formatStatusMessage(track.status)
+        ];
+    
+        if (this.selectedFilter === 'lateFee') {
+          row.push(track.lateDays?.toString() || '-');
+          row.push(track.lateFees ? track.lateFees.toLocaleString() : '-');
+        } else {
+          row.push(track.term ? `Term ${track.term}` : '-');
+        }
+    
+        return row;
+      });
+    
+      // Generate table
+      autoTable(doc, {
+        startY: 45,
+        head: [tableHeaders],
+        body: tableData,
+        theme: 'striped',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [22, 160, 133] },
+        columnStyles: {
+          0: { cellWidth: 30 }, // Payment Date
+          1: { cellWidth: 25 }, // Amount
+          2: { cellWidth: 30 }, // Purpose
+          3: { cellWidth: 40 }, // Status
+          4: { cellWidth: 20 }, // Late Days or Term
+          ...(this.selectedFilter === 'lateFee' ? { 5: { cellWidth: 25 } } : {}) // Late Fees if applicable
+        }
+      });
+    
+      // Save PDF
+      doc.save(`HP_Loan_Repayment_Report_${this.loanId}.pdf`);
     }
 }

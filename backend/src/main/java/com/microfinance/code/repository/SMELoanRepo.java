@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
+public interface SMELoanRepo extends JpaRepository<SMELoan, Integer> {
     Optional<SMELoan> findByLoanId(String loanId);
 
     @Query("SELECT s FROM SMELoan s LEFT JOIN FETCH s.currentAccount WHERE s.id = :id")
@@ -28,6 +28,12 @@ public interface SMELoanRepo extends JpaRepository<SMELoan,Integer> {
     List<SMELoan> findByStatus(LoanStatus loanStatus);
 
     List<SMELoan> findByApprovedDateBetweenAndStatus(LocalDateTime localDateTime, LocalDateTime localDateTime1, LoanStatus loanStatus);
+
     List<SMELoan> findByEntryUser_Branch_IdAndStatus(Integer branchId, LoanStatus loanStatus);
 
+    @Query("SELECT COUNT(s) FROM SMELoan s WHERE s.status = 'APPROVE'")
+    long countApprovedSMELoans();
+
+    @Query("SELECT COUNT(s) FROM SMELoan s WHERE s.status = 'APPROVE' AND s.entryUser.branch.id = :branchId")
+    long countApprovedSMELoansByBranch(@Param("branchId") Integer branchId);
 }

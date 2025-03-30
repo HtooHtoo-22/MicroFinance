@@ -71,4 +71,9 @@ public class UserController {
     public Long getActiveUserCountByBranch(@PathVariable Integer branchId) {
         return userService.getActiveUserCountByBranch(branchId);
     }
+
+    @GetMapping("/active/count")
+    public Long getTotalActiveUserCount() {
+        return userService.getTotalActiveUserCount();
+    }
 }

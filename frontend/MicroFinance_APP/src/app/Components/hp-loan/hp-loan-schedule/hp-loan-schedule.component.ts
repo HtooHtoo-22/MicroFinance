@@ -3,6 +3,8 @@ import { HPSchedule } from '../../../model/HPSchedule';
 import { HpLoanSchduleService } from '../../../service/hp-loan-schdule.service';
 import { ActivatedRoute } from '@angular/router';
 import { ApiResponse } from '../../../model/ApiResponse';
+import autoTable from 'jspdf-autotable';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-hp-loan-schedule',
@@ -69,5 +71,91 @@ export class HpLoanScheduleComponent implements OnChanges {
         default:
             return baseClasses;
     }
+}
+downloadCSV(): void {
+  let csvContent = `"Term","Due Date","Grace End","Days","Principal (Ks)","Interest (Ks)","OD Interest (Ks)","Total Repaid (Ks)","Status"\n`;
+
+  this.schedules.forEach(schedule => {
+    csvContent += `"${schedule.termNumber}","${schedule.dueDate}","${schedule.gracePeriodEndDate || ''}","${schedule.totalDays}","${schedule.principal} Ks","${schedule.interestAmount} Ks","${schedule.interestODAmount} Ks","${schedule.totalRepaidAmount} Ks","${this.formatStatus(schedule.status)}"\n`;
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'repayment_schedule.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+
+downloadPDF(): void {
+  const doc = new jsPDF('landscape');
+  doc.setFontSize(14);
+  doc.text('Repayment Schedule', 10, 10);
+
+  const headers = [['Term', 'Due Date', 'Grace End', 'Days', 'Principal (Ks)', 'Interest (Ks)', 'OD Interest (Ks)', 'Total Repaid (Ks)', 'Status']];
+
+  const body = this.schedules.map(schedule => [
+    schedule.termNumber,
+    schedule.dueDate,
+    schedule.gracePeriodEndDate || '',
+    schedule.totalDays,
+    `${schedule.principal} Ks`,
+    `${schedule.interestAmount} Ks`,
+    `${schedule.interestODAmount} Ks`,
+    `${schedule.totalRepaidAmount} Ks`,
+    this.formatStatus(schedule.status)
+  ]);
+
+  autoTable(doc, {
+    head: headers,
+    body: body,
+    startY: 20,
+    theme: 'striped',
+    styles: { fontSize: 10, cellPadding: 2, valign: 'middle' },
+    headStyles: { fillColor: [0, 51, 102], textColor: 255, fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 20 },
+      1: { cellWidth: 30 },
+      2: { cellWidth: 30 },
+      3: { cellWidth: 20 },
+      4: { cellWidth: 30 },
+      5: { cellWidth: 30 },
+      6: { cellWidth: 30 },
+      7: { cellWidth: 35 },
+      8: { cellWidth: 35 }
+    },
+    willDrawCell: function (data) {
+      if (data.section === 'body' && data.row.index !== undefined) {
+        const statusText = String(body[data.row.index][8] || '').toLowerCase();
+        let bgColor: [number, number, number] = [255, 255, 255];
+
+        switch (statusText) {
+          case 'all paid':
+            bgColor = [187, 247, 208];
+            break;
+          case 'in grace period':
+            bgColor = [224, 242, 254];
+            break;
+          case 'interest paid (principal od)':
+            bgColor = [254, 243, 199];
+            break;
+          case 'interest od (principal od)':
+            bgColor = [254, 202, 202];
+            break;
+          case 'not due yet':
+          default:
+            bgColor = [248, 250, 252];
+        }
+
+        doc.setFillColor(...bgColor);
+        doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+      }
+    }
+  });
+
+  doc.save('repayment_schedule.pdf');
 }
 }

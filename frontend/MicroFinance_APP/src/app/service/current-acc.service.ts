@@ -53,9 +53,10 @@ export class CurrentAccService {
     return this.http.get<{data: Branch[] }>(`${this.branchUrl}/list`);
   }
 
-  getCurrentAccountCount(branchId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/count/${branchId}`);
-  }
+// current-account.service.ts
+getActiveCurrentAccountCount(branchId: number): Observable<number> {
+  return this.http.get<number>(`${this.apiUrl}/active/count/${branchId}`);
+}
 
   updateFreezeStatus(accountId: string, freeze: boolean): Observable<ApiResponse<CurrentAccount>> {
     return this.http.patch<ApiResponse<CurrentAccount>>(
@@ -63,6 +64,10 @@ export class CurrentAccService {
       {}
     );
   }
+
+  getActiveAccountCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/active/count`);
+}
   
   
 }

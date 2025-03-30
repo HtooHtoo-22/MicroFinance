@@ -46,7 +46,7 @@ export class CreateCifComponent implements OnInit {
       incomeAmount: [null, [Validators.required, Validators.min(0)]],
       nrc: ['', Validators.required, this.isEditMode ? [] : [this.nrcExistsValidator()]],
       email: ['', [Validators.required, Validators.email], this.isEditMode ? [] : [this.emailExistsValidator()]],
-      phone: ['+95 ', [Validators.required]],
+      phone: ['+95', [Validators.required]],
       state: ['', Validators.required],
       township: ['', Validators.required],
       address: ['', Validators.required],

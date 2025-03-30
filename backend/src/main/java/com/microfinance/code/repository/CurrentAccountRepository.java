@@ -16,7 +16,9 @@ import java.util.Optional;
 public interface CurrentAccountRepository extends JpaRepository<CurrentAccount, Integer> {
     Optional<CurrentAccount> findByAccountId(String accountId);
     List<CurrentAccount> findByCif_Id(Integer cifId);
-    @Query("SELECT COUNT(ca) FROM CurrentAccount ca WHERE ca.cif.branch.id = :branchId")
-    long countByBranchId(@Param("branchId") Integer branchId);
+    @Query("SELECT COUNT(ca) FROM CurrentAccount ca WHERE ca.cif.branch.id = :branchId AND ca.freezeStatus = false")
+    long countActiveAccountsByBranchId(@Param("branchId") Integer branchId);
     boolean existsByCifId(Integer cifId); // Add this method
+    @Query("SELECT COUNT(ca) FROM CurrentAccount ca WHERE ca.freezeStatus = false")
+    long countActiveAccounts();
 }

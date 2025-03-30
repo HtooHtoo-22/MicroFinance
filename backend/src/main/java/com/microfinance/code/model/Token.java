@@ -16,7 +16,7 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, length = 500)
+    @Column(unique = true, columnDefinition = "LONGTEXT")
     private String token;
 
     @Enumerated(EnumType.STRING)

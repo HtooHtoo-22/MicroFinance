@@ -28,4 +28,9 @@ public interface HPLoanRepo extends JpaRepository<HPLoan,Integer> {
     List<HPLoan> findByEntryUser_Branch_Id(Integer branchId);
 
     List<HPLoan> findByApprovedDateBetweenAndStatus(LocalDateTime localDateTime, LocalDateTime localDateTime1, LoanStatus loanStatus);
+    @Query("SELECT COUNT(h) FROM HPLoan h WHERE h.status = 'APPROVE'")
+    long countApprovedHPLoans();
+
+    @Query("SELECT COUNT(h) FROM HPLoan h WHERE h.status = 'APPROVE' AND h.entryUser.branch.id = :branchId")
+    long countApprovedHPLoansByBranch(@Param("branchId") Integer branchId);
 }

@@ -49,9 +49,10 @@ public class CurrentAccountController {
         return ApiResponse.success(HttpStatus.OK, 200, "Accounts retrieved successfully", accounts);
     }
 
-    @GetMapping("/count/{branchId}")
-    public long getCurrentAccountCount(@PathVariable Integer branchId) {
-        return currentAccountService.getCurrentAccountCountByBranch(branchId);
+    // CurrentAccountController.java
+    @GetMapping("/active/count/{branchId}")
+    public long getActiveCurrentAccountCountByBranch(@PathVariable Integer branchId) {
+        return currentAccountService.getActiveCurrentAccountCountByBranch(branchId);
     }
 
     @PutMapping("/currentAcc/{accountId}")
@@ -65,6 +66,11 @@ public class CurrentAccountController {
         CurrentAccountDTO updatedAccount = currentAccountService.updateFreezeStatus(accountId, freeze);
         String message = freeze ? "Account frozen successfully" : "Account unfrozen successfully";
         return ApiResponse.success(HttpStatus.OK, 200, message, updatedAccount);
+    }
+
+    @GetMapping("/active/count")
+    public long getActiveAccountCount() {
+        return currentAccountService.countActiveAccounts();
     }
 
 }

@@ -47,7 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
         CurrentAccount currentAccount = currentAccountRepository.findByAccountId(dto.getCurrentAccountId())
                 .orElseThrow(() -> new NotFoundException("CurrentAccount not found with accountId: " + dto.getCurrentAccountId()));
 
-        if (!currentAccount.isFreezeStatus()) {
+        if (currentAccount.isFreezeStatus()) {
             throw new AccountFrozenException("This account is frozen, transactions cannot be created.");
         }
 

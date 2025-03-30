@@ -50,6 +50,12 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider, LogoutHandler logoutHandler) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.authenticationProvider = authenticationProvider;
+        this.logoutHandler = logoutHandler;
+    }
+
     @Bean
     public SecurityFilterChain createFilter(HttpSecurity http) throws Exception {
         http
@@ -84,6 +90,7 @@ public class SecurityConfig {
                                 .requestMatchers(HP_LIST_URL).hasAnyAuthority("HP_LOAN_READ")
                                 .requestMatchers(SME_LIST_URL).hasAnyAuthority("SME_LOAN_WRITE", "SME_LOAN_READ")
                                 .requestMatchers("/api/permission/**").hasAnyAuthority("PERMISSION_READ")
+                                .requestMatchers("/api/loans/**").hasAnyAuthority("LOAN_READ")
                                 .requestMatchers("/api/dashboard/loan-metrics").permitAll()
                                 .anyRequest().authenticated()
                 )

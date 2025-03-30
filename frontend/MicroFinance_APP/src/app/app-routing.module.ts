@@ -57,6 +57,8 @@ import { HpApproveLoansComponent } from './Components/hp-approve-loans/hp-approv
 import { SmeApproveLoansComponent } from './Components/sme-approve-loans/sme-approve-loans.component';
 import { ProductListComponent } from './Components/product-list/product-list.component';
 import { EditProductComponent } from './Components/Product/edit-product/edit-product.component';
+import { BranchViewDetailComponent } from './Components/branch/branch-view-detail/branch-view-detail.component';
+import { DashboardReportComponent } from './Components/admin/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -67,7 +69,7 @@ const routes: Routes = [
     data: { role: 'ADMIN' },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: DashboardComponent },
+      { path: 'home', component: DashboardReportComponent },
       { path: 'create-user', component: CreateuserComponent },
       { path: 'list-users', component: ListuserComponent },
       { path: 'edit-user/:id', component: UpdateUserComponent },
@@ -84,6 +86,7 @@ const routes: Routes = [
       {path: 'create-collateral-type', component: CreateCollateralTypeComponent},
       {path: 'collateral-type-list', component: CollateralTypeListComponent},
       {path: 'update-collateral-type/:id', component: CollateralTypeUpdateComponent},
+      {path: 'view-branch/:id', component: BranchViewDetailComponent},
 
     ]
   },

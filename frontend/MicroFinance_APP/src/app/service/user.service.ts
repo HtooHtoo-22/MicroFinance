@@ -118,5 +118,9 @@ export class UserService {
   getActiveUserCount(branchId: number): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/users/active/count/${branchId}`);
   }
+
+  getTotalActiveUserCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/users/active/count`);
+}
   
 }

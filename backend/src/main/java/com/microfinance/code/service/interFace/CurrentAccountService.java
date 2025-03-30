@@ -10,8 +10,9 @@ public interface CurrentAccountService {
     List<CurrentAccountDTO> getAccountsByCifId(Integer cifId);
     CurrentAccountDTO updateCurrentAccount(String accountId, CurrentAccountDTO dto);
     List<CurrentAccountDTO> getAllCurrentACC();
+    long countActiveAccounts();
 
     CurrentAccountDTO updateFreezeStatus(String accountId, boolean freeze);
 
-    long getCurrentAccountCountByBranch(Integer branchId);
+    long getActiveCurrentAccountCountByBranch(Integer branchId);
 }

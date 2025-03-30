@@ -18,7 +18,7 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     Optional<User> findByUserId(String userId);
     @Query("SELECT COUNT(u) FROM User u WHERE u.branch.id = :branchId AND u.active = true")
     Long countActiveUsersByBranch(@Param("branchId") Integer branchId);
-
-
+    @Query("SELECT COUNT(u) FROM User u WHERE u.active = true")
+    long countByActiveTrue();
     List<User> findByBranchId(Integer branchId);
 }

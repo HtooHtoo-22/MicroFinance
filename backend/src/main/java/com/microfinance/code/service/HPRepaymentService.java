@@ -114,12 +114,72 @@ public class HPRepaymentService {
         BigDecimal availableBalance = totalBalance.subtract(minBalance);
         BigDecimal totalRepaidAmount = BigDecimal.ZERO;
 
+        BigDecimal installment = duePrincipal.add(dueInterest);
+
+        // Deduct principal if balance allows
+        if (availableBalance.compareTo(installment) >= 0) {
+
+            availableBalance = availableBalance.subtract(installment);
+            totalRepaidAmount = totalRepaidAmount.add(duePrincipal);
+            schedule.setPrincipalODAmount(BigDecimal.ZERO);
+            schedule.setStatus(RepaymentStatus.ALL_PAID);
+            schedule.setFullyPaidDate(today);
+            HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
+            repaymentTrack.setHpSchedule(schedule);
+            repaymentTrack.setDate(LocalDate.now());
+            repaymentTrack.setPaidAmount(totalRepaidAmount);
+            repaymentTrack.setRepayStatus(RepaymentStatus.ALL_PAID);
+            repaymentTrackRepo.save(repaymentTrack);
+            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
+                    "The full principal and interest amount of MMK " + duePrincipal + " has been cleared. " +
+                    "Thank you for your timely payment!";
+            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
+
+// Full Repayment Email
+            String emailSubject = "HP Loan Term: " + schedule.getTermNumber() + " - Full Repayment Confirmation";
+            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
+                    "We are pleased to inform you that your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
+                    "The full principal and interest  amount of MMK " + duePrincipal + " has been cleared. Thank you for your timely payment.\n\n" +
+                    "Best regards,\nRichCoin Financial Services";
+            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+            hpLoan.getCurrentAccount().setTotalBalence(minBalance.add(availableBalance).doubleValue());
+
+// Update schedule
+            schedule.setInstallment(BigDecimal.ZERO);
+            schedule.setInterestAmount(BigDecimal.ZERO);
+            schedule.setPrincipal(BigDecimal.ZERO);
+            schedule.setTotalRepaidAmount(installment);
+
+// Save changes
+            hpLoanRepository.save(hpLoan);
+            hpScheduleRepository.save(schedule);
+            return;
+        }
+//        } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
+//            totalRepaidAmount = totalRepaidAmount.add(availableBalance);
+//            schedule.setPrincipalODAmount(duePrincipal.subtract(availableBalance));
+//            availableBalance = BigDecimal.ZERO;
+//        } else {
+//            schedule.setPrincipalODAmount(duePrincipal);
+//        }
+
+
 // Deduct interest first
         if (availableBalance.compareTo(dueInterest) >= 0) {
+            System.out.println("Test");
             availableBalance = availableBalance.subtract(dueInterest);
+
             totalRepaidAmount = totalRepaidAmount.add(dueInterest);
+
             schedule.setInterestODAmount(BigDecimal.ZERO);
+            schedule.setPrincipalODAmount(schedule.getPrincipal());
             schedule.setStatus(RepaymentStatus.INTEREST_PAID_PRINCIPAL_OD);
+
+            if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
+                totalRepaidAmount = totalRepaidAmount.add(availableBalance);
+                schedule.setPrincipalODAmount(duePrincipal.subtract(availableBalance));
+                availableBalance = BigDecimal.ZERO;
+            }
 
             HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
             repaymentTrack.setHpSchedule(schedule);
@@ -140,9 +200,11 @@ public class HPRepaymentService {
                     "RichCoin Financial Services";
             EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
         } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
+
             totalRepaidAmount = totalRepaidAmount.add(availableBalance);
             schedule.setInterestODAmount(dueInterest.subtract(availableBalance));
-            availableBalance = BigDecimal.ZERO;
+            schedule.setPrincipalODAmount(schedule.getPrincipal());
+
             schedule.setStatus(RepaymentStatus.INTEREST_OD_PRINCIPAL_OD);
 
             HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
@@ -166,6 +228,7 @@ public class HPRepaymentService {
                     "Best regards,\n" +
                     "RichCoin Financial Services";
             EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
+            availableBalance = BigDecimal.ZERO;
         } else {
             schedule.setInterestODAmount(dueInterest);
             schedule.setPrincipalODAmount(duePrincipal);
@@ -188,39 +251,7 @@ public class HPRepaymentService {
 
         }
 
-// Deduct principal if balance allows
-        if (availableBalance.compareTo(duePrincipal) >= 0) {
-            availableBalance = availableBalance.subtract(duePrincipal);
-            totalRepaidAmount = totalRepaidAmount.add(duePrincipal);
-            schedule.setPrincipalODAmount(BigDecimal.ZERO);
-            schedule.setStatus(RepaymentStatus.ALL_PAID);
-            schedule.setFullyPaidDate(today);
-            HPRepaymentTrack repaymentTrack = new HPRepaymentTrack();
-            repaymentTrack.setHpSchedule(schedule);
-            repaymentTrack.setDate(LocalDate.now());
-            repaymentTrack.setPaidAmount(totalRepaidAmount);
-            repaymentTrack.setRepayStatus(RepaymentStatus.ALL_PAID);
-            repaymentTrackRepo.save(repaymentTrack);
 
-            String smsMessage = "RichCoin: Your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
-                    "The full principal amount of MMK " + duePrincipal + " has been cleared. " +
-                    "Thank you for your timely payment!";
-            SmsSender.sendSms(schedule.getHpLoan().getCurrentAccount().getCif().getPhone(), smsMessage);
-
-// Full Repayment Email
-            String emailSubject = "HP Loan Term: " + schedule.getTermNumber() + " - Full Repayment Confirmation";
-            String emailBody = "Dear " + schedule.getHpLoan().getCurrentAccount().getCif().getUserName() + ",\n\n" +
-                    "We are pleased to inform you that your HP loan Term: " + schedule.getTermNumber() + " has been fully repaid. " +
-                    "The full principal amount of MMK " + duePrincipal + " has been cleared. Thank you for your timely payment.\n\n" +
-                    "Best regards,\nRichCoin Financial Services";
-            EmailSender.sendEmail(schedule.getHpLoan().getCurrentAccount().getCif().getEmail(), emailSubject, emailBody);
-        } else if (availableBalance.compareTo(BigDecimal.ZERO) > 0) {
-            totalRepaidAmount = totalRepaidAmount.add(availableBalance);
-            schedule.setPrincipalODAmount(duePrincipal.subtract(availableBalance));
-            availableBalance = BigDecimal.ZERO;
-        } else {
-            schedule.setPrincipalODAmount(duePrincipal);
-        }
 
 // Update account balance **after** processing both interest & principal
         BigDecimal newTotalBalance = minBalance.add(availableBalance);
@@ -272,4 +303,3 @@ public class HPRepaymentService {
         }
     }
 }
-

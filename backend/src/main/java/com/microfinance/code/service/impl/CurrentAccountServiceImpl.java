@@ -109,10 +109,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public long getCurrentAccountCountByBranch(Integer branchId) {
-        return currentAccountRepository.countByBranchId(branchId);
-    }
+
 
     @Override
     public CurrentAccountDTO updateFreezeStatus(String accountId, boolean freeze) {
@@ -123,6 +120,17 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
         CurrentAccount updatedAccount = currentAccountRepository.save(account);
 
         return CurrentAccountMapper.toDTO(updatedAccount);
+    }
+
+    // CurrentAccountServiceImpl.java
+    @Override
+    public long getActiveCurrentAccountCountByBranch(Integer branchId) {
+        return currentAccountRepository.countActiveAccountsByBranchId(branchId);
+    }
+
+    @Override
+    public long countActiveAccounts() {
+        return currentAccountRepository.countActiveAccounts();
     }
 
 //    @Override

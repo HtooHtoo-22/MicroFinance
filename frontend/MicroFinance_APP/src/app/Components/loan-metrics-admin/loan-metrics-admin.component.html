@@ -1,0 +1,81 @@
+<div *ngIf="metrics && !loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    
+    <!-- SME Disbursements -->
+    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium text-indigo-800">SME Disbursements</h3>
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+      </div>
+      <p class="text-2xl font-bold text-indigo-900">
+        {{ metrics.smeDisbursements | number }} MMK
+      </p>
+      <p class="text-xs text-indigo-600 mt-1">
+        {{ metrics.startDate | date }} to {{ metrics.endDate | date }}
+      </p>
+    </div>
+  
+    <!-- HP Disbursements -->
+    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium text-blue-800">HP Disbursements</h3>
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+        </svg>
+      </div>
+      <p class="text-2xl font-bold text-blue-900">
+        {{ metrics.hpDisbursements | number }} MMK
+      </p>
+      <p class="text-xs text-blue-600 mt-1">
+        {{ metrics.startDate | date }} to {{ metrics.endDate | date }}
+      </p>
+    </div>
+  
+    <!-- Total Repayments -->
+    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium text-green-800">Total Repayments</h3>
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+        </svg>
+      </div>
+      <p class="text-2xl font-bold text-green-900">
+        {{ metrics.totalRepayments | number }} MMK
+      </p>
+      <div class="flex justify-between text-xs mt-1">
+        <span class="text-green-600">SME: {{ metrics.smeRepayments | number }}</span>
+        <span class="text-green-600">HP: {{ metrics.hpRepayments | number }}</span>
+      </div>
+    </div>
+  
+    <!-- Portfolio Health -->
+    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-medium text-amber-800">Portfolio Health</h3>
+        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+      </div>
+      <p class="text-1.5xl font-bold text-amber-900">
+        {{ metrics.outstandingPortfolio | number }} MMK
+      </p>
+      <div class="flex items-center mt-1">
+        <span class="text-xs font-medium mr-2" 
+              [class.text-red-600]="metrics.delinquencyRate > 5"
+              [class.text-amber-600]="metrics.delinquencyRate <= 5 && metrics.delinquencyRate > 2"
+              [class.text-green-600]="metrics.delinquencyRate <= 2">
+          Delinquency: {{ metrics.delinquencyRate | number:'1.2-2' }}%
+        </span>
+        <div class="flex-1 bg-gray-200 rounded-full h-1.5">
+          <div class="bg-current h-1.5 rounded-full" 
+               [class.bg-red-600]="metrics.delinquencyRate > 5"
+               [class.bg-amber-600]="metrics.delinquencyRate <= 5 && metrics.delinquencyRate > 2"
+               [class.bg-green-600]="metrics.delinquencyRate <= 2"
+               [style.width.%]="metrics.delinquencyRate > 10 ? 100 : metrics.delinquencyRate * 10">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
